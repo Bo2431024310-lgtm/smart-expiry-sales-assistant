@@ -348,6 +348,15 @@ function renderSummaryPage() {
         const body = document.createElement('div');
         body.innerHTML = department.total ? `<p class="summary-count">แสดง ${department.items.length} จาก ${department.total.toLocaleString()} รหัสสินค้า • ข้อมูลของล็อตที่ต้องจัดการก่อน</p><div class="summary-table-wrap"><table><thead><tr><th>สถานะ</th><th>Item No</th><th>Item Description</th><th>Class</th><th>Stock</th><th>วันหมดอายุ</th><th>เหลือเวลาขาย</th><th>Action แนะนำ</th></tr></thead><tbody>${department.items.map(row => `<tr class="${row.status === 'ต้องเร่งขาย' ? 'urgent' : 'high'}-row"><td><span class="badge ${row.status === 'ต้องเร่งขาย' ? 'urgent' : 'high'}">${escape(row.status)}</span></td><td>${escape(row.itemno)}</td><td>${escape(row.name)}</td><td>${escape(row.class)}</td><td>${row.stock.toLocaleString()}</td><td>${escape(row.expiry)}</td><td>${row.days} วัน</td><td class="action-cell">${escape(row.action)}</td></tr>`).join('')}</tbody></table></div>` : '<p class="summary-count">ไม่มีสินค้าสถานะต้องเร่งขายหรือเสี่ยงสูงในแผนกนี้</p>';
         detail.appendChild(body);
+        if (department.items.length) {
+          const exportButton = document.createElement('button');
+          exportButton.type = 'button';
+          exportButton.className = 'export-btn';
+          exportButton.style.margin = '14px';
+          exportButton.textContent = '⇩ Export รูปภาพสำหรับ LINE';
+          exportButton.onclick = () => exportDepartmentImage(division.name, department, exportButton);
+          body.prepend(exportButton);
+        }
       });
       container.appendChild(detail);
     }
@@ -362,6 +371,88 @@ function syncSummaryRoute() {
   summaryPage.classList.toggle('hide', !isSummary);
   if (isSummary) { renderSummaryPage(); document.getElementById('summaryTitle').focus(); }
   window.scrollTo(0, 0);
+}
+function wrapImageText(ctx, value, maxWidth) {
+  const text = String(value ?? '');
+  const segments = typeof Intl.Segmenter === 'function'
+    ? [...new Intl.Segmenter('th', {granularity: 'grapheme'}).segment(text)].map(x => x.segment)
+    : Array.from(text);
+  const lines = []; let line = '';
+  for (const part of segments) {
+    if (part === '\n') { lines.push(line); line = ''; continue; }
+    if (line && ctx.measureText(line + part).width > maxWidth) { lines.push(line); line = part; }
+    else line += part;
+  }
+  lines.push(line);
+  return lines;
+}
+
+function createDepartmentCanvas(division, department, now = new Date()) {
+  const canvas = document.createElement('canvas');
+  const ctx = canvas.getContext('2d');
+  if (!ctx) throw new Error('เบราว์เซอร์นี้ไม่รองรับการสร้างภาพ');
+  const font = '"Noto Sans Thai", Tahoma, sans-serif';
+  ctx.font = `600 30px ${font}`;
+  const heading = wrapImageText(ctx, `Department: ${department.name}`, 944);
+  const divisionLines = wrapImageText(ctx, `Division: ${division}`, 944);
+  const headerHeight = 218 + (heading.length + divisionLines.length) * 42;
+  const cards = department.items.slice(0, 20).map(row => {
+    ctx.font = `700 30px ${font}`;
+    const name = wrapImageText(ctx, row.name, 912);
+    ctx.font = `400 25px ${font}`;
+    const code = wrapImageText(ctx, `Item No: ${row.itemno}`, 912);
+    const action = wrapImageText(ctx, `Action: ${String(row.action).replace(/\n/g, ' ')}`, 912);
+    return {row, name, code, action, height: 130 + name.length * 40 + code.length * 34 + action.length * 34};
+  });
+  canvas.width = 1080;
+  canvas.height = headerHeight + cards.reduce((sum, card) => sum + card.height + 16, 0) + 104;
+  ctx.fillStyle = '#f1f5fb'; ctx.fillRect(0, 0, canvas.width, canvas.height);
+  ctx.fillStyle = '#12466f'; ctx.fillRect(0, 0, 1080, headerHeight - 20);
+  const drawLines = (lines, x, y, step, color, style) => {
+    ctx.fillStyle = color; ctx.font = `${style} ${font}`;
+    for (const line of lines) { ctx.fillText(line, x, y); y += step; }
+    return y;
+  };
+  drawLines(['Smart Expiry • สรุปเร่งจัดการ'], 60, 62, 44, '#ffffff', '700 36px');
+  let y = drawLines(divisionLines, 60, 114, 42, '#ddecfa', '600 30px');
+  y = drawLines(heading, 60, y, 42, '#ffffff', '700 30px');
+  const stamp = now.toLocaleString('th-TH', {timeZone:'Asia/Bangkok',year:'numeric',month:'2-digit',day:'2-digit',hour:'2-digit',minute:'2-digit'});
+  drawLines([`จัดทำ ${stamp} • แสดง ${cards.length} / ${department.total} รหัสสินค้า`, `ต้องเร่งขาย ${department.urgent}  |  เสี่ยงสูง ${department.high}`], 60, y + 12, 38, '#ddecfa', '400 26px');
+  y = headerHeight;
+  for (let index = 0; index < cards.length; index++) {
+    const {row, name, code, action, height} = cards[index];
+    const urgent = row.status === 'ต้องเร่งขาย';
+    ctx.fillStyle = urgent ? '#fff6e9' : '#fffde8'; ctx.fillRect(44, y, 992, height);
+    ctx.fillStyle = urgent ? '#e78200' : '#d1a500'; ctx.fillRect(44, y, 8, height);
+    drawLines([`${index + 1}. ${row.status} • เหลือ ${row.days} วัน`], 76, y + 44, 38, urgent ? '#9f4d00' : '#806300', '700 28px');
+    let textY = drawLines(code, 76, y + 84, 34, '#49617a', '400 25px');
+    textY = drawLines(name, 76, textY + 4, 40, '#173651', '700 30px');
+    textY = drawLines([`Stock: ${Number(row.stock).toLocaleString('th-TH')}  •  หมดอายุ: ${row.expiry}`], 76, textY + 4, 34, '#49617a', '400 25px');
+    drawLines(action, 76, textY + 4, 34, '#173651', '400 25px');
+    y += height + 16;
+  }
+  drawLines(['ข้อมูลล็อตที่ต้องจัดการก่อน • ไม่รวมสินค้าหมดอายุ', 'Smart Expiry Sales Assistant'], 60, y + 28, 32, '#60748a', '400 23px');
+  return canvas;
+}
+
+async function exportDepartmentImage(division, department, button) {
+  if (!department.items.length) return;
+  button.disabled = true; button.textContent = 'กำลังสร้างรูปภาพ…';
+  try {
+    if (document.fonts) await Promise.race([document.fonts.load('700 30px "Noto Sans Thai"'), new Promise(resolve => setTimeout(resolve, 3000))]);
+    const canvas = createDepartmentCanvas(division, department);
+    const blob = await new Promise((resolve, reject) => canvas.toBlob(result => result ? resolve(result) : reject(new Error('สร้างรูปภาพไม่สำเร็จ')), 'image/png'));
+    const url = URL.createObjectURL(blob);
+    const dialog = document.createElement('dialog');
+    dialog.style.cssText = 'width:min(640px,94vw);max-height:90vh;border:1px solid #cbdcec;border-radius:16px;padding:20px;color:#173651';
+    const filename = `SmartExpiry-${division}-${department.name}-${new Date().toISOString().slice(0,10)}.png`.replace(/[<>:"/\\|?*\u0000-\u001f]/g, '_');
+    dialog.innerHTML = `<div class="summary-heading"><b>รูปภาพพร้อมส่งใน LINE</b><button type="button" class="export-btn">ปิด</button></div><p class="summary-note">กดดาวน์โหลด แล้วแนบรูปภาพใน LINE ได้เลย</p><a class="export-btn" style="display:inline-block;margin-bottom:16px" download="${escape(filename)}" href="${url}">⇩ ดาวน์โหลด PNG</a><img alt="ภาพสรุปสินค้า ${escape(department.name)}" src="${url}" style="display:block;width:100%;height:auto">`;
+    dialog.querySelector('button').onclick = () => dialog.close();
+    dialog.addEventListener('close', () => { URL.revokeObjectURL(url); dialog.remove(); }, {once:true});
+    document.body.appendChild(dialog);
+    dialog.showModal();
+  } catch (error) { alert(`สร้างภาพไม่สำเร็จ: ${error.message}`); }
+  finally { button.disabled = false; button.textContent = '⇩ Export รูปภาพสำหรับ LINE'; }
 }
 window.addEventListener('hashchange', syncSummaryRoute);
 syncSummaryRoute();
