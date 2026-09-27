@@ -305,6 +305,7 @@ function buildDivisionSummary(items) {
   const compare = (a, b) => priority(a) - priority(b) || a.days - b.days || String(a.itemno).localeCompare(String(b.itemno));
   for (const row of items) {
     const division = label(row.division), department = label(row.department);
+    if (division === 'ไม่ระบุ' || division === '-' || !division.replace(/[\s\u200B-\u200D\uFEFF]/g, '')) continue;
     if (!divisions.has(division)) divisions.set(division, new Map());
     const departments = divisions.get(division);
     if (!departments.has(department)) departments.set(department, new Map());
