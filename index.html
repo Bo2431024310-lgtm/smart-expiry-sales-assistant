@@ -72,12 +72,12 @@ function confirmRefresh() {
   if (confirm('ยืนยันที่จะกด Refresh ใช่ หรือ ไม่')) location.reload();
 }
 function filterByCard(status) {
+  if (status === 'หมดอายุ') { toggleExpiredItems(); return; }
   const select = document.getElementById('statusSelect');
   select.value = select.value === status ? '' : status;
   applyFilters();
 }
-function exportData() {
-  const list = window.filteredItems || [];
+function exportData(list = window.filteredItems || [], expiredOnly = false) {
   if (!list.length) { alert('ไม่พบข้อมูลสำหรับ Export'); return; }
   const rows = list.map(x => ({
     'สถานะ': x.status,
@@ -99,14 +99,39 @@ function exportData() {
     {wch:14},{wch:34},{wch:16},{wch:24},{wch:30},{wch:32},{wch:14},{wch:38},{wch:12},{wch:21},{wch:21},{wch:32},{wch:20}
   ];
   const workbook = XLSX.utils.book_new();
-  XLSX.utils.book_append_sheet(workbook, worksheet, 'Daily AI Action Plan');
+  XLSX.utils.book_append_sheet(workbook, worksheet, expiredOnly ? 'Expired Items' : 'Daily AI Action Plan');
   const date = new Date().toISOString().slice(0, 10);
-  XLSX.writeFile(workbook, `smart-expiry-action-plan-${date}.xlsx`);
+  XLSX.writeFile(workbook, `${expiredOnly ? 'smart-expiry-expired-items' : 'smart-expiry-action-plan'}-${date}.xlsx`);
 }
 </script><script>
 /* Fast file reader: prevents a large worksheet from creating thousands of table rows at once. */
 const ROWS_PER_PAGE = 250;
 let visibleRowCount = ROWS_PER_PAGE;
+let expiredVisibleCount = ROWS_PER_PAGE;
+let expiredPanelOpen = false;
+const expiredSection = document.createElement('section');
+expiredSection.id = 'expiredSection';
+expiredSection.className = 'hide';
+expiredSection.innerHTML = `<div class="plan-heading"><h2>สินค้าหมดอายุ — แยกรอคัดออก</h2><div><button type="button" class="export-btn" onclick="exportData(window.expiredItems || [], true)">⇩ Export data</button> <button type="button" class="export-btn" onclick="toggleExpiredItems()">ปิดรายการ</button></div></div><p id="expiredSummary" class="hint" aria-live="polite"></p><table>${document.querySelector('table thead').outerHTML}<tbody id="expiredRows"></tbody></table><button id="expiredMore" type="button" class="load-more hide" onclick="expiredVisibleCount += ROWS_PER_PAGE; renderExpiredItems()">แสดงเพิ่ม</button>`;
+document.getElementById('results').appendChild(expiredSection);
+
+function toggleExpiredItems() {
+  expiredPanelOpen = !expiredPanelOpen;
+  expiredVisibleCount = ROWS_PER_PAGE;
+  renderExpiredItems();
+  if (expiredPanelOpen) expiredSection.scrollIntoView({ behavior: 'smooth', block: 'start' });
+}
+
+function renderExpiredItems() {
+  expiredSection.classList.toggle('hide', !expiredPanelOpen);
+  const card = document.querySelector('.expired-card');
+  card.classList.toggle('active', expiredPanelOpen);
+  card.setAttribute('aria-pressed', String(expiredPanelOpen));
+  const items = window.expiredItems || [];
+  document.getElementById('expiredSummary').textContent = `สินค้าหมดอายุ ${items.length.toLocaleString()} รายการ ตามตัวกรองสินค้าและช่วงข้อมูล`;
+  document.getElementById('expiredRows').innerHTML = expiredPanelOpen ? items.slice(0, expiredVisibleCount).map(renderItemRow).join('') || '<tr><td colspan="13">ไม่พบสินค้าหมดอายุตามตัวกรอง</td></tr>' : '';
+  document.getElementById('expiredMore').classList.toggle('hide', items.length <= expiredVisibleCount);
+}
 const legacyFileInput = document.getElementById('file');
 const fastFileInput = legacyFileInput.cloneNode(true);
 legacyFileInput.replaceWith(fastFileInput);
@@ -180,6 +205,7 @@ async function prepareItems(data) {
   }
 
   window.allItems = items.sort((left, right) => left.days - right.days);
+  expiredPanelOpen = false;
   const options = [
     ['divisionSelect', 'division', 'ทุก Division'], ['departmentSelect', 'department', 'ทุก Department'], ['classSelect', 'class', 'ทุก Class']
   ];
@@ -187,7 +213,7 @@ async function prepareItems(data) {
     const values = [...new Set(window.allItems.map(item => item[key]))].sort();
     document.getElementById(id).innerHTML = `<option value="">${label}</option>` + values.map(value => `<option>${escape(value)}</option>`).join('');
   });
-  document.getElementById('statusSelect').innerHTML = '<option value="">ทุกสถานะ</option><option>หมดอายุ</option><option>ต้องเร่งขาย</option><option>เสี่ยงสูง</option><option>ปกติ</option>';
+  document.getElementById('statusSelect').innerHTML = '<option value="">ทุกสถานะที่ยังไม่หมดอายุ</option><option>ต้องเร่งขาย</option><option>เสี่ยงสูง</option><option>ปกติ</option>';
   document.getElementById('itemSearch').value = '';
   document.getElementById('periodSelect').value = 'all';
   const receivedDates = window.allItems.map(item => item.receivedIso).filter(Boolean).sort();
@@ -210,30 +236,30 @@ function applyFilters() {
   const start = period === 'all' ? '' : period === 'mtd' ? `${received.slice(0, 8)}01` : period === 'ytd' ? `${received.slice(0, 4)}-01-01` : period === 'previous_year' ? `${Number(received.slice(0, 4)) - 1}${received.slice(4)}` : received;
   const end = period === 'previous_year' ? start : received;
   visibleRowCount = ROWS_PER_PAGE;
-  renderItems(window.allItems.filter(row => (!division || row.division === division) && (!department || row.department === department) && (!itemClass || row.class === itemClass) && (!item || String(row.itemno).toLowerCase().includes(item)) && (!status || row.status === status) && (!start || (row.receivedIso >= start && row.receivedIso <= end))));
+  const matching = window.allItems.filter(row => (!division || row.division === division) && (!department || row.department === department) && (!itemClass || row.class === itemClass) && (!item || String(row.itemno).toLowerCase().includes(item)) && (!start || (row.receivedIso >= start && row.receivedIso <= end)));
+  window.summaryItems = matching;
+  window.expiredItems = matching.filter(row => row.status === 'หมดอายุ');
+  expiredVisibleCount = ROWS_PER_PAGE;
+  renderItems(matching.filter(row => row.status !== 'หมดอายุ' && (!status || row.status === status)));
+  renderExpiredItems();
 }
 
 function renderItems(list) {
   window.filteredItems = list;
   const counts = { 'หมดอายุ': 0, 'ต้องเร่งขาย': 0, 'เสี่ยงสูง': 0, 'ปกติ': 0 };
-  list.forEach(row => counts[row.status] += 1);
+  (window.summaryItems || list).forEach(row => counts[row.status] += 1);
   document.getElementById('expired').textContent = counts['หมดอายุ'];
   document.getElementById('urgent').textContent = counts['ต้องเร่งขาย'];
   document.getElementById('watching').textContent = counts['เสี่ยงสูง'];
   document.getElementById('normal').textContent = counts['ปกติ'];
   const selectedStatus = document.getElementById('statusSelect').value;
   document.querySelectorAll('.card[data-status]').forEach(card => {
-    const active = card.dataset.status === selectedStatus;
+    const active = card.dataset.status === 'หมดอายุ' ? expiredPanelOpen : card.dataset.status === selectedStatus;
     card.classList.toggle('active', active);
     card.setAttribute('aria-pressed', String(active));
   });
   const shownRows = list.slice(0, visibleRowCount);
-  document.getElementById('rows').innerHTML = shownRows.map(row => {
-    const cssClass = row.status === 'หมดอายุ' ? 'danger' : row.status === 'ต้องเร่งขาย' ? 'urgent' : row.status === 'เสี่ยงสูง' ? 'high' : 'normal';
-    const timeLeft = row.days < 0 ? `หมดอายุ ${Math.abs(row.days)} วัน` : `${row.days} วัน`;
-    const image = row.thumbnail ? `<img class="thumb" src="${escape(row.thumbnail)}" alt="สินค้า" loading="lazy">` : '-';
-    return `<tr><td><span class="badge ${cssClass}">${row.status}</span></td><td class="action-cell">${row.action}</td><td>${escape(row.division)}</td><td>${escape(row.department)}</td><td>${escape(row.class)}</td><td>${image}</td><td>${escape(row.itemno)}</td><td>${escape(row.name)}</td><td>${row.stock.toLocaleString()}</td><td>${escape(row.received)}</td><td>${Number(row.receivedqty).toLocaleString()}</td><td>${row.expiry}</td><td>${timeLeft}</td></tr>`;
-  }).join('') || '<tr><td colspan="13" class="green">ไม่พบข้อมูลตามตัวกรอง</td></tr>';
+  document.getElementById('rows').innerHTML = shownRows.map(renderItemRow).join('') || '<tr><td colspan="13" class="green">ไม่พบข้อมูลตามตัวกรอง</td></tr>';
   const loadMore = document.getElementById('loadMore');
   if (list.length > shownRows.length) {
     loadMore.textContent = `แสดงเพิ่ม (${shownRows.length.toLocaleString()} / ${list.length.toLocaleString()} รายการ)`;
@@ -242,9 +268,15 @@ function renderItems(list) {
   document.getElementById('results').classList.remove('hide');
 }
 
+function renderItemRow(row) {
+    const cssClass = row.status === 'หมดอายุ' ? 'danger' : row.status === 'ต้องเร่งขาย' ? 'urgent' : row.status === 'เสี่ยงสูง' ? 'high' : 'normal';
+    const timeLeft = row.days < 0 ? `หมดอายุ ${Math.abs(row.days)} วัน` : `${row.days} วัน`;
+    const image = row.thumbnail ? `<img class="thumb" src="${escape(row.thumbnail)}" alt="สินค้า" loading="lazy">` : '-';
+    return `<tr><td><span class="badge ${cssClass}">${row.status}</span></td><td class="action-cell">${row.action}</td><td>${escape(row.division)}</td><td>${escape(row.department)}</td><td>${escape(row.class)}</td><td>${image}</td><td>${escape(row.itemno)}</td><td>${escape(row.name)}</td><td>${row.stock.toLocaleString()}</td><td>${escape(row.received)}</td><td>${Number(row.receivedqty).toLocaleString()}</td><td>${row.expiry}</td><td>${timeLeft}</td></tr>`;
+}
+
 function showMoreRows() {
   visibleRowCount += ROWS_PER_PAGE;
   renderItems(window.filteredItems || []);
 }
 </script></body></html>
-
