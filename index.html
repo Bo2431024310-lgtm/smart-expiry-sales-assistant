@@ -297,6 +297,13 @@ summaryPage.innerHTML = `<style>
 @media(max-width:1100px){.cards{grid-template-columns:repeat(3,minmax(0,1fr))}}@media(max-width:700px){.cards{grid-template-columns:repeat(2,minmax(0,1fr))}.division-summary{padding:12px}.summary-card b{font-size:19px}}
 </style><div class="summary-heading"><h2 tabindex="-1" id="summaryTitle">สรุปรายการที่ต้องรีบจัดการ</h2><button type="button" class="export-btn" onclick="location.hash = ''">← กลับหน้าหลัก</button></div><p class="summary-note">สรุปจากไฟล์ที่อัปโหลดทั้งหมด • ไม่เกิน 20 รหัสสินค้าต่อ Department • เรียงสีส้ม ต้องเร่งขาย → สีเหลือง เสี่ยงสูง แล้วเรียงวันคงเหลือน้อยที่สุด<br>รหัสสินค้าที่มีหลายล็อตจะแสดงล็อตที่ต้องจัดการก่อน • สินค้าหมดอายุแยกอยู่ในการ์ดหมดอายุหน้าหลัก</p><div id="summaryContent"></div>`;
 document.querySelector('main').appendChild(summaryPage);
+const overviewExportButton = document.createElement('button');
+overviewExportButton.id = 'overviewExportButton';
+overviewExportButton.type = 'button';
+overviewExportButton.className = 'export-btn';
+overviewExportButton.textContent = '⇩ Export ภาพรวมสำหรับ LINE';
+overviewExportButton.onclick = () => exportOverviewImage(overviewExportButton);
+document.querySelector('#summaryPage .summary-heading').appendChild(overviewExportButton);
 
 function buildDivisionSummary(items) {
   const divisions = new Map();
@@ -348,7 +355,7 @@ function renderSummaryPage() {
         const body = document.createElement('div');
         body.innerHTML = department.total ? `<p class="summary-count">แสดง ${department.items.length} จาก ${department.total.toLocaleString()} รหัสสินค้า • ข้อมูลของล็อตที่ต้องจัดการก่อน</p><div class="summary-table-wrap"><table><thead><tr><th>สถานะ</th><th>Item No</th><th>Item Description</th><th>Class</th><th>Stock</th><th>วันหมดอายุ</th><th>เหลือเวลาขาย</th><th>Action แนะนำ</th></tr></thead><tbody>${department.items.map(row => `<tr class="${row.status === 'ต้องเร่งขาย' ? 'urgent' : 'high'}-row"><td><span class="badge ${row.status === 'ต้องเร่งขาย' ? 'urgent' : 'high'}">${escape(row.status)}</span></td><td>${escape(row.itemno)}</td><td>${escape(row.name)}</td><td>${escape(row.class)}</td><td>${row.stock.toLocaleString()}</td><td>${escape(row.expiry)}</td><td>${row.days} วัน</td><td class="action-cell">${escape(row.action)}</td></tr>`).join('')}</tbody></table></div>` : '<p class="summary-count">ไม่มีสินค้าสถานะต้องเร่งขายหรือเสี่ยงสูงในแผนกนี้</p>';
         detail.appendChild(body);
-        if (department.items.length) {
+        if (false && department.items.length) {
           const exportButton = document.createElement('button');
           exportButton.type = 'button';
           exportButton.className = 'export-btn';
@@ -453,6 +460,101 @@ async function exportDepartmentImage(division, department, button) {
     dialog.showModal();
   } catch (error) { alert(`สร้างภาพไม่สำเร็จ: ${error.message}`); }
   finally { button.disabled = false; button.textContent = '⇩ Export รูปภาพสำหรับ LINE'; }
+}
+function createOverviewCanvas(groups, now = new Date()) {
+  const visibleGroups = groups.map(group => ({...group, departments: group.departments.filter(department => department.total > 0)}))
+    .filter(group => group.departments.length > 0);
+  if (!visibleGroups.length) throw new Error('ไม่พบสินค้าที่ต้องเร่งขายหรือเสี่ยงสูง');
+  const canvas = document.createElement('canvas');
+  const ctx = canvas.getContext('2d');
+  if (!ctx) throw new Error('เบราว์เซอร์นี้ไม่รองรับการสร้างภาพ');
+  const font = '"Noto Sans Thai", Tahoma, sans-serif';
+  const width = 1080, margin = 42, contentWidth = width - margin * 2;
+  const allDepartments = visibleGroups.flatMap(group => group.departments);
+  const urgentTotal = allDepartments.reduce((sum, department) => sum + department.urgent, 0);
+  const highTotal = allDepartments.reduce((sum, department) => sum + department.high, 0);
+  const prepare = limit => visibleGroups.map(group => ({
+    ...group,
+    cards: group.departments.map(department => {
+      const rows = department.items.slice(0, limit).map(row => {
+        ctx.font = `600 25px ${font}`;
+        let nameLines = wrapImageText(ctx, row.name, 610);
+        if (nameLines.length > 2) nameLines = [nameLines[0], `${nameLines[1].slice(0, -1)}…`];
+        return {row, nameLines, height: nameLines.length > 1 ? 104 : 78};
+      });
+      return {department, rows, height: 76 + rows.reduce((sum, row) => sum + row.height, 0) + 14};
+    })
+  }));
+  let prepared = prepare(3);
+  const heightOf = data => 328 + data.reduce((sum, group) => sum + 76 + group.cards.reduce((cardSum, card) => cardSum + card.height + 14, 0) + 20, 0) + 108;
+  if (heightOf(prepared) > 30000) prepared = prepare(1);
+  canvas.width = width;
+  canvas.height = Math.min(heightOf(prepared), 32000);
+  const fill = (color, x, y, w, h) => { ctx.fillStyle = color; ctx.fillRect(x, y, w, h); };
+  const text = (value, x, y, color, style, align = 'left') => { ctx.fillStyle = color; ctx.font = `${style} ${font}`; ctx.textAlign = align; ctx.fillText(String(value), x, y); ctx.textAlign = 'left'; };
+  fill('#f3f7fc', 0, 0, canvas.width, canvas.height);
+  fill('#114d78', 0, 0, width, 300);
+  text('SMART EXPIRY SALES ASSISTANT', margin, 62, '#bfe2f7', '700 24px');
+  text('สรุปสินค้าที่ต้องรีบจัดการ', margin, 116, '#ffffff', '800 42px');
+  const stamp = now.toLocaleString('th-TH', {timeZone:'Asia/Bangkok',year:'numeric',month:'2-digit',day:'2-digit',hour:'2-digit',minute:'2-digit'});
+  text(`ข้อมูล ณ ${stamp} • ${visibleGroups.length} Division • ${allDepartments.length} Department`, margin, 158, '#dceefa', '400 25px');
+  const statY = 188, statW = 302, gap = 22;
+  [['#fff1dc','#a95100','ต้องเร่งขาย',urgentTotal],['#fff8c9','#806300','เสี่ยงสูง',highTotal],['#e9f3ff','#185382','Department',allDepartments.length]].forEach((stat, index) => {
+    const x = margin + index * (statW + gap); fill(stat[0], x, statY, statW, 82);
+    text(stat[2], x + 18, statY + 30, stat[1], '600 21px'); text(Number(stat[3]).toLocaleString('th-TH'), x + 18, statY + 66, stat[1], '800 32px');
+  });
+  let y = 328;
+  for (const group of prepared) {
+    fill('#dcecf8', margin, y, contentWidth, 62);
+    text(`DIVISION  ${group.name}`, margin + 20, y + 41, '#154f7c', '800 28px');
+    y += 76;
+    for (const card of group.cards) {
+      const {department, rows} = card;
+      fill('#ffffff', margin, y, contentWidth, card.height);
+      fill('#eef5fb', margin, y, contentWidth, 62);
+      text(department.name, margin + 20, y + 40, '#173d60', '800 27px');
+      text(`เร่งขาย ${department.urgent}  •  เสี่ยงสูง ${department.high}  •  ทั้งหมด ${department.total}`, width - margin - 20, y + 39, '#536b82', '600 22px', 'right');
+      let rowY = y + 70;
+      for (const item of rows) {
+        const urgent = item.row.status === 'ต้องเร่งขาย';
+        fill(urgent ? '#fff8ee' : '#fffced', margin + 12, rowY, contentWidth - 24, item.height - 7);
+        fill(urgent ? '#ea8300' : '#d4a400', margin + 12, rowY, 7, item.height - 7);
+        text(urgent ? 'ต้องเร่งขาย' : 'เสี่ยงสูง', margin + 34, rowY + 31, urgent ? '#a34e00' : '#806300', '800 22px');
+        text(`${item.row.days} วัน`, margin + 34, rowY + 59, '#536b82', '600 20px');
+        text(`Item ${item.row.itemno}`, margin + 210, rowY + 31, '#173d60', '700 23px');
+        let nameY = rowY + 59;
+        for (const line of item.nameLines) { text(line, margin + 210, nameY, '#173d60', '600 25px'); nameY += 32; }
+        text(`Stock ${Number(item.row.stock).toLocaleString('th-TH')}  •  หมดอายุ ${item.row.expiry}`, width - margin - 26, rowY + 31, '#536b82', '500 20px', 'right');
+        rowY += item.height;
+      }
+      if (department.total > rows.length) text(`แสดง ${rows.length} รายการแรกจาก ${department.total} รหัสสินค้า • ดูครบ 20 รายการได้ในหน้าสรุป`, margin + 20, y + card.height - 13, '#718499', '400 19px');
+      y += card.height + 14;
+    }
+    y += 20;
+  }
+  fill('#e8f0f7', 0, canvas.height - 94, width, 94);
+  text('สีส้ม: ลดราคาและตรวจสอบคุณภาพ  •  สีเหลือง: ขอโปรโมชันและจัดชิมผลักดันการขาย', margin, canvas.height - 55, '#38546e', '600 21px');
+  text('แสดงสินค้าลำดับเร่งด่วนสูงสุดของแต่ละ Department • ไม่รวมสินค้าหมดอายุ', margin, canvas.height - 23, '#60748a', '400 19px');
+  return canvas;
+}
+
+async function exportOverviewImage(button) {
+  button.disabled = true; button.textContent = 'กำลังสร้างภาพรวม…';
+  try {
+    if (document.fonts) await Promise.race([document.fonts.load('800 42px "Noto Sans Thai"'), new Promise(resolve => setTimeout(resolve, 3000))]);
+    const groups = buildDivisionSummary(window.allItems || []);
+    const canvas = createOverviewCanvas(groups);
+    const blob = await new Promise((resolve, reject) => canvas.toBlob(result => result ? resolve(result) : reject(new Error('สร้างรูปภาพไม่สำเร็จ')), 'image/png'));
+    const url = URL.createObjectURL(blob);
+    const dialog = document.createElement('dialog');
+    dialog.style.cssText = 'width:min(680px,94vw);max-height:92vh;border:1px solid #cbdcec;border-radius:16px;padding:20px;color:#173651';
+    const filename = `SmartExpiry-Overview-${new Date().toISOString().slice(0,10)}.png`;
+    dialog.innerHTML = `<div class="summary-heading"><b>ภาพรวมพร้อมส่งใน LINE</b><button type="button" class="export-btn">ปิด</button></div><p class="summary-note">ภาพเดียวรวมทุก Division และ Department โดยแสดงสินค้าที่เร่งด่วนสูงสุดเพื่อให้อ่านบนมือถือได้ชัดเจน</p><a class="export-btn" style="display:inline-block;margin-bottom:16px" download="${filename}" href="${url}">⇩ ดาวน์โหลด PNG</a><img alt="ภาพรวมสินค้าที่ต้องรีบจัดการ" src="${url}" style="display:block;width:100%;height:auto;border:1px solid #dbe6ef;border-radius:10px">`;
+    dialog.querySelector('button').onclick = () => dialog.close();
+    dialog.addEventListener('close', () => { URL.revokeObjectURL(url); dialog.remove(); }, {once:true});
+    document.body.appendChild(dialog); dialog.showModal();
+  } catch (error) { alert(`สร้างภาพรวมไม่สำเร็จ: ${error.message}`); }
+  finally { button.disabled = false; button.textContent = '⇩ Export ภาพรวมสำหรับ LINE'; }
 }
 window.addEventListener('hashchange', syncSummaryRoute);
 syncSummaryRoute();
