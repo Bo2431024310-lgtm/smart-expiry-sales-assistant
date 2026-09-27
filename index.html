@@ -281,4 +281,87 @@ function showMoreRows() {
   visibleRowCount += ROWS_PER_PAGE;
   renderItems(window.filteredItems || []);
 }
+// A separate hash-routed summary view keeps the uploaded workbook in memory.
+const summaryCard = document.createElement('button');
+summaryCard.type = 'button';
+summaryCard.className = 'card summary-card';
+summaryCard.innerHTML = 'สรุป<b>ดูภาพรวม →</b>';
+summaryCard.onclick = () => { location.hash = 'summary'; };
+document.querySelector('.cards').appendChild(summaryCard);
+const summaryPage = document.createElement('div');
+summaryPage.id = 'summaryPage';
+summaryPage.className = 'hide';
+summaryPage.innerHTML = `<style>
+.cards{grid-template-columns:repeat(5,minmax(0,1fr))}.summary-card{background:#eef4ff;border-color:#b9cff8;color:#234d97;font-family:inherit}.summary-card:before{background:#3972cc}.summary-card b{font-size:22px}
+#summaryPage{margin-top:24px}.summary-heading{display:flex;align-items:center;justify-content:space-between;gap:16px;flex-wrap:wrap;margin-bottom:14px}.summary-heading h2{font-size:25px}.summary-note{color:#60748a;margin-bottom:18px}.division-summary{margin:20px 0;border:1px solid #d7e5f1;border-radius:16px;background:white;padding:20px}.division-summary h3{margin:0 0 6px;color:#185382;font-size:21px}.department-summary{border:1px solid #e1e9f1;border-radius:10px;margin-top:12px;overflow:hidden}.department-summary summary{padding:14px;cursor:pointer;background:#f3f8fd;font-weight:700}.department-summary summary .badge{margin-left:8px}.summary-table-wrap{overflow:auto}.summary-table-wrap table{min-width:900px}.summary-table-wrap .action-cell{min-width:190px}.summary-table-wrap .urgent-row td:first-child{border-left:4px solid #ea8300}.summary-table-wrap .high-row td:first-child{border-left:4px solid #d4a400}.summary-count{padding:10px 14px;color:#60748a;font-size:13px}
+@media(max-width:1100px){.cards{grid-template-columns:repeat(3,minmax(0,1fr))}}@media(max-width:700px){.cards{grid-template-columns:repeat(2,minmax(0,1fr))}.division-summary{padding:12px}.summary-card b{font-size:19px}}
+</style><div class="summary-heading"><h2 tabindex="-1" id="summaryTitle">สรุปรายการที่ต้องรีบจัดการ</h2><button type="button" class="export-btn" onclick="location.hash = ''">← กลับหน้าหลัก</button></div><p class="summary-note">สรุปจากไฟล์ที่อัปโหลดทั้งหมด • ไม่เกิน 20 รหัสสินค้าต่อ Department • เรียงสีส้ม ต้องเร่งขาย → สีเหลือง เสี่ยงสูง แล้วเรียงวันคงเหลือน้อยที่สุด<br>รหัสสินค้าที่มีหลายล็อตจะแสดงล็อตที่ต้องจัดการก่อน • สินค้าหมดอายุแยกอยู่ในการ์ดหมดอายุหน้าหลัก</p><div id="summaryContent"></div>`;
+document.querySelector('main').appendChild(summaryPage);
+
+function buildDivisionSummary(items) {
+  const divisions = new Map();
+  const label = value => String(value ?? '').trim() || 'ไม่ระบุ';
+  const priority = row => row.status === 'ต้องเร่งขาย' ? 0 : 1;
+  const compare = (a, b) => priority(a) - priority(b) || a.days - b.days || String(a.itemno).localeCompare(String(b.itemno));
+  for (const row of items) {
+    const division = label(row.division), department = label(row.department);
+    if (!divisions.has(division)) divisions.set(division, new Map());
+    const departments = divisions.get(division);
+    if (!departments.has(department)) departments.set(department, new Map());
+    if (!['ต้องเร่งขาย', 'เสี่ยงสูง'].includes(row.status)) continue;
+    const products = departments.get(department);
+    const id = label(row.itemno);
+    const key = id === '-' || id === 'ไม่ระบุ' ? `name:${label(row.name)}` : `item:${id}`;
+    const current = products.get(key);
+    if (!current || compare(row, current) < 0) products.set(key, row);
+  }
+  return [...divisions].sort(([a], [b]) => a.localeCompare(b)).map(([name, departments]) => ({
+    name,
+    departments: [...departments].sort(([a], [b]) => a.localeCompare(b)).map(([name, products]) => {
+      const ranked = [...products.values()].sort(compare);
+      return {name, total: ranked.length, urgent: ranked.filter(row => row.status === 'ต้องเร่งขาย').length,
+        high: ranked.filter(row => row.status === 'เสี่ยงสูง').length, items: ranked.slice(0, 20)};
+    })
+  }));
+}
+
+function renderSummaryPage() {
+  const groups = buildDivisionSummary(window.allItems || []);
+  const content = document.getElementById('summaryContent');
+  content.innerHTML = '';
+  if (!groups.length) {
+    content.innerHTML = '<section>ยังไม่มีข้อมูล กรุณากลับหน้าหลักเพื่ออัปโหลด Excel</section>';
+    return;
+  }
+  for (const division of groups) {
+    const container = document.createElement('div');
+    container.className = 'division-summary';
+    container.innerHTML = `<h3>Division: ${escape(division.name)}</h3><p class="hint">${division.departments.length} Department • ${division.departments.reduce((n, department) => n + department.total, 0).toLocaleString()} รหัสสินค้าที่ต้องจัดการ (นับแยกตาม Department)</p>`;
+    for (const department of division.departments) {
+      const detail = document.createElement('details');
+      detail.className = 'department-summary';
+      detail.innerHTML = `<summary>${escape(department.name)} <span class="badge urgent">ต้องเร่งขาย ${department.urgent}</span><span class="badge high">เสี่ยงสูง ${department.high}</span></summary>`;
+      detail.addEventListener('toggle', () => {
+        if (!detail.open || detail.dataset.loaded) return;
+        detail.dataset.loaded = 'true';
+        const body = document.createElement('div');
+        body.innerHTML = department.total ? `<p class="summary-count">แสดง ${department.items.length} จาก ${department.total.toLocaleString()} รหัสสินค้า • ข้อมูลของล็อตที่ต้องจัดการก่อน</p><div class="summary-table-wrap"><table><thead><tr><th>สถานะ</th><th>Item No</th><th>Item Description</th><th>Class</th><th>Stock</th><th>วันหมดอายุ</th><th>เหลือเวลาขาย</th><th>Action แนะนำ</th></tr></thead><tbody>${department.items.map(row => `<tr class="${row.status === 'ต้องเร่งขาย' ? 'urgent' : 'high'}-row"><td><span class="badge ${row.status === 'ต้องเร่งขาย' ? 'urgent' : 'high'}">${escape(row.status)}</span></td><td>${escape(row.itemno)}</td><td>${escape(row.name)}</td><td>${escape(row.class)}</td><td>${row.stock.toLocaleString()}</td><td>${escape(row.expiry)}</td><td>${row.days} วัน</td><td class="action-cell">${escape(row.action)}</td></tr>`).join('')}</tbody></table></div>` : '<p class="summary-count">ไม่มีสินค้าสถานะต้องเร่งขายหรือเสี่ยงสูงในแผนกนี้</p>';
+        detail.appendChild(body);
+      });
+      container.appendChild(detail);
+    }
+    content.appendChild(container);
+  }
+}
+
+function syncSummaryRoute() {
+  const isSummary = location.hash === '#summary';
+  document.querySelector('.upload').classList.toggle('hide', isSummary);
+  document.getElementById('results').classList.toggle('hide', isSummary || !window.allItems);
+  summaryPage.classList.toggle('hide', !isSummary);
+  if (isSummary) { renderSummaryPage(); document.getElementById('summaryTitle').focus(); }
+  window.scrollTo(0, 0);
+}
+window.addEventListener('hashchange', syncSummaryRoute);
+syncSummaryRoute();
 </script></body></html>
