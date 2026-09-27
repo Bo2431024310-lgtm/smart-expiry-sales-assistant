@@ -210,8 +210,10 @@ async function prepareItems(data) {
     ['divisionSelect', 'division', 'ทุก Division'], ['departmentSelect', 'department', 'ทุก Department'], ['classSelect', 'class', 'ทุก Class']
   ];
   options.forEach(([id, key, label]) => {
-    const values = [...new Set(window.allItems.map(item => item[key]))].sort();
+    const values = [...new Set(window.allItems.map(item => item[key]))]
+      .filter(value => String(value ?? '').replace(/[\s\u200B-\u200D\uFEFF]/g, '').length > 0).sort();
     document.getElementById(id).innerHTML = `<option value="">${label}</option>` + values.map(value => `<option>${escape(value)}</option>`).join('');
+    document.getElementById(id).value = '';
   });
   document.getElementById('statusSelect').innerHTML = '<option value="">ทุกสถานะที่ยังไม่หมดอายุ</option><option>ต้องเร่งขาย</option><option>เสี่ยงสูง</option><option>ปกติ</option>';
   document.getElementById('itemSearch').value = '';
