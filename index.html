@@ -538,6 +538,21 @@ function createOverviewCanvas(groups, now = new Date()) {
   return canvas;
 }
 
+const LINE_WORKER_URL = 'https://smart-expiry-line.boss2431024310.workers.dev';
+
+async function canvasToLineJpeg(canvas) {
+  const qualities = [0.88, 0.8, 0.72, 0.64, 0.56];
+  for (const quality of qualities) {
+    const blob = await new Promise((resolve, reject) => canvas.toBlob(
+      result => result ? resolve(result) : reject(new Error('ไม่สามารถสร้างรูปภาพสำหรับ LINE ได้')),
+      'image/jpeg',
+      quality
+    ));
+    if (blob.size <= 950000) return blob;
+  }
+  throw new Error('รูปภาพมีขนาดใหญ่เกินไป กรุณาลดจำนวนข้อมูลในสรุป');
+}
+
 async function exportOverviewImage(button) {
   button.disabled = true; button.textContent = 'กำลังสร้างภาพรวม…';
   try {
@@ -545,13 +560,22 @@ async function exportOverviewImage(button) {
     const groups = buildDivisionSummary(window.allItems || []);
     const canvas = createOverviewCanvas(groups);
     const blob = await new Promise((resolve, reject) => canvas.toBlob(result => result ? resolve(result) : reject(new Error('สร้างรูปภาพไม่สำเร็จ')), 'image/png'));
+    const lineBlob = await canvasToLineJpeg(canvas);
     const url = URL.createObjectURL(blob);
     const dialog = document.createElement('dialog');
     dialog.style.cssText = 'width:min(680px,94vw);max-height:92vh;border:1px solid #cbdcec;border-radius:16px;padding:20px;color:#173651';
     const filename = `SmartExpiry-Overview-${new Date().toISOString().slice(0,10)}.png`;
     dialog.innerHTML = `<div class="summary-heading"><b>ภาพรวมพร้อมส่งใน LINE</b><button type="button" class="export-btn">ปิด</button></div><p class="summary-note">กดแชร์บนมือถือ แล้วเลือกห้อง “Expired product x Next Gen” ภาพจะถูกแนบไปพร้อมส่ง</p><button type="button" class="btn" data-line-share style="margin:0 8px 16px 0">แชร์ไป LINE</button><a class="export-btn" style="display:inline-block;margin-bottom:16px" download="${filename}" href="${url}">⇩ ดาวน์โหลด PNG</a><img alt="ภาพรวมสินค้าที่ต้องรีบจัดการ" src="${url}" style="display:block;width:100%;height:auto;border:1px solid #dbe6ef;border-radius:10px">`;
     dialog.querySelector('.summary-heading button').onclick = () => dialog.close();
-    dialog.querySelector('[data-line-share]').onclick = event => shareOverviewToLine(blob, filename, event.currentTarget);
+    const shareButton = dialog.querySelector('[data-line-share]');
+    shareButton.onclick = event => shareOverviewToLine(blob, filename, event.currentTarget);
+    const lineOaButton = document.createElement('button');
+    lineOaButton.type = 'button';
+    lineOaButton.className = 'btn';
+    lineOaButton.textContent = 'ส่งเข้า LINE OA';
+    lineOaButton.style.cssText = 'margin:0 8px 16px 0;background:#06c755';
+    shareButton.insertAdjacentElement('afterend', lineOaButton);
+    lineOaButton.onclick = () => sendOverviewToLineOA(lineBlob, lineOaButton);
     dialog.addEventListener('close', () => { URL.revokeObjectURL(url); dialog.remove(); }, {once:true});
     document.body.appendChild(dialog); dialog.showModal();
   } catch (error) { alert(`สร้างภาพรวมไม่สำเร็จ: ${error.message}`); }
@@ -584,6 +608,33 @@ async function shareOverviewToLine(blob, filename, button) {
     button.textContent = 'แชร์ไป LINE';
   }
 }
+async function sendOverviewToLineOA(blob, button) {
+  const sendKey = prompt('กรอกรหัส SEND_KEY เพื่อส่งภาพเข้า LINE OA');
+  if (!sendKey) return;
+  button.disabled = true;
+  const oldText = button.textContent;
+  button.textContent = 'กำลังส่งเข้า LINE...';
+  try {
+    const response = await fetch(`${LINE_WORKER_URL}/send`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'image/jpeg',
+        'X-Send-Key': sendKey.trim()
+      },
+      body: blob
+    });
+    let result = {};
+    try { result = await response.json(); } catch (_) {}
+    if (!response.ok) throw new Error(result.error || `ส่งไม่สำเร็จ (${response.status})`);
+    alert('ส่งภาพสรุปเข้า LINE OA เรียบร้อยแล้ว');
+  } catch (error) {
+    alert(`ส่งเข้า LINE OA ไม่สำเร็จ: ${error.message}`);
+  } finally {
+    button.disabled = false;
+    button.textContent = oldText;
+  }
+}
+
 window.addEventListener('hashchange', syncSummaryRoute);
 syncSummaryRoute();
 </script>
