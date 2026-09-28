@@ -647,4 +647,137 @@ section>table{display:block;width:100%;min-width:0;border-collapse:separate}sect
 .summary-page{padding:14px 10px}.summary-heading{align-items:flex-start;gap:10px}.summary-heading h2{font-size:22px}.summary-heading h2:focus{outline:none}.division-summary{padding:14px}.division-summary h3{font-size:20px}.department-summary summary{padding:13px 12px;line-height:1.7}.summary-table-wrap{overflow-x:auto}.summary-table-wrap table{min-width:900px}dialog{padding:14px!important}.summary-note{font-size:13px}
 }
 </style>
+<style id="smart-expiry-ux-2026">
+:root{--sx-navy:#123d61;--sx-blue:#0878b9;--sx-sky:#eaf4fc;--sx-line:#d7e6f2;--sx-muted:#647a8f;--sx-shadow:0 10px 30px rgba(24,61,94,.09)}
+.dashboard-meta.hide{display:none!important}
+html{scroll-behavior:smooth}body{font-family:"Anuphan",system-ui,sans-serif}.wrap{max-width:1760px}.topbar{position:relative;overflow:hidden}.topbar:after{content:"";position:absolute;width:240px;height:240px;border-radius:50%;right:-90px;bottom:-150px;background:rgba(255,255,255,.08);pointer-events:none}.topbar h1{letter-spacing:-.5px}.upload{transition:padding .25s ease,border-color .25s ease,box-shadow .25s ease}.upload.has-data{display:grid;grid-template-columns:minmax(220px,1fr) auto;align-items:center;text-align:left;gap:4px 18px;padding:17px 20px;border-style:solid;border-color:#bdd8ea}.upload.has-data>b{font-size:15px}.upload.has-data>.hint:first-of-type{display:none}.upload.has-data #message{grid-column:1;margin:0;color:#41647f}.upload.has-data .btn{grid-column:2;grid-row:1/3;box-shadow:none}.dashboard-meta{display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin:-8px 0 16px;color:var(--sx-muted);font-size:12px}.dashboard-meta span{display:inline-flex;align-items:center;gap:5px;padding:5px 9px;border:1px solid var(--sx-line);border-radius:999px;background:#fff}.dashboard-meta .line-ready{color:#087f40;border-color:#bee5cd;background:#f1fbf5}.cards{align-items:stretch}.card{min-height:112px;background:#fff}.card .card-help{display:block;margin-top:10px;color:#718396;font-size:11px;font-weight:600}.filter-toggle{display:none;width:100%;align-items:center;justify-content:space-between;border:1px solid #b9d4e8;background:#f4f9fd;color:#194d75;border-radius:11px;padding:11px 13px;font:800 14px "Anuphan",sans-serif;cursor:pointer}.filter-summary{display:flex;gap:7px;flex-wrap:wrap;margin-top:10px}.filter-chip{padding:5px 9px;border-radius:999px;background:#e7f3fb;color:#17577f;font-size:11px;font-weight:700}.filter-chip-clear{border:0;cursor:pointer;background:#ffeceb;color:#a8322b}.loading-shade{display:none;position:fixed;inset:0;z-index:5000;background:rgba(7,34,55,.38);backdrop-filter:blur(2px);align-items:center;justify-content:center;padding:24px}.loading-shade.show{display:flex}.loading-panel{width:min(360px,90vw);padding:25px;border-radius:18px;background:#fff;box-shadow:0 24px 70px rgba(0,0,0,.2);text-align:center;color:var(--sx-navy);font-weight:800}.loading-spinner{width:38px;height:38px;margin:0 auto 13px;border:4px solid #dcecf7;border-top-color:var(--sx-blue);border-radius:50%;animation:sx-spin .8s linear infinite}@keyframes sx-spin{to{transform:rotate(360deg)}}.mobile-actions{display:none}.back-to-top{position:fixed;right:20px;bottom:22px;z-index:80;width:44px;height:44px;border:0;border-radius:50%;background:#0d659c;color:#fff;font-size:20px;box-shadow:0 7px 22px rgba(13,101,156,.3);cursor:pointer;opacity:0;pointer-events:none;transform:translateY(8px);transition:.2s}.back-to-top.show{opacity:1;pointer-events:auto;transform:none}
+@media(max-width:700px){
+body{padding-bottom:74px;background:#f5f8fb}.wrap{padding:10px 9px 24px}.topbar{min-height:142px;padding:18px 16px 16px;border-radius:15px;align-items:flex-start}.topbar h1{max-width:250px;font-size:23px}.topbar p{max-width:315px}.topbar .refresh-btn{font-size:0;width:42px;height:42px;padding:0;border-radius:50%}.topbar .refresh-btn:first-letter{font-size:18px}.upload{margin:13px 0;padding:19px 13px;border-radius:14px}.upload.has-data{display:grid;grid-template-columns:1fr auto;gap:5px 10px;padding:12px 13px}.upload.has-data>b{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.upload.has-data #message{grid-column:1;font-size:11px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.upload.has-data .btn{grid-column:2;grid-row:1/3;min-height:40px;padding:7px 11px;font-size:12px}.dashboard-meta{margin:0 2px 12px}.cards{gap:8px;margin:12px 0}.card{min-height:98px;padding:13px 14px;font-size:13px}.card b{font-size:27px;margin-top:5px}.card .card-help{display:none}.summary-card{min-height:76px}.summary-card b{font-size:18px!important}.filter-toggle{display:flex}.filter-bar{margin-top:9px;transition:.2s}.filter-bar.sx-collapsed{display:none}.filter-summary:empty{display:none}section{padding:10px 9px;margin-top:11px}.plan-heading{margin:16px 0 10px}.plan-heading h2{font-size:19px}.plan-heading .export-btn{font-size:12px;min-height:38px}.action-cell{font-size:13px!important}
+section>table tbody{gap:10px}section>table tbody tr{position:relative;grid-template-columns:62px minmax(0,1fr) auto;gap:2px 10px;padding:12px 11px 34px;border-radius:13px;cursor:pointer}section>table tbody tr::after{content:"ดูรายละเอียด  ▾";position:absolute;left:82px;bottom:9px;color:#2872a3;font-size:11px;font-weight:800}section>table tbody tr.sx-expanded::after{content:"ซ่อนรายละเอียด  ▴"}section>table td{padding:3px 2px}section>table td::before{margin-bottom:1px;font-size:10px}section>table td:nth-child(1){grid-column:1;grid-row:1}section>table td:nth-child(1)::before,section>table td:nth-child(6)::before,section>table td:nth-child(7)::before,section>table td:nth-child(8)::before,section>table td:nth-child(13)::before{display:none}section>table td:nth-child(6){grid-column:1;grid-row:2/5}section>table td:nth-child(7){grid-column:2;grid-row:1;font-weight:800;color:#315873}section>table td:nth-child(7):before{display:inline;content:"Item ";color:#8194a4}section>table td:nth-child(8){grid-column:2/4;grid-row:2;font-weight:700;font-size:14px;line-height:1.42}section>table td:nth-child(9){grid-column:2;grid-row:3}section>table td:nth-child(9):before{display:inline;content:"Stock ";margin-right:3px}section>table td:nth-child(13){grid-column:3;grid-row:1;color:#9b5600;font-size:12px;font-weight:800;text-align:right}section>table td:nth-child(2){grid-column:2/4;grid-row:4;padding-top:6px;border-top:1px dashed #dce7ef}section>table td:nth-child(3),section>table td:nth-child(4),section>table td:nth-child(5),section>table td:nth-child(10),section>table td:nth-child(11),section>table td:nth-child(12){display:none}section>table tr.sx-expanded td:nth-child(3),section>table tr.sx-expanded td:nth-child(4),section>table tr.sx-expanded td:nth-child(5),section>table tr.sx-expanded td:nth-child(10),section>table tr.sx-expanded td:nth-child(11),section>table tr.sx-expanded td:nth-child(12){display:block;grid-column:1/4;padding:7px 4px;border-top:1px solid #edf2f6}section>table tr.sx-expanded td:nth-child(3){margin-top:5px}.thumb{width:56px;height:56px}.badge{padding:5px 8px;font-size:11px}section>table tr.sx-empty{display:block;padding:18px;cursor:default}section>table tr.sx-empty::after{display:none}
+.mobile-actions{display:grid;position:fixed;z-index:100;left:8px;right:8px;bottom:7px;grid-template-columns:repeat(3,1fr);gap:6px;padding:7px;background:rgba(255,255,255,.95);border:1px solid #d9e6ef;border-radius:16px;box-shadow:0 10px 35px rgba(19,58,89,.2);backdrop-filter:blur(12px)}.mobile-actions button{border:0;border-radius:10px;background:#eef6fb;color:#184d73;min-height:48px;font:800 12px "Anuphan",sans-serif}.mobile-actions button:last-child{background:#06c755;color:#fff}.back-to-top{display:none}.summary-heading{padding-top:5px}.division-summary{border-radius:13px}.department-summary summary{font-size:13px}.summary-table-wrap table{min-width:780px}
+}
+</style>
+<script>
+(function improveSmartExpiryUX(){
+  const uploadBox = document.querySelector('.upload');
+  if (!uploadBox || typeof uploadBox.querySelector !== 'function') return;
+  const resultsBox = document.getElementById('results');
+  const filterBar = document.getElementById('divisionFilter');
+  const mainSection = resultsBox && typeof resultsBox.querySelector === 'function' ? resultsBox.querySelector('section') : document.querySelector('section');
+  const uploadButton = uploadBox && uploadBox.querySelector('.btn');
+  let currentFileName = '';
+
+  const title = document.querySelector('.topbar h1');
+  if (title) title.innerHTML = '⏳ Smart Expiry<span class="desktop-title"> Sales Assistant</span>';
+
+  document.querySelectorAll('.card[data-status]').forEach(card => {
+    if (!card.querySelector('.card-help')) card.insertAdjacentHTML('beforeend','<span class="card-help">กดเพื่อกรองรายการ</span>');
+  });
+
+  const meta = document.createElement('div');
+  meta.className = 'dashboard-meta hide';
+  meta.innerHTML = '<span data-file-meta>ยังไม่ได้เลือกไฟล์</span><span data-time-meta>ยังไม่มีข้อมูล</span><span class="line-ready">● LINE OA พร้อมใช้งาน</span>';
+  if (resultsBox) resultsBox.insertAdjacentElement('beforebegin', meta);
+
+  const toggle = document.createElement('button');
+  toggle.type = 'button';
+  toggle.className = 'filter-toggle';
+  toggle.setAttribute('aria-expanded','false');
+  toggle.innerHTML = '<span>⚙ ตัวกรองสินค้า</span><span data-filter-count>ยังไม่กรอง</span>';
+  const chips = document.createElement('div');
+  chips.className = 'filter-summary';
+  if (filterBar && mainSection) {
+    mainSection.insertBefore(toggle, filterBar);
+    filterBar.insertAdjacentElement('afterend', chips);
+    filterBar.classList.add('sx-collapsed');
+  }
+  toggle.onclick = () => {
+    const collapsed = filterBar.classList.toggle('sx-collapsed');
+    toggle.setAttribute('aria-expanded', String(!collapsed));
+    toggle.firstElementChild.textContent = collapsed ? '⚙ ตัวกรองสินค้า' : '✕ ปิดตัวกรอง';
+  };
+
+  function selectedFilterEntries(){
+    return [
+      ['Division', document.getElementById('divisionSelect')],
+      ['Department', document.getElementById('departmentSelect')],
+      ['Class', document.getElementById('classSelect')],
+      ['Item', document.getElementById('itemSearch')],
+      ['สถานะ', document.getElementById('statusSelect')],
+      ['ช่วง', document.getElementById('periodSelect')]
+    ].filter(([,el]) => el && el.value && !(el.id === 'periodSelect' && el.value === 'all'));
+  }
+  function updateFilterChips(){
+    const entries = selectedFilterEntries();
+    const count = toggle.querySelector('[data-filter-count]');
+    if (count) count.textContent = entries.length ? `${entries.length} ตัวกรอง` : 'ยังไม่กรอง';
+    chips.innerHTML = entries.map(([label,el]) => `<span class="filter-chip">${label}: ${escape(el.options ? el.options[el.selectedIndex].text : el.value)}</span>`).join('');
+    if (entries.length) chips.insertAdjacentHTML('beforeend','<button type="button" class="filter-chip filter-chip-clear">ล้างตัวกรอง</button>');
+    const clear = chips.querySelector('.filter-chip-clear');
+    if (clear) clear.onclick = () => {
+      ['divisionSelect','departmentSelect','classSelect','statusSelect','itemSearch'].forEach(id => { const el=document.getElementById(id); if(el) el.value=''; });
+      const period=document.getElementById('periodSelect'); if(period) period.value='all';
+      applyFilters();
+    };
+  }
+  ['divisionSelect','departmentSelect','classSelect','itemSearch','statusSelect','periodSelect','receivedDate'].forEach(id => {
+    const el=document.getElementById(id); if(el) el.addEventListener(id==='itemSearch'?'input':'change', updateFilterChips);
+  });
+
+  function decorateRows(){
+    document.querySelectorAll('#rows tr,#expiredRows tr').forEach(row => {
+      if (row.children.length < 5) { row.classList.add('sx-empty'); return; }
+      row.tabIndex = 0;
+      row.setAttribute('role','button');
+      row.setAttribute('aria-expanded','false');
+      const toggleRow = event => {
+        if (window.innerWidth > 700 || event.target.closest('a,button')) return;
+        row.classList.toggle('sx-expanded');
+        row.setAttribute('aria-expanded', String(row.classList.contains('sx-expanded')));
+      };
+      row.onclick = toggleRow;
+      row.onkeydown = event => { if (event.key === 'Enter' || event.key === ' ') { event.preventDefault(); toggleRow(event); } };
+    });
+  }
+
+  const originalRenderItemsUX = renderItems;
+  renderItems = function(list){ originalRenderItemsUX(list); decorateRows(); updateFilterChips(); };
+  const originalRenderExpiredUX = renderExpiredItems;
+  renderExpiredItems = function(){ originalRenderExpiredUX(); decorateRows(); };
+  const originalPrepareItemsUX = prepareItems;
+  prepareItems = async function(data){
+    await originalPrepareItemsUX(data);
+    uploadBox.classList.add('has-data');
+    if (uploadButton) uploadButton.textContent = 'เปลี่ยนไฟล์';
+    meta.classList.remove('hide');
+    meta.querySelector('[data-file-meta]').textContent = `📄 ${currentFileName || 'Dashboard Excel'} • ${data.length.toLocaleString('th-TH')} รายการ`;
+    meta.querySelector('[data-time-meta]').textContent = `อัปเดตล่าสุด ${new Date().toLocaleTimeString('th-TH',{hour:'2-digit',minute:'2-digit'})}`;
+    filterBar.classList.add('sx-collapsed');
+    toggle.setAttribute('aria-expanded','false');
+    updateFilterChips();
+  };
+  const fileInputUX = document.getElementById('file');
+  if (fileInputUX) fileInputUX.addEventListener('change', event => { currentFileName = event.target.files[0]?.name || ''; });
+
+  const shade = document.createElement('div');
+  shade.className = 'loading-shade';
+  shade.innerHTML = '<div class="loading-panel"><div class="loading-spinner"></div><div>กำลังอ่านและวิเคราะห์ Excel</div><small style="display:block;margin-top:5px;color:#718396;font-weight:500">ไฟล์ขนาดใหญ่อาจใช้เวลาสักครู่</small></div>';
+  document.body.appendChild(shade);
+  const message = document.getElementById('message');
+  if (message) new MutationObserver(() => shade.classList.toggle('show', message.classList.contains('loading'))).observe(message,{attributes:true,childList:true,subtree:true});
+
+  const mobileActions = document.createElement('nav');
+  mobileActions.className = 'mobile-actions';
+  mobileActions.setAttribute('aria-label','เมนูลัด');
+  mobileActions.innerHTML = '<button type="button" data-mobile-filter>⚙ ตัวกรอง</button><button type="button" data-mobile-summary>▦ สรุป</button><button type="button" data-mobile-line>LINE OA</button>';
+  document.body.appendChild(mobileActions);
+  mobileActions.querySelector('[data-mobile-filter]').onclick = () => { if (location.hash === '#summary') location.hash=''; filterBar.classList.remove('sx-collapsed'); toggle.setAttribute('aria-expanded','true'); setTimeout(() => toggle.scrollIntoView({behavior:'smooth',block:'start'}),80); };
+  mobileActions.querySelector('[data-mobile-summary]').onclick = () => { if (!window.allItems?.length) return alert('กรุณาอัปโหลด Excel ก่อนเปิดหน้าสรุป'); location.hash='summary'; };
+  mobileActions.querySelector('[data-mobile-line]').onclick = event => { if (!window.allItems?.length) return alert('กรุณาอัปโหลด Excel ก่อนส่ง LINE'); exportOverviewImage(event.currentTarget); };
+
+  const topButton = document.createElement('button');
+  topButton.type='button'; topButton.className='back-to-top'; topButton.setAttribute('aria-label','กลับด้านบน'); topButton.textContent='↑'; topButton.onclick=()=>scrollTo({top:0,behavior:'smooth'}); document.body.appendChild(topButton);
+  addEventListener('scroll',()=>topButton.classList.toggle('show',scrollY>650),{passive:true});
+})();
+</script>
 </body></html>
