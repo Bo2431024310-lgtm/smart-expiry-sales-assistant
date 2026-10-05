@@ -1,783 +1,1173 @@
 <!doctype html>
-<html lang="th"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Smart Expiry Sales Assistant</title><link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin><link href="https://fonts.googleapis.com/css2?family=Anuphan:wght@400;500;600;700;800&display=swap" rel="stylesheet"><script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
-<style>
-*{box-sizing:border-box}body{margin:0;background:linear-gradient(180deg,#f8fbff 0,#f3f7fc 100%);color:#13263d;font:15px/1.55 "Noto Sans Thai",system-ui,sans-serif}.wrap{max-width:1720px;margin:auto;padding:30px 26px 52px}.topbar{display:flex;align-items:center;justify-content:space-between;gap:18px;padding:25px 28px;background:linear-gradient(125deg,#0c4b78,#1471a9);border-radius:18px;color:#fff;box-shadow:0 10px 28px #0c4b7824}.topbar p{color:#dceefa;margin:4px 0 0;font-size:14px}.topbar h1{font-size:29px}h1,h2,p{margin:0}h2{font-size:20px;font-weight:800;letter-spacing:-.2px;color:#173c60}.upload{margin:22px 0;padding:28px;border:1.5px dashed #8eb8dc;border-radius:16px;background:#fff;text-align:center;box-shadow:0 4px 16px #173a5e0a}.upload b{font-size:17px}.upload p{margin:5px 0 14px;color:#62758b}.btn{background:linear-gradient(135deg,#0c70b4,#1689cc);color:#fff;border:0;border-radius:9px;padding:11px 21px;font:700 15px inherit;cursor:pointer;box-shadow:0 5px 12px #0d71b42e}.btn:hover{filter:brightness(1.05)}.refresh-btn{background:#ffffff1a;color:#fff;border:1px solid #ffffff73;border-radius:9px;padding:9px 15px;font:700 14px inherit;cursor:pointer}.refresh-btn:hover{background:#ffffff2c}.cards{display:grid;grid-template-columns:repeat(4,1fr);gap:16px;margin:22px 0}.card{position:relative;overflow:hidden;border-radius:14px;padding:19px 21px;border:1px solid #e3eaf2;box-shadow:0 5px 16px #173a5e0c;font:700 15px/1.55 inherit;text-align:left;cursor:pointer;transition:transform .18s ease,box-shadow .18s ease,outline-color .18s ease}.card:hover{transform:translateY(-3px);box-shadow:0 10px 22px #173a5e1c}.card:focus-visible{outline:3px solid #1988cb;outline-offset:3px}.card.active{box-shadow:0 0 0 3px #1977b542,0 10px 22px #173a5e20}.card:before{content:"";position:absolute;inset:0 auto 0 0;width:5px}.card b{display:block;font-size:28px;line-height:1;margin-top:8px}.card.expired-card{background:#fff5f4;border-color:#ffd4d0}.card.expired-card:before{background:#d93025}.card.expired-card b{color:#c5221f}.card.urgent-card{background:#fff8ef;border-color:#ffe0af}.card.urgent-card:before{background:#ea8300}.card.urgent-card b{color:#b85a00}.card.high-card{background:#fffced;border-color:#f5e496}.card.high-card:before{background:#d4a400}.card.high-card b{color:#946e00}.card.normal-card{background:#f2fbf5;border-color:#c6e7d0}.card.normal-card:before{background:#2b8a4b}.card.normal-card b{color:#23723d}section{background:#fff;border:1px solid #e1eaf3;border-radius:16px;padding:20px;margin-top:20px;overflow:auto;box-shadow:0 5px 18px #173a5e0a}.filter-bar{display:grid;grid-template-columns:1.1fr 1.4fr 2.2fr 1.1fr 1.1fr .8fr 1.8fr;gap:14px;padding:18px;background:#f1f7fc;border:1px solid #d8e8f5;border-radius:12px}.filter-bar label{font-size:13px;font-weight:800;color:#234b70;display:block;margin-bottom:6px}.filter-bar select,.filter-bar input{width:100%;height:42px;padding:8px 11px;border:1px solid #a9c8e3;border-radius:8px;background:#fff;color:#183450;font:500 15px inherit;outline:none}.filter-bar select:focus,.filter-bar input:focus{border-color:#1689cc;box-shadow:0 0 0 3px #1689cc1f}.plan-heading{display:flex;align-items:center;justify-content:space-between;gap:16px;margin:26px 0 15px}.export-btn{border:1px solid #0d70b1;border-radius:9px;background:#fff;color:#0c5f98;padding:9px 14px;font:800 14px inherit;cursor:pointer;white-space:nowrap;transition:all .18s ease}.export-btn:hover{background:#0c70b4;color:#fff;box-shadow:0 5px 13px #0d71b42e}table{width:100%;border-collapse:separate;border-spacing:0;min-width:1450px;font-size:14px}th{text-align:left;background:#e9f2fa;color:#264d70;font-weight:800;line-height:1.4}th:first-child{border-radius:9px 0 0 0}th:last-child{border-radius:0 9px 0 0}th,td{padding:15px 13px;border-bottom:1px solid #e4edf5;vertical-align:middle}tbody tr:nth-child(even){background:#fbfdff}tbody tr:hover{background:#f3f9fe}.action-cell{min-width:220px;max-width:260px;line-height:1.55;font-weight:700;color:#183b5c;white-space:pre-line}.thumb{width:48px;height:48px;object-fit:cover;border-radius:9px;border:1px solid #d6e3ef;background:#fff}.badge{display:inline-block;padding:5px 10px;border-radius:999px;font-size:13px;font-weight:800}.danger{background:#ffebe9;color:#bd241c}.urgent{background:#fff2dc;color:#a14a00}.high{background:#fff7c2;color:#846300}.normal{background:#e7f6ec;color:#20773e}.green{color:#137333;font-weight:700}.hint{font-size:13px}.loading{color:#0c70b4;font-weight:800}.load-more{display:block;margin:16px auto 0;background:#eef7ff;border:1px solid #9fc9e9;border-radius:9px;padding:9px 16px;color:#145783;font:800 14px inherit;cursor:pointer}.load-more:hover{background:#dcefff}.hide{display:none}@media(max-width:1100px){.filter-bar{grid-template-columns:repeat(3,1fr)}}@media(max-width:700px){.wrap{padding:16px}.topbar{padding:20px;align-items:flex-start}.topbar h1{font-size:23px}.cards{grid-template-columns:repeat(2,1fr)}.filter-bar{grid-template-columns:1fr 1fr}.plan-heading{margin-top:22px}.refresh-btn{white-space:nowrap}}
-</style></head><body><main class="wrap"><div class="topbar"><div><h1>⏳ Smart Expiry Sales Assistant</h1><p>อัปโหลด Excel เพื่อค้นหาสินค้าใกล้หมดอายุ และรับ Action แนะนำสำหรับทีมขาย</p></div><button class="refresh-btn" onclick="confirmRefresh()">↻ Refresh</button></div>
-<div class="upload"><b>เลือกไฟล์ Dashboard (.xlsx, .xls หรือ .csv)</b><p class="hint">ต้องมี: Item Description, Stock, Received Date (Lot) + Expiry Days</p><input id="file" type="file" accept=".xlsx,.xls,.csv" class="hide"><button class="btn" onclick="document.getElementById('file').click()">อัปโหลด Excel</button><p id="message" class="hint"></p></div>
-<div id="results" class="hide"><div class="cards"><button type="button" class="card expired-card" data-status="หมดอายุ" onclick="filterByCard('หมดอายุ')" title="กดเพื่อดูสินค้าหมดอายุ">หมดอายุ<b id="expired">0</b></button><button type="button" class="card urgent-card" data-status="ต้องเร่งขาย" onclick="filterByCard('ต้องเร่งขาย')" title="กดเพื่อดูสินค้าที่ต้องเร่งขาย">ต้องเร่งขาย<b id="urgent">0</b></button><button type="button" class="card high-card" data-status="เสี่ยงสูง" onclick="filterByCard('เสี่ยงสูง')" title="กดเพื่อดูสินค้าเสี่ยงสูง">เสี่ยงสูง<b id="watching">0</b></button><button type="button" class="card normal-card" data-status="ปกติ" onclick="filterByCard('ปกติ')" title="กดเพื่อดูสินค้าสถานะปกติ">ปกติ<b id="normal">0</b></button></div>
-<section><div id="divisionFilter" class="filter-bar hide"><div><label>แยกตาม Division</label><select id="divisionSelect" onchange="applyFilters()"></select></div><div><label>Department</label><select id="departmentSelect" onchange="applyFilters()"></select></div><div><label>Class</label><select id="classSelect" onchange="applyFilters()"></select></div><div><label>ค้นหา Item No</label><input id="itemSearch" type="search" placeholder="เช่น 814216" oninput="applyFilters()"></div><div><label>สถานะ</label><select id="statusSelect" onchange="applyFilters()"></select></div><div><label>ช่วงข้อมูล</label><select id="periodSelect" onchange="applyFilters()"><option value="all">รวม</option><option value="daily">รายวัน</option><option value="mtd">MTD</option><option value="ytd">YTD</option><option value="previous_year">LY</option></select></div><div><label>เลือกวันรับเข้า</label><input id="receivedDate" type="date" onchange="applyFilters()"><input id="startDate" type="hidden"><input id="endDate" type="hidden"></div></div><div class="plan-heading"><h2>🎯 Daily AI Action Plan</h2><button type="button" class="export-btn" onclick="exportData()">⇩ Export data</button></div><table><thead><tr><th>สถานะ</th><th>Action (แนะนำ)</th><th>Division</th><th>Department</th><th>Class</th><th>รูปภาพ</th><th>Item No</th><th>Item Description</th><th>Stock</th><th>Received Date (Lot)</th><th>Received Qty (Lot)</th><th>Received Date (Lot) + Expiry Days</th><th>เหลือเวลาในการขาย</th></tr></thead><tbody id="rows"></tbody></table><button id="loadMore" type="button" class="load-more hide" onclick="showMoreRows()"></button></section></div></main>
+<html lang="th">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="color-scheme" content="light dark">
+<title>Smart Expiry Sales Assistant</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Anuphan:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
 <script>
-const aliases={product:['สินค้า','ชื่อสินค้า','product','product name','item','item description'],itemno:['item no','sku','รหัสสินค้า'],expiry:['วันหมดอายุ','หมดอายุ','expiry','expiry date','expiration date','exp date','received date (lot) + expiry days'],stock:['stock','คงเหลือ','สต็อก','on hand','inventory','qty','quantity','remaining qty'],sales:['ยอดขายเฉลี่ย/วัน','ขายเฉลี่ยต่อวัน','avg daily sales','daily sales','sales'],price:['ราคา','ราคาขาย','price','unit price','selling price'],cost:['avg cost','ต้นทุน','cost','unit cost'],division:['division'],department:['department'],class:['class'],received:['received date (lot)'],receivedqty:['received qty (lot)'],thumbnail:['thumbnail','image','image url','รูปภาพ']};
-const norm=s=>String(s||'').trim().toLowerCase(); const money=n=>'฿'+Math.round(n||0).toLocaleString('th-TH');
-function find(headers,key){return headers.find(h=>aliases[key].includes(norm(h)))}
-function dateValue(x){if(x instanceof Date&&!isNaN(x))return x;if(typeof x==='number'&&x>20000&&x<80000){let p=XLSX.SSF.parse_date_code(x);return new Date(p.y,p.m-1,p.d)}let d=new Date(x);if(!isNaN(d)&&d.getFullYear()>1980)return d;let m=String(x).match(/(\d{1,2})[\/-](\d{1,2})[\/-](\d{2,4})/);if(m)return new Date((m[3].length===2?'20':'')+m[3],m[2]-1,m[1]);return null}
-function formatDate(d){return d?`${String(d.getDate()).padStart(2,'0')}-${String(d.getMonth()+1).padStart(2,'0')}-${d.getFullYear()}`:'-'}
-function escape(s){return String(s).replace(/[&<>"']/g,x=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[x]))}
-document.getElementById('file').addEventListener('change',e=>{let f=e.target.files[0];if(!f)return;let r=new FileReader();r.onload=x=>{try{let wb=XLSX.read(x.target.result,{type:'array',cellDates:true});let data=XLSX.utils.sheet_to_json(wb.Sheets[wb.SheetNames[0]],{defval:''});analyse(data)}catch(err){document.getElementById('message').textContent='อ่านไฟล์ไม่สำเร็จ: '+err.message}};r.readAsArrayBuffer(f)});
-function analyse(data){let msg=document.getElementById('message');if(!data.length){msg.textContent='ไม่พบข้อมูลในไฟล์';return}let h=Object.keys(data[0]),p=find(h,'product'),ex=find(h,'expiry'),st=find(h,'stock');if(!p||!ex||!st){msg.textContent='ไม่พบคอลัมน์จำเป็น';return}let keys=['itemno','sales','cost','price','division','department','class','received','receivedqty'];let m=Object.fromEntries(keys.map(k=>[k,find(h,k)])),today=new Date();today.setHours(0,0,0,0);window.allItems=data.map(x=>{let d=dateValue(x[ex]),received=m.received?dateValue(x[m.received]):null,days=d?Math.floor((d-today)/86400000):9999,stock=+x[st]||0,sales=m.sales?(+x[m.sales]||0):0,cost=m.cost?(+x[m.cost]||0):(m.price?(+x[m.price]||0):0),cover=sales?stock/sales:Infinity,status=days<0?'หมดอายุแล้ว':(days<=7||(cover!==Infinity&&cover>days)?'ต้องเร่งขาย':days<=21?'เสี่ยงสูง':days<=45?'เฝ้าระวัง':'ปกติ'),action=status==='หมดอายุแล้ว'?'หยุดขายทันที • แยกสินค้า':status==='ต้องเร่งขาย'?'ลดราคา • จัด Bundle • เพิ่มหน้าชั้นวาง':status==='เสี่ยงสูง'?'ตั้งเป้ายอดขาย • พิจารณาโอนสาขา':'ติดตาม Sell-through';return {division:m.division?x[m.division]:'ไม่ระบุ',department:m.department?x[m.department]:'-',class:m.class?x[m.class]:'-',itemno:m.itemno?x[m.itemno]:'-',name:x[p],stock,received:formatDate(received),receivedqty:m.receivedqty?x[m.receivedqty]:'-',expiry:formatDate(d),days,risk:stock*cost,target:days>0?Math.ceil(stock/days):stock,status,action}}).sort((a,b)=>a.days-b.days);for(let [id,key,label] of [['divisionSelect','division','ทุก Division'],['departmentSelect','department','ทุก Department'],['classSelect','class','ทุก Class'],['statusSelect','status','ทุกสถานะ']]){let values=[...new Set(window.allItems.map(x=>x[key]))];document.getElementById(id).innerHTML='<option value="">'+label+'</option>'+values.map(x=>'<option>'+escape(x)+'</option>').join('')}let allDates=window.allItems.map(x=>x.expiry).filter(x=>x!=='-').map(x=>x.split('-').reverse().join('-')).sort();document.getElementById('startDate').value=allDates[0];document.getElementById('endDate').value=allDates.at(-1);document.getElementById('divisionFilter').classList.remove('hide');renderItems(window.allItems);msg.textContent='อ่านข้อมูลแล้ว '+data.length.toLocaleString()+' รายการ';}
-function applyFilters(){let d=document.getElementById('divisionSelect').value,p=document.getElementById('departmentSelect').value,c=document.getElementById('classSelect').value,s=document.getElementById('statusSelect').value,start=document.getElementById('startDate').value,end=document.getElementById('endDate').value;let iso=x=>x.split('-').reverse().join('-');renderItems(window.allItems.filter(x=>(!d||x.division===d)&&(!p||x.department===p)&&(!c||x.class===c)&&(!s||x.status===s)&&(!start||iso(x.expiry)>=start)&&(!end||iso(x.expiry)<=end)))}
-function renderItems(list){let expired=list.filter(x=>x.status==='หมดอายุแล้ว'),urgent=list.filter(x=>x.status==='ต้องเร่งขาย'),watching=list.filter(x=>x.status==='เสี่ยงสูง'||x.status==='เฝ้าระวัง'),normal=list.filter(x=>x.status==='ปกติ');document.getElementById('expired').textContent=expired.length;document.getElementById('urgent').textContent=urgent.length;document.getElementById('watching').textContent=watching.length;document.getElementById('normal').textContent=normal.length;document.getElementById('rows').innerHTML=list.map(x=>{let cls=x.status==='หมดอายุแล้ว'?'danger':x.status==='ต้องเร่งขาย'?'urgent':x.status==='เสี่ยงสูง'?'high':x.status==='เฝ้าระวัง'?'watch':'normal';return `<tr><td>${escape(x.division)}</td><td>${escape(x.department)}</td><td>${escape(x.class)}</td><td>${escape(x.itemno)}</td><td>${escape(x.name)}</td><td>${x.stock.toLocaleString()}</td><td>${escape(x.received)}</td><td>${Number(x.receivedqty).toLocaleString()}</td><td>${x.expiry}</td><td><span class="badge ${cls}">${x.status}</span></td><td>${x.action}</td></tr>`}).join('')||'<tr><td colspan="11" class="green">ไม่พบข้อมูลตามตัวกรอง</td></tr>';document.getElementById('results').classList.remove('hide');}
-</script><script>
-const baseAnalyse = analyse;
-analyse = function(data) {
-  baseAnalyse(data);
-  const thumbnailKey = Object.keys(data[0] || {}).find(h => aliases.thumbnail.includes(norm(h)));
-  const productKey = Object.keys(data[0] || {}).find(h => aliases.product.includes(norm(h)));
-  const thumbnails = new Map(data.map(row => [String(row[productKey] || ''), String(row[thumbnailKey] || '')]));
-  window.allItems.forEach(x => x.thumbnail = thumbnails.get(String(x.name)) || '');
-  window.allItems.forEach(x => {
-    if (x.status === 'หมดอายุแล้ว') { x.status = 'หมดอายุ'; x.action = 'ห้ามจำหน่าย\n- คัดออกรอทำลาย'; }
-    else if (x.status === 'ต้องเร่งขาย') x.action = 'ลดราคา\n- ตรวจสอบคุณภาพ';
-    else if (x.status === 'เสี่ยงสูง' || x.status === 'เฝ้าระวัง') { x.status = 'เสี่ยงสูง'; x.action = 'ขอโปรโมชัน\n- ทำจัดชิมผลักดันการขาย'; }
-    else x.action = 'ติดตาม Movement สินค้า';
-  });
-  document.getElementById('statusSelect').innerHTML = '<option value="">ทุกสถานะ</option><option>หมดอายุ</option><option>ต้องเร่งขาย</option><option>เสี่ยงสูง</option><option>ปกติ</option>';
-  window.allItems.forEach(x => x.receivedIso = x.received === '-' ? '' : x.received.split('-').reverse().join('-'));
-  const receivedDates = window.allItems.map(x => x.receivedIso).filter(Boolean).sort();
-  document.getElementById('receivedDate').value = receivedDates.at(-1) || '';
-  applyFilters();
+  // ตั้งธีมก่อนหน้าเว็บแสดงผล เพื่อไม่ให้กระพริบ
+  (function () {
+    let t = null;
+    try { t = localStorage.getItem('sx-theme'); } catch (_) {}
+    if (!t) t = matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+    document.documentElement.dataset.theme = t;
+  })();
+</script>
+<style>
+:root{
+  --bg:#f3f6fa;--surface:#fff;--surface-2:#f4f8fc;--surface-3:#e9f1f8;--border:#dde7f0;--border-strong:#b9cfe2;
+  --text:#13263d;--muted:#62758b;--faint:#8a9bad;--brand:#0b6fae;--brand-strong:#095a8e;--brand-soft:#e6f2fb;
+  --hero-1:#0c4b78;--hero-2:#1471a9;
+  --exp:#c5221f;--exp-bg:#fdecea;--exp-line:#f6c6c1;
+  --urg:#ad5300;--urg-bg:#fff1dd;--urg-line:#ffd9a6;
+  --high:#866500;--high-bg:#fff7c9;--high-line:#f1df8a;
+  --ok:#1d7a3e;--ok-bg:#e6f5eb;--ok-line:#bfe3cb;
+  --sum:#2f5fb3;--sum-bg:#edf3ff;--sum-line:#c3d5f6;
+  --shadow:0 1px 2px rgba(20,50,80,.05),0 6px 20px rgba(20,50,80,.06);
+  --shadow-lg:0 20px 60px rgba(10,30,50,.22);
+  --radius:14px;
+}
+:root[data-theme="dark"]{
+  --bg:#0c141e;--surface:#131e2b;--surface-2:#182636;--surface-3:#1d2e41;--border:#243649;--border-strong:#33506c;
+  --text:#e3ecf5;--muted:#97a9bc;--faint:#6f8295;--brand:#4ba7e4;--brand-strong:#73bdf0;--brand-soft:#16324a;
+  --hero-1:#0b2c47;--hero-2:#0f4670;
+  --exp:#ff8b80;--exp-bg:#3a1c1c;--exp-line:#5d2a2a;
+  --urg:#ffb35a;--urg-bg:#382814;--urg-line:#5a4020;
+  --high:#efd060;--high-bg:#332e14;--high-line:#544a1f;
+  --ok:#6fd290;--ok-bg:#14301f;--ok-line:#24503a;
+  --sum:#8fb3ff;--sum-bg:#18263f;--sum-line:#2b4166;
+  --shadow:0 1px 2px rgba(0,0,0,.3),0 6px 20px rgba(0,0,0,.25);
+  --shadow-lg:0 20px 60px rgba(0,0,0,.55);
+}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{margin:0;background:var(--bg);color:var(--text);font:15px/1.55 "Anuphan",system-ui,sans-serif;-webkit-font-smoothing:antialiased}
+button,input,select{font:inherit;color:inherit}
+h1,h2,h3,p{margin:0}
+[hidden]{display:none!important}
+.wrap{max-width:1760px;margin:auto;padding:24px 24px 56px}
+
+/* ---------- Header ---------- */
+.topbar{position:relative;overflow:hidden;display:flex;align-items:center;justify-content:space-between;gap:16px;padding:22px 26px;border-radius:18px;color:#fff;background:linear-gradient(125deg,var(--hero-1),var(--hero-2));box-shadow:var(--shadow)}
+.topbar:after{content:"";position:absolute;width:260px;height:260px;border-radius:50%;right:-80px;bottom:-170px;background:rgba(255,255,255,.07);pointer-events:none}
+.topbar h1{font-size:27px;font-weight:800;letter-spacing:-.4px;line-height:1.25}
+.topbar p{margin-top:4px;color:#d4e9f8;font-size:14px}
+.top-actions{display:flex;gap:8px;position:relative;z-index:1}
+.icon-btn{display:inline-flex;align-items:center;justify-content:center;gap:6px;height:40px;min-width:40px;padding:0 13px;border:1px solid rgba(255,255,255,.4);border-radius:10px;background:rgba(255,255,255,.1);color:#fff;font-weight:700;font-size:14px;cursor:pointer;white-space:nowrap}
+.icon-btn:hover{background:rgba(255,255,255,.2)}
+.icon-btn svg{width:18px;height:18px}
+
+/* ---------- Buttons ---------- */
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:7px;min-height:42px;padding:9px 18px;border:0;border-radius:10px;background:var(--brand);color:#fff;font-weight:700;cursor:pointer;white-space:nowrap}
+:root[data-theme="dark"] .btn{color:#06223a}
+.btn:hover{background:var(--brand-strong)}
+.btn:disabled{opacity:.6;cursor:wait}
+.btn.line{background:#06c755;color:#fff}.btn.line:hover{background:#05b04b}
+.btn-outline{display:inline-flex;align-items:center;justify-content:center;gap:6px;min-height:38px;padding:7px 13px;border:1px solid var(--border-strong);border-radius:10px;background:var(--surface);color:var(--brand-strong);font-weight:700;font-size:14px;cursor:pointer;white-space:nowrap}
+.btn-outline:hover{background:var(--brand-soft)}
+a.btn-outline,a.btn{text-decoration:none}
+.btn-outline:disabled{opacity:.6;cursor:wait}
+.btn-ghost{border:0;background:none;color:var(--brand-strong);font-weight:700;cursor:pointer;padding:6px 8px;border-radius:8px}
+.btn-ghost:hover{background:var(--brand-soft)}
+:focus-visible{outline:3px solid color-mix(in srgb,var(--brand) 55%,transparent);outline-offset:2px}
+
+/* ---------- Upload ---------- */
+.upload{margin:20px 0;padding:34px 24px;border:2px dashed var(--border-strong);border-radius:16px;background:var(--surface);text-align:center;transition:border-color .2s,background .2s}
+.upload.drag{border-color:var(--brand);background:var(--brand-soft)}
+.upload .up-icon{width:46px;height:46px;margin:0 auto 10px;color:var(--brand)}
+.upload b{font-size:18px}
+.upload p{margin:6px 0 16px;color:var(--muted);font-size:14px}
+.upload code{font-family:inherit;font-size:13px;background:var(--surface-3);padding:2px 7px;border-radius:6px}
+.upload.compact{display:flex;align-items:center;justify-content:space-between;gap:14px;padding:12px 16px;border-style:solid;border-width:1px;border-color:var(--border);text-align:left}
+.upload.compact .up-icon,.upload.compact .up-full{display:none}
+.file-meta{display:none;align-items:center;gap:10px;min-width:0}
+.upload.compact .file-meta{display:flex}
+.file-meta .fm-icon{flex:none;width:38px;height:38px;border-radius:10px;display:grid;place-items:center;background:var(--ok-bg);color:var(--ok)}
+.file-meta b{font-size:15px;display:block;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.file-meta small{color:var(--muted);font-size:12.5px}
+
+/* ---------- Cards ---------- */
+.cards{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:14px;margin:18px 0}
+.card{position:relative;overflow:hidden;display:flex;flex-direction:column;align-items:flex-start;text-align:left;min-height:118px;padding:16px 18px;border-radius:var(--radius);border:1px solid var(--border);background:var(--surface);box-shadow:var(--shadow);cursor:pointer;transition:transform .15s,box-shadow .15s}
+.card:hover{transform:translateY(-2px)}
+.card:before{content:"";position:absolute;inset:0 auto 0 0;width:5px;background:var(--c)}
+.card .lbl{font-weight:700;font-size:14.5px;color:var(--text)}
+.card .num{font-size:32px;font-weight:800;line-height:1.1;margin-top:6px;color:var(--c);font-variant-numeric:tabular-nums}
+.card .hint{margin-top:auto;padding-top:6px;font-size:12px;color:var(--faint)}
+.card.active{background:var(--cbg);border-color:var(--c);box-shadow:0 0 0 2px var(--c) inset,var(--shadow)}
+.card.c-exp{--c:var(--exp);--cbg:var(--exp-bg)}
+.card.c-urg{--c:var(--urg);--cbg:var(--urg-bg)}
+.card.c-high{--c:var(--high);--cbg:var(--high-bg)}
+.card.c-ok{--c:var(--ok);--cbg:var(--ok-bg)}
+.card.c-sum{--c:var(--sum);--cbg:var(--sum-bg);background:var(--sum-bg);border-color:var(--sum-line)}
+.card.c-sum .num{font-size:21px;margin-top:10px}
+
+/* ---------- Panel ---------- */
+.panel{background:var(--surface);border:1px solid var(--border);border-radius:16px;padding:18px;margin-top:18px;box-shadow:var(--shadow)}
+.panel-head{display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap;margin:4px 0 14px}
+.panel-head h2{font-size:20px;font-weight:800;letter-spacing:-.2px}
+.panel-head .sub{color:var(--muted);font-size:13.5px;margin-top:2px}
+.head-actions{display:flex;gap:8px;flex-wrap:wrap;align-items:center}
+
+/* ---------- Filters ---------- */
+.filters{display:grid;grid-template-columns:2.2fr 1.1fr 1.3fr 1.6fr 1.1fr 1fr 1.2fr;gap:12px;padding:14px;background:var(--surface-2);border:1px solid var(--border);border-radius:12px}
+.field label{display:block;margin-bottom:5px;font-size:12.5px;font-weight:700;color:var(--muted)}
+.field select,.field input{width:100%;height:42px;padding:8px 11px;border:1px solid var(--border-strong);border-radius:9px;background:var(--surface);font-size:14.5px;outline:none;min-width:0}
+.field select:focus,.field input:focus{border-color:var(--brand);box-shadow:0 0 0 3px color-mix(in srgb,var(--brand) 22%,transparent)}
+.field input:disabled{opacity:.5}
+.search-box{position:relative}
+.search-box svg{position:absolute;left:11px;top:50%;transform:translateY(-50%);width:17px;height:17px;color:var(--faint);pointer-events:none}
+.search-box input{padding-left:35px}
+.search-box kbd{position:absolute;right:9px;top:50%;transform:translateY(-50%);font:600 11px inherit;color:var(--faint);border:1px solid var(--border);border-radius:5px;padding:1px 6px}
+.filter-toggle{display:none}
+.chips{display:flex;flex-wrap:wrap;gap:6px;margin-top:10px}
+.chips:empty{display:none}
+.chip{display:inline-flex;align-items:center;gap:6px;padding:4px 6px 4px 10px;border-radius:999px;background:var(--brand-soft);color:var(--brand-strong);font-size:12.5px;font-weight:700}
+.chip button{border:0;background:none;color:inherit;cursor:pointer;width:20px;height:20px;border-radius:50%;line-height:1;font-size:15px}
+.chip button:hover{background:color-mix(in srgb,var(--brand) 18%,transparent)}
+.chip.clear{background:var(--exp-bg);color:var(--exp);border:0;padding:4px 10px;cursor:pointer}
+
+/* ---------- Column menu ---------- */
+.colmenu{position:relative}
+.colmenu summary{list-style:none}
+.colmenu summary::-webkit-details-marker{display:none}
+.colmenu .menu{position:absolute;right:0;top:calc(100% + 6px);z-index:30;width:240px;max-height:360px;overflow:auto;padding:8px;background:var(--surface);border:1px solid var(--border);border-radius:12px;box-shadow:var(--shadow-lg)}
+.colmenu label{display:flex;align-items:center;gap:9px;padding:7px 8px;border-radius:7px;font-size:14px;cursor:pointer}
+.colmenu label:hover{background:var(--surface-2)}
+.colmenu input{width:16px;height:16px;accent-color:var(--brand)}
+
+/* ---------- Table ---------- */
+.table-wrap{overflow:auto;max-height:calc(100vh - 150px);border:1px solid var(--border);border-radius:12px}
+table{width:100%;border-collapse:separate;border-spacing:0;font-size:14px}
+thead th{position:sticky;top:0;z-index:2;background:var(--surface-3);color:var(--muted);font-weight:700;font-size:13px;text-align:left;padding:12px;border-bottom:1px solid var(--border);white-space:nowrap}
+th.sortable{cursor:pointer;user-select:none}
+th.sortable:hover{color:var(--text)}
+th .arrow{display:inline-block;width:12px;margin-left:3px;opacity:.35}
+th.sorted{color:var(--brand-strong)}
+th.sorted .arrow{opacity:1}
+td{padding:12px;border-bottom:1px solid var(--border);vertical-align:middle}
+tbody tr:last-child td{border-bottom:0}
+tbody tr:hover td{background:var(--surface-2)}
+td.num,th.num{text-align:right;font-variant-numeric:tabular-nums}
+.c-name{min-width:220px;font-weight:600}
+.c-action{min-width:190px;white-space:pre-line;font-weight:600;font-size:13.5px;line-height:1.5}
+.c-itemno{font-variant-numeric:tabular-nums;white-space:nowrap}
+.c-expiry,.c-received,.c-division,.c-department,.c-class{white-space:nowrap}
+.thumb{width:46px;height:46px;object-fit:cover;border-radius:9px;border:1px solid var(--border);background:var(--surface-2);display:block}
+.thumb-ph{width:46px;height:46px;border-radius:9px;background:var(--surface-2);border:1px dashed var(--border)}
+.badge{display:inline-flex;align-items:center;gap:6px;padding:4px 10px;border-radius:999px;font-size:12.5px;font-weight:800;white-space:nowrap;background:var(--bbg);color:var(--bc)}
+.badge:before{content:"";width:7px;height:7px;border-radius:50%;background:currentColor}
+.s-exp{--bc:var(--exp);--bbg:var(--exp-bg)}.s-urg{--bc:var(--urg);--bbg:var(--urg-bg)}.s-high{--bc:var(--high);--bbg:var(--high-bg)}.s-ok{--bc:var(--ok);--bbg:var(--ok-bg)}
+.days{min-width:96px}
+.days b{display:block;font-weight:800;color:var(--bc);font-size:14px;white-space:nowrap}
+.days i{display:block;height:5px;margin-top:5px;border-radius:9px;background:var(--surface-3);overflow:hidden}
+.days i:after{content:"";display:block;height:100%;width:var(--p);background:var(--bc);border-radius:9px}
+.empty{padding:40px 16px;text-align:center;color:var(--muted)}
+.load-more{display:block;margin:14px auto 0}
+.row-toggle{display:none}
+
+/* ---------- Summary page ---------- */
+.summary-head{display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap;margin:22px 0 8px}
+.summary-head h2{font-size:24px;font-weight:800}
+.summary-head h2:focus{outline:none}
+.note{color:var(--muted);font-size:13.5px}
+.sum-stats{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px;margin:16px 0}
+.sum-stat{padding:14px 16px;border-radius:12px;background:var(--surface);border:1px solid var(--border)}
+.sum-stat span{font-size:13px;color:var(--muted);font-weight:700}
+.sum-stat b{display:block;font-size:26px;font-weight:800;font-variant-numeric:tabular-nums}
+.division{margin:14px 0;padding:18px;border:1px solid var(--border);border-radius:16px;background:var(--surface)}
+.division h3{font-size:19px;color:var(--brand-strong)}
+.dept{margin-top:10px;border:1px solid var(--border);border-radius:11px;overflow:hidden}
+.dept summary{display:flex;align-items:center;gap:8px;flex-wrap:wrap;padding:12px 14px;background:var(--surface-2);cursor:pointer;font-weight:700}
+.dept summary .dname{flex:1;min-width:160px}
+.dept[open] summary{border-bottom:1px solid var(--border)}
+.dept .table-wrap{border:0;border-radius:0;max-height:none}
+.dept .cnt{padding:10px 14px;color:var(--muted);font-size:13px}
+
+/* ---------- Overlay / dialog / toast ---------- */
+.loading{position:fixed;inset:0;z-index:5000;display:flex;align-items:center;justify-content:center;padding:24px;background:rgba(5,20,35,.45);backdrop-filter:blur(3px)}
+.loading-box{width:min(360px,92vw);padding:26px;border-radius:18px;background:var(--surface);box-shadow:var(--shadow-lg);text-align:center;font-weight:800}
+.loading-box small{display:block;margin-top:6px;color:var(--muted);font-weight:500}
+.spinner{width:38px;height:38px;margin:0 auto 14px;border:4px solid var(--surface-3);border-top-color:var(--brand);border-radius:50%;animation:spin .8s linear infinite}
+.progress{height:6px;margin-top:14px;border-radius:9px;background:var(--surface-3);overflow:hidden}
+.progress i{display:block;height:100%;width:0;background:var(--brand);transition:width .2s}
+@keyframes spin{to{transform:rotate(360deg)}}
+dialog{width:min(680px,94vw);max-height:92vh;padding:0;border:1px solid var(--border);border-radius:18px;background:var(--surface);color:var(--text);box-shadow:var(--shadow-lg)}
+dialog::backdrop{background:rgba(5,20,35,.5);backdrop-filter:blur(2px)}
+.dlg-head{position:sticky;top:0;z-index:1;display:flex;align-items:center;justify-content:space-between;gap:10px;padding:16px 20px;background:var(--surface);border-bottom:1px solid var(--border)}
+.dlg-head b{font-size:17px}
+.dlg-body{padding:18px 20px}
+.dlg-actions{display:flex;flex-wrap:wrap;gap:8px;margin:12px 0 16px}
+.dlg-preview{display:block;width:100%;height:auto;border:1px solid var(--border);border-radius:10px}
+.oa-box{margin:0 0 16px;padding:14px;border-radius:12px;background:var(--surface-2);border:1px solid var(--border)}
+.oa-box .row{display:flex;gap:8px;margin-top:8px}
+.oa-box input[type=password]{flex:1;height:42px;padding:8px 11px;border:1px solid var(--border-strong);border-radius:9px;background:var(--surface);min-width:0}
+.oa-box .remember{display:flex;align-items:center;gap:7px;margin-top:8px;font-size:13px;color:var(--muted)}
+.confirm-text{font-size:15px;margin-bottom:18px}
+.toasts{position:fixed;left:50%;bottom:24px;transform:translateX(-50%);z-index:6000;display:flex;flex-direction:column;gap:8px;align-items:center;pointer-events:none;width:min(480px,92vw)}
+.toast{padding:11px 16px;border-radius:12px;background:#13263d;color:#fff;font-weight:600;font-size:14px;box-shadow:var(--shadow-lg);animation:tin .2s ease}
+:root[data-theme="dark"] .toast{background:#e3ecf5;color:#0c141e}
+.toast.err{background:#b3261e;color:#fff}
+.toast.ok{background:#1d7a3e;color:#fff}
+@keyframes tin{from{opacity:0;transform:translateY(8px)}}
+.to-top{position:fixed;right:20px;bottom:22px;z-index:80;width:44px;height:44px;border:0;border-radius:50%;background:var(--brand);color:#fff;font-size:20px;box-shadow:var(--shadow-lg);cursor:pointer;opacity:0;pointer-events:none;transform:translateY(8px);transition:.2s}
+.to-top.show{opacity:1;pointer-events:auto;transform:none}
+.mobile-nav{display:none}
+
+/* ---------- Responsive ---------- */
+@media (max-width:1280px){
+  .filters{grid-template-columns:repeat(4,minmax(0,1fr))}
+  .filters .f-search{grid-column:1/-1}
+}
+@media (max-width:1000px){
+  .cards{grid-template-columns:repeat(3,minmax(0,1fr))}
+}
+@media (max-width:720px){
+  body{font-size:14px;padding-bottom:80px}
+  .wrap{padding:10px 10px 24px}
+  .topbar{padding:16px;border-radius:15px;align-items:flex-start}
+  .topbar h1{font-size:21px}
+  .topbar p{font-size:12.5px}
+  .topbar .lbl-full{display:none}
+  .icon-btn{padding:0;width:38px;height:38px}
+  .upload{margin:12px 0;padding:24px 14px}
+  .upload.compact{padding:10px 12px}
+  .upload.compact .btn{min-height:38px;padding:7px 12px;font-size:13px}
+  .cards{grid-template-columns:repeat(2,minmax(0,1fr));gap:9px;margin:12px 0}
+  .card{min-height:96px;padding:12px 14px}
+  .card .num{font-size:27px}
+  .card .hint{display:none}
+  .card.c-sum{grid-column:1/-1;min-height:70px;flex-direction:row;align-items:center;justify-content:space-between}
+  .card.c-sum .num{margin:0;font-size:17px}
+  .panel{padding:12px 10px;margin-top:12px}
+  .panel-head h2{font-size:18px}
+  .filter-toggle{display:flex;width:100%;align-items:center;justify-content:space-between;padding:11px 13px;border:1px solid var(--border-strong);border-radius:11px;background:var(--surface-2);color:var(--brand-strong);font-weight:800;cursor:pointer}
+  .filters{grid-template-columns:1fr 1fr;margin-top:9px;padding:12px}
+  .filters.collapsed{display:none}
+  .filters .f-search{grid-column:1/-1}
+  .field select,.field input{height:46px;font-size:16px}
+  .search-box kbd{display:none}
+  .colmenu{display:none}
+
+  /* ตารางกลายเป็นการ์ดบนมือถือ */
+  .table-wrap{max-height:none;overflow:visible;border:0}
+  .table-wrap table,.table-wrap tbody{display:block}
+  .table-wrap thead{display:none}
+  .table-wrap tbody{display:grid;gap:10px}
+  .table-wrap tbody tr{display:grid;grid-template-columns:52px minmax(0,1fr) auto;grid-template-areas:"thumb item days" "thumb name name" "thumb status stock" "action action action" "more more more";gap:3px 10px;padding:12px;border:1px solid var(--border);border-radius:13px;background:var(--surface)}
+  .table-wrap.no-thumbs tbody tr{grid-template-columns:minmax(0,1fr) auto;grid-template-areas:"item days" "name name" "status stock" "action action" "more more"}
+  .table-wrap tbody tr:hover td{background:none}
+  .table-wrap td{display:block;padding:2px 0;border:0;min-width:0}
+  .table-wrap td.c-thumb{grid-area:thumb}
+  .table-wrap.no-thumbs td.c-thumb{display:none}
+  .table-wrap td.c-itemno{grid-area:item;color:var(--muted);font-size:12.5px;font-weight:700}
+  .table-wrap td.c-itemno:before{content:"Item "}
+  .table-wrap td.c-days{grid-area:days;text-align:right}
+  .table-wrap td.c-days .days{min-width:0}
+  .table-wrap td.c-days i{display:none}
+  .table-wrap td.c-name{grid-area:name;min-width:0;font-size:14.5px;line-height:1.4}
+  .table-wrap td.c-status{grid-area:status}
+  .table-wrap td.c-stock{grid-area:stock;text-align:right;color:var(--muted);font-size:13px}
+  .table-wrap td.c-stock:before{content:"Stock "}
+  .table-wrap td.c-action{grid-area:action;min-width:0;margin-top:6px;padding-top:7px;border-top:1px dashed var(--border);font-size:13px}
+  .table-wrap td.sec{display:none;grid-column:1/-1;padding:6px 0;border-top:1px solid var(--border)}
+  .table-wrap td.sec:before{content:attr(data-label);display:block;color:var(--faint);font-size:11px;font-weight:700}
+  .table-wrap tr.open td.sec{display:block}
+  .table-wrap td.num{text-align:left}
+  .table-wrap td.c-stock.num{text-align:right}
+  .row-toggle{display:block;grid-area:more;margin-top:4px;padding:4px 0;border:0;background:none;color:var(--brand-strong);font-size:12px;font-weight:800;text-align:left;cursor:pointer}
+  .table-wrap tr.empty-row{display:block}
+  .table-wrap tr.empty-row td{display:block}
+  .dept .table-wrap{overflow:visible}
+  .dept .table-wrap tbody{padding:10px}
+  .division{padding:12px}
+  .sum-stats{gap:8px}
+  .sum-stat b{font-size:21px}
+  .mobile-nav{display:grid;position:fixed;z-index:100;left:8px;right:8px;bottom:calc(8px + env(safe-area-inset-bottom));grid-template-columns:repeat(3,1fr);gap:6px;padding:6px;background:color-mix(in srgb,var(--surface) 92%,transparent);border:1px solid var(--border);border-radius:16px;box-shadow:var(--shadow-lg);backdrop-filter:blur(12px)}
+  .mobile-nav button{min-height:48px;border:0;border-radius:11px;background:var(--surface-2);color:var(--brand-strong);font-weight:800;font-size:12.5px;cursor:pointer}
+  .mobile-nav button.line{background:#06c755;color:#fff}
+  .to-top{display:none}
+  .toasts{bottom:92px}
+}
+@media (prefers-reduced-motion:reduce){*{transition:none!important;animation:none!important}html{scroll-behavior:auto}}
+</style>
+</head>
+<body>
+<main class="wrap">
+  <header class="topbar">
+    <div>
+      <h1>⏳ Smart Expiry <span class="lbl-full">Sales Assistant</span></h1>
+      <p>อัปโหลด Excel เพื่อค้นหาสินค้าใกล้หมดอายุ และรับ Action แนะนำสำหรับทีมขาย</p>
+    </div>
+    <div class="top-actions">
+      <button type="button" class="icon-btn" id="themeBtn" aria-label="สลับโหมดสว่าง/มืด" title="สลับโหมดสว่าง/มืด"></button>
+      <button type="button" class="icon-btn" id="resetBtn" title="ล้างข้อมูลและเริ่มใหม่" hidden>
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 12a9 9 0 1 0 3-6.7L3 8"/><path d="M3 3v5h5"/></svg>
+        <span class="lbl-full">เริ่มใหม่</span>
+      </button>
+    </div>
+  </header>
+
+  <section class="upload" id="upload">
+    <svg class="up-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M12 16V4"/><path d="m7 9 5-5 5 5"/><path d="M20 16v3a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2v-3"/></svg>
+    <div class="up-full">
+      <b>ลากไฟล์มาวาง หรือเลือกไฟล์ Dashboard</b>
+      <p>รองรับ .xlsx .xls .csv • ต้องมีคอลัมน์ <code>Item Description</code> <code>Stock</code> <code>Received Date (Lot) + Expiry Days</code></p>
+    </div>
+    <div class="file-meta">
+      <span class="fm-icon">✓</span>
+      <div style="min-width:0"><b id="fileName">-</b><small id="fileInfo"></small></div>
+    </div>
+    <input id="file" type="file" accept=".xlsx,.xls,.csv" hidden>
+    <button type="button" class="btn" id="pickBtn">อัปโหลด Excel</button>
+  </section>
+
+  <div id="app" hidden>
+    <div class="cards">
+      <button type="button" class="card c-exp" data-status="หมดอายุ" aria-pressed="false"><span class="lbl">หมดอายุ</span><span class="num" data-count="หมดอายุ">0</span><span class="hint">กดเพื่อดูรายการแยกคัดออก</span></button>
+      <button type="button" class="card c-urg" data-status="ต้องเร่งขาย" aria-pressed="false"><span class="lbl">ต้องเร่งขาย</span><span class="num" data-count="ต้องเร่งขาย">0</span><span class="hint">≤ 7 วัน หรือสต็อกขายไม่ทัน</span></button>
+      <button type="button" class="card c-high" data-status="เสี่ยงสูง" aria-pressed="false"><span class="lbl">เสี่ยงสูง</span><span class="num" data-count="เสี่ยงสูง">0</span><span class="hint">8 – 45 วัน</span></button>
+      <button type="button" class="card c-ok" data-status="ปกติ" aria-pressed="false"><span class="lbl">ปกติ</span><span class="num" data-count="ปกติ">0</span><span class="hint">มากกว่า 45 วัน</span></button>
+      <button type="button" class="card c-sum" id="summaryCard"><span class="lbl">สรุปภาพรวม</span><span class="num">ดูสรุป →</span><span class="hint">แยกตาม Division / Department</span></button>
+    </div>
+
+    <section class="panel" id="mainPanel">
+      <button type="button" class="filter-toggle" id="filterToggle" aria-expanded="false" aria-controls="filters">
+        <span>⚙ ตัวกรองสินค้า</span><span id="filterCount">ยังไม่กรอง</span>
+      </button>
+      <div class="filters collapsed" id="filters">
+        <div class="field f-search">
+          <label for="search">ค้นหา Item No หรือชื่อสินค้า</label>
+          <div class="search-box">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg>
+            <input id="search" type="search" placeholder="เช่น 814216 หรือ นมสด" autocomplete="off">
+            <kbd>/</kbd>
+          </div>
+        </div>
+        <div class="field"><label for="fDivision">Division</label><select id="fDivision"></select></div>
+        <div class="field"><label for="fDepartment">Department</label><select id="fDepartment"></select></div>
+        <div class="field"><label for="fClass">Class</label><select id="fClass"></select></div>
+        <div class="field"><label for="fStatus">สถานะ</label>
+          <select id="fStatus"><option value="">ทุกสถานะ (ไม่รวมหมดอายุ)</option><option>ต้องเร่งขาย</option><option>เสี่ยงสูง</option><option>ปกติ</option></select>
+        </div>
+        <div class="field"><label for="fPeriod">ช่วงวันรับเข้า</label>
+          <select id="fPeriod"><option value="all">ทั้งหมด</option><option value="daily">รายวัน</option><option value="mtd">MTD</option><option value="ytd">YTD</option><option value="ly">LY (วันเดียวกันปีก่อน)</option></select>
+        </div>
+        <div class="field"><label for="fDate">วันอ้างอิง</label><input id="fDate" type="date" disabled></div>
+      </div>
+      <div class="chips" id="chips"></div>
+
+      <div class="panel-head" style="margin-top:16px">
+        <div><h2>🎯 Daily AI Action Plan</h2><div class="sub" id="resultInfo"></div></div>
+        <div class="head-actions">
+          <details class="colmenu" id="colMenu">
+            <summary class="btn-outline">▥ คอลัมน์</summary>
+            <div class="menu" id="colList"></div>
+          </details>
+          <button type="button" class="btn-outline" id="exportBtn">⇩ Export Excel</button>
+        </div>
+      </div>
+      <div class="table-wrap" id="mainWrap"><table><thead id="mainHead"></thead><tbody id="mainRows"></tbody></table></div>
+      <button type="button" class="btn-outline load-more" id="mainMore" hidden></button>
+    </section>
+
+    <section class="panel" id="expiredPanel" hidden>
+      <div class="panel-head">
+        <div><h2 style="color:var(--exp)">สินค้าหมดอายุ — แยกรอคัดออก</h2><div class="sub" id="expiredInfo"></div></div>
+        <div class="head-actions">
+          <button type="button" class="btn-outline" id="expiredExport">⇩ Export Excel</button>
+          <button type="button" class="btn-outline" id="expiredClose">ปิดรายการ</button>
+        </div>
+      </div>
+      <div class="table-wrap" id="expiredWrap"><table><thead id="expiredHead"></thead><tbody id="expiredRows"></tbody></table></div>
+      <button type="button" class="btn-outline load-more" id="expiredMore" hidden></button>
+    </section>
+  </div>
+
+  <div id="summaryPage" hidden>
+    <div class="summary-head">
+      <h2 tabindex="-1" id="summaryTitle">สรุปรายการที่ต้องรีบจัดการ</h2>
+      <div class="head-actions">
+        <button type="button" class="btn-outline" id="backBtn">← กลับหน้าหลัก</button>
+        <button type="button" class="btn line" id="lineBtn">⇩ ภาพรวมสำหรับ LINE</button>
+      </div>
+    </div>
+    <p class="note">สรุปจากไฟล์ที่อัปโหลดทั้งหมด • ไม่เกิน 20 รหัสสินค้าต่อ Department • เรียง ต้องเร่งขาย → เสี่ยงสูง แล้วตามวันคงเหลือน้อยที่สุด<br>รหัสสินค้าที่มีหลายล็อตจะแสดงล็อตที่ต้องจัดการก่อน • สินค้าหมดอายุแยกอยู่ในการ์ดหมดอายุหน้าหลัก</p>
+    <div class="sum-stats" id="sumStats"></div>
+    <div id="summaryContent"></div>
+  </div>
+</main>
+
+<div class="loading" id="loading" hidden>
+  <div class="loading-box">
+    <div class="spinner"></div>
+    <div id="loadingText">กำลังอ่านและวิเคราะห์ Excel</div>
+    <small>ไฟล์ขนาดใหญ่อาจใช้เวลาสักครู่</small>
+    <div class="progress"><i id="loadingBar"></i></div>
+  </div>
+</div>
+<div class="toasts" id="toasts" aria-live="polite"></div>
+<button type="button" class="to-top" id="toTop" aria-label="กลับด้านบน">↑</button>
+<nav class="mobile-nav" aria-label="เมนูลัด">
+  <button type="button" id="mFilter">⚙ ตัวกรอง</button>
+  <button type="button" id="mSummary">▦ สรุป</button>
+  <button type="button" id="mLine" class="line">LINE</button>
+</nav>
+
+<script>
+'use strict';
+/* =====================================================================
+   Smart Expiry Sales Assistant
+   ===================================================================== */
+const LINE_WORKER_URL = 'https://smart-expiry-line.boss2431024310.workers.dev';
+const LINE_ROOM = 'Expired product x Next Gen';
+const PAGE_SIZE = 250;
+
+const ST = { EXP: 'หมดอายุ', URG: 'ต้องเร่งขาย', HIGH: 'เสี่ยงสูง', OK: 'ปกติ' };
+const STATUS_META = {
+  [ST.EXP]:  { cls: 's-exp',  order: 0, action: 'ห้ามจำหน่าย\n- คัดออกรอทำลาย' },
+  [ST.URG]:  { cls: 's-urg',  order: 1, action: 'ลดราคา\n- ตรวจสอบคุณภาพ' },
+  [ST.HIGH]: { cls: 's-high', order: 2, action: 'ขอโปรโมชัน\n- ทำจัดชิมผลักดันการขาย' },
+  [ST.OK]:   { cls: 's-ok',   order: 3, action: 'ติดตาม Movement สินค้า' }
 };
-function applyFilters() {
-  const d = document.getElementById('divisionSelect').value, p = document.getElementById('departmentSelect').value;
-  const c = document.getElementById('classSelect').value, s = document.getElementById('statusSelect').value;
-  const received = document.getElementById('receivedDate').value, period = document.getElementById('periodSelect').value;
-  const item = document.getElementById('itemSearch').value.trim().toLowerCase();
-  const start = period === 'all' ? '' : period === 'mtd' ? `${received.slice(0, 8)}01` : period === 'ytd' ? `${received.slice(0, 4)}-01-01` : period === 'previous_year' ? `${Number(received.slice(0, 4)) - 1}${received.slice(4)}` : received;
-  const end = period === 'previous_year' ? start : received;
-  renderItems(window.allItems.filter(x => (!d || x.division === d) && (!p || x.department === p) && (!c || x.class === c) && (!item || String(x.itemno).toLowerCase().includes(item)) && (!s || x.status === s) && (!start || (x.receivedIso >= start && x.receivedIso <= end))));
-}
-function renderItems(list) {
-  window.filteredItems = list;
-  const expired = list.filter(x => x.status === 'หมดอายุ'), urgent = list.filter(x => x.status === 'ต้องเร่งขาย');
-  const high = list.filter(x => x.status === 'เสี่ยงสูง'), normal = list.filter(x => x.status === 'ปกติ');
-  document.getElementById('expired').textContent = expired.length;
-  document.getElementById('urgent').textContent = urgent.length;
-  document.getElementById('watching').textContent = high.length;
-  document.getElementById('normal').textContent = normal.length;
-  const selectedStatus = document.getElementById('statusSelect').value;
-  document.querySelectorAll('.card[data-status]').forEach(card => {
-    card.classList.toggle('active', card.dataset.status === selectedStatus);
-    card.setAttribute('aria-pressed', String(card.dataset.status === selectedStatus));
-  });
-  document.getElementById('rows').innerHTML = list.map(x => {
-    const cls = x.status === 'หมดอายุ' ? 'danger' : x.status === 'ต้องเร่งขาย' ? 'urgent' : x.status === 'เสี่ยงสูง' ? 'high' : 'normal';
-    const timeLeft = x.days < 0 ? `หมดอายุ ${Math.abs(x.days)} วัน` : `${x.days} วัน`;
-    const image = x.thumbnail ? `<img class="thumb" src="${escape(x.thumbnail)}" alt="สินค้า" loading="lazy">` : '-';
-    return `<tr><td><span class="badge ${cls}">${x.status}</span></td><td class="action-cell">${x.action}</td><td>${escape(x.division)}</td><td>${escape(x.department)}</td><td>${escape(x.class)}</td><td>${image}</td><td>${escape(x.itemno)}</td><td>${escape(x.name)}</td><td>${x.stock.toLocaleString()}</td><td>${escape(x.received)}</td><td>${Number(x.receivedqty).toLocaleString()}</td><td>${x.expiry}</td><td>${timeLeft}</td></tr>`;
-  }).join('') || '<tr><td colspan="13" class="green">ไม่พบข้อมูลตามตัวกรอง</td></tr>';
-  document.getElementById('results').classList.remove('hide');
-}
-function confirmRefresh() {
-  if (confirm('ยืนยันที่จะกด Refresh ใช่ หรือ ไม่')) location.reload();
-}
-function filterByCard(status) {
-  if (status === 'หมดอายุ') { toggleExpiredItems(); return; }
-  const select = document.getElementById('statusSelect');
-  select.value = select.value === status ? '' : status;
-  applyFilters();
-}
-function exportData(list = window.filteredItems || [], expiredOnly = false) {
-  if (!list.length) { alert('ไม่พบข้อมูลสำหรับ Export'); return; }
-  const rows = list.map(x => ({
-    'สถานะ': x.status,
-    'Action (แนะนำ)': x.action.replace(/\n/g, ' '),
-    'Division': x.division,
-    'Department': x.department,
-    'Class': x.class,
-    'รูปภาพ (URL)': x.thumbnail || '',
-    'Item No': x.itemno,
-    'Item Description': x.name,
-    'Stock': x.stock,
-    'Received Date (Lot)': x.received,
-    'Received Qty (Lot)': x.receivedqty,
-    'Received Date (Lot) + Expiry Days': x.expiry,
-    'เหลือเวลาในการขาย': x.days < 0 ? `หมดอายุ ${Math.abs(x.days)} วัน` : `${x.days} วัน`
-  }));
-  const worksheet = XLSX.utils.json_to_sheet(rows);
-  worksheet['!cols'] = [
-    {wch:14},{wch:34},{wch:16},{wch:24},{wch:30},{wch:32},{wch:14},{wch:38},{wch:12},{wch:21},{wch:21},{wch:32},{wch:20}
-  ];
-  const workbook = XLSX.utils.book_new();
-  XLSX.utils.book_append_sheet(workbook, worksheet, expiredOnly ? 'Expired Items' : 'Daily AI Action Plan');
-  const date = new Date().toISOString().slice(0, 10);
-  XLSX.writeFile(workbook, `${expiredOnly ? 'smart-expiry-expired-items' : 'smart-expiry-action-plan'}-${date}.xlsx`);
-}
-</script><script>
-/* Fast file reader: prevents a large worksheet from creating thousands of table rows at once. */
-const ROWS_PER_PAGE = 250;
-let visibleRowCount = ROWS_PER_PAGE;
-let expiredVisibleCount = ROWS_PER_PAGE;
-let expiredPanelOpen = false;
-const expiredSection = document.createElement('section');
-expiredSection.id = 'expiredSection';
-expiredSection.className = 'hide';
-expiredSection.innerHTML = `<div class="plan-heading"><h2>สินค้าหมดอายุ — แยกรอคัดออก</h2><div><button type="button" class="export-btn" onclick="exportData(window.expiredItems || [], true)">⇩ Export data</button> <button type="button" class="export-btn" onclick="toggleExpiredItems()">ปิดรายการ</button></div></div><p id="expiredSummary" class="hint" aria-live="polite"></p><table>${document.querySelector('table thead').outerHTML}<tbody id="expiredRows"></tbody></table><button id="expiredMore" type="button" class="load-more hide" onclick="expiredVisibleCount += ROWS_PER_PAGE; renderExpiredItems()">แสดงเพิ่ม</button>`;
-document.getElementById('results').appendChild(expiredSection);
 
-function toggleExpiredItems() {
-  expiredPanelOpen = !expiredPanelOpen;
-  expiredVisibleCount = ROWS_PER_PAGE;
-  renderExpiredItems();
-  if (expiredPanelOpen) expiredSection.scrollIntoView({ behavior: 'smooth', block: 'start' });
-}
-
-function renderExpiredItems() {
-  expiredSection.classList.toggle('hide', !expiredPanelOpen);
-  const card = document.querySelector('.expired-card');
-  card.classList.toggle('active', expiredPanelOpen);
-  card.setAttribute('aria-pressed', String(expiredPanelOpen));
-  const items = window.expiredItems || [];
-  document.getElementById('expiredSummary').textContent = `สินค้าหมดอายุ ${items.length.toLocaleString()} รายการ ตามตัวกรองสินค้าและช่วงข้อมูล`;
-  document.getElementById('expiredRows').innerHTML = expiredPanelOpen ? items.slice(0, expiredVisibleCount).map(renderItemRow).join('') || '<tr><td colspan="13">ไม่พบสินค้าหมดอายุตามตัวกรอง</td></tr>' : '';
-  document.getElementById('expiredMore').classList.toggle('hide', items.length <= expiredVisibleCount);
-}
-const legacyFileInput = document.getElementById('file');
-const fastFileInput = legacyFileInput.cloneNode(true);
-legacyFileInput.replaceWith(fastFileInput);
-
-const waitForPaint = () => new Promise(resolve => requestAnimationFrame(resolve));
-const setMessage = (text, loading = false) => {
-  const message = document.getElementById('message');
-  message.textContent = text;
-  message.classList.toggle('loading', loading);
+const ALIASES = {
+  product: ['สินค้า', 'ชื่อสินค้า', 'product', 'product name', 'item', 'item description'],
+  itemno: ['item no', 'item no.', 'sku', 'รหัสสินค้า'],
+  expiry: ['วันหมดอายุ', 'หมดอายุ', 'expiry', 'expiry date', 'expiration date', 'exp date', 'received date (lot) + expiry days'],
+  stock: ['stock', 'คงเหลือ', 'สต็อก', 'on hand', 'inventory', 'qty', 'quantity', 'remaining qty'],
+  sales: ['ยอดขายเฉลี่ย/วัน', 'ขายเฉลี่ยต่อวัน', 'avg daily sales', 'daily sales', 'sales'],
+  division: ['division'], department: ['department'], class: ['class'],
+  received: ['received date (lot)'], receivedqty: ['received qty (lot)'],
+  thumbnail: ['thumbnail', 'image', 'image url', 'รูปภาพ']
 };
 
-fastFileInput.addEventListener('change', event => {
-  const file = event.target.files[0];
-  if (!file) return;
-  setMessage(`กำลังเตรียมอ่านไฟล์ ${file.name}...`, true);
-  const reader = new FileReader();
-  reader.onerror = () => setMessage('ไม่สามารถเปิดไฟล์นี้ได้ กรุณาลองเลือกไฟล์อีกครั้ง');
-  reader.onload = async loadEvent => {
-    try {
-      await waitForPaint();
-      setMessage('กำลังอ่านข้อมูลจาก Excel กรุณารอสักครู่...', true);
-      await new Promise(resolve => setTimeout(resolve, 0));
-      const workbook = XLSX.read(loadEvent.target.result, { type: 'array', cellDates: true, dense: true });
-      const sheet = workbook.Sheets[workbook.SheetNames[0]];
-      const data = XLSX.utils.sheet_to_json(sheet, { defval: '' });
-      await prepareItems(data);
-    } catch (error) {
-      console.error(error);
-      setMessage(`อ่านไฟล์ไม่สำเร็จ: ${error.message || 'รูปแบบไฟล์ไม่ถูกต้อง'}`);
+/* Column definitions shared by table, mobile cards and Excel export */
+const COLUMNS = [
+  { key: 'status',      label: 'สถานะ',               sort: r => STATUS_META[r.status].order, lock: true },
+  { key: 'action',      label: 'Action (แนะนำ)' },
+  { key: 'division',    label: 'Division',            sec: true },
+  { key: 'department',  label: 'Department',          sec: true },
+  { key: 'class',       label: 'Class',               sec: true },
+  { key: 'thumb',       label: 'รูปภาพ' },
+  { key: 'itemno',      label: 'Item No',             sort: r => r.itemno },
+  { key: 'name',        label: 'Item Description',    sort: r => r.name, lock: true },
+  { key: 'stock',       label: 'Stock',               sort: r => r.stock, num: true },
+  { key: 'received',    label: 'Received Date (Lot)', sort: r => r.receivedIso, sec: true },
+  { key: 'receivedqty', label: 'Received Qty (Lot)',  sort: r => r.receivedqty, num: true, sec: true },
+  { key: 'expiry',      label: 'วันหมดอายุ (Lot + Expiry Days)', sort: r => r.days, sec: true },
+  { key: 'days',        label: 'เหลือเวลาในการขาย',    sort: r => r.days }
+];
+COLUMNS.forEach(c => { c.sortable = !!c.sort; });
+
+/* ---------- Helpers ---------- */
+const $ = s => document.querySelector(s);
+const $$ = s => [...document.querySelectorAll(s)];
+const norm = s => String(s ?? '').trim().toLowerCase().replace(/\s+/g, ' ');
+const isBlank = v => !String(v ?? '').replace(/[\s​-‍﻿]/g, '');
+const esc = s => String(s ?? '').replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+const fmtNum = n => (n === '' || n == null || isNaN(n)) ? '-' : Number(n).toLocaleString('th-TH');
+const pad = n => String(n).padStart(2, '0');
+const fmtDate = d => d ? `${pad(d.getDate())}-${pad(d.getMonth() + 1)}-${d.getFullYear()}` : '-';
+const isoDate = d => d ? `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}` : '';
+const daysText = d => d === null ? '-' : d < 0 ? `หมดอายุ ${Math.abs(d)} วัน` : `${d} วัน`;
+const nextFrame = () => new Promise(r => requestAnimationFrame(() => setTimeout(r, 0)));
+const store = {
+  get(k, f = null) { try { const v = localStorage.getItem(k); return v === null ? f : JSON.parse(v); } catch (_) { return f; } },
+  set(k, v) { try { localStorage.setItem(k, JSON.stringify(v)); } catch (_) {} }
+};
+const collator = new Intl.Collator('th', { numeric: true, sensitivity: 'base' });
+
+function findCol(headers, key) { return headers.find(h => ALIASES[key].includes(norm(h))); }
+
+function parseDate(x) {
+  if (x instanceof Date && !isNaN(x)) return new Date(x.getFullYear(), x.getMonth(), x.getDate());
+  if (typeof x === 'number' && x > 20000 && x < 80000) { const p = XLSX.SSF.parse_date_code(x); return new Date(p.y, p.m - 1, p.d); }
+  if (isBlank(x)) return null;
+  const s = String(x).trim();
+  let m = s.match(/^(\d{4})[\/-](\d{1,2})[\/-](\d{1,2})/);
+  if (m) return new Date(+m[1], m[2] - 1, +m[3]);
+  m = s.match(/^(\d{1,2})[\/-](\d{1,2})[\/-](\d{2,4})/);
+  if (m) { let y = +m[3]; if (y < 100) y += 2000; if (y > 2400) y -= 543; return new Date(y, m[2] - 1, +m[1]); }
+  const d = new Date(s);
+  return !isNaN(d) && d.getFullYear() > 1980 ? new Date(d.getFullYear(), d.getMonth(), d.getDate()) : null;
+}
+
+/* ---------- State ---------- */
+const state = {
+  items: [], matching: [], list: [], expired: [],
+  sort: store.get('sx-sort', { key: 'days', dir: 1 }),
+  hidden: new Set(store.get('sx-hidden', [])),
+  shown: PAGE_SIZE, expShown: PAGE_SIZE, expOpen: false,
+  fileName: '', loadedAt: null, hasThumbs: false
+};
+
+/* ---------- Toast / confirm ---------- */
+function toast(text, type = '') {
+  const el = document.createElement('div');
+  el.className = `toast ${type}`; el.textContent = text;
+  $('#toasts').appendChild(el);
+  setTimeout(() => el.remove(), 3600);
+}
+function confirmBox(text, okLabel = 'ยืนยัน') {
+  return new Promise(resolve => {
+    const d = document.createElement('dialog');
+    d.style.width = 'min(420px,92vw)';
+    d.innerHTML = `<div class="dlg-body"><p class="confirm-text">${esc(text)}</p><div class="head-actions" style="justify-content:flex-end"><button type="button" class="btn-outline" data-no>ยกเลิก</button><button type="button" class="btn" data-yes>${esc(okLabel)}</button></div></div>`;
+    document.body.appendChild(d);
+    const done = v => { d.close(); d.remove(); resolve(v); };
+    d.querySelector('[data-no]').onclick = () => done(false);
+    d.querySelector('[data-yes]').onclick = () => done(true);
+    d.addEventListener('cancel', e => { e.preventDefault(); done(false); });
+    d.showModal();
+  });
+}
+
+/* ---------- Theme ---------- */
+const ICON_SUN = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"/></svg>';
+const ICON_MOON = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12.8A9 9 0 1 1 11.2 3a7 7 0 0 0 9.8 9.8z"/></svg>';
+function paintThemeBtn() { $('#themeBtn').innerHTML = document.documentElement.dataset.theme === 'dark' ? ICON_SUN : ICON_MOON; }
+$('#themeBtn').onclick = () => {
+  const t = document.documentElement.dataset.theme === 'dark' ? 'light' : 'dark';
+  document.documentElement.dataset.theme = t;
+  try { localStorage.setItem('sx-theme', t); } catch (_) {}
+  paintThemeBtn();
+};
+paintThemeBtn();
+
+/* ---------- Upload ---------- */
+const fileInput = $('#file');
+const uploadBox = $('#upload');
+$('#pickBtn').onclick = () => fileInput.click();
+fileInput.addEventListener('change', e => { const f = e.target.files[0]; if (f) loadFile(f); fileInput.value = ''; });
+['dragenter', 'dragover'].forEach(ev => uploadBox.addEventListener(ev, e => { e.preventDefault(); uploadBox.classList.add('drag'); }));
+['dragleave', 'drop'].forEach(ev => uploadBox.addEventListener(ev, e => { e.preventDefault(); uploadBox.classList.remove('drag'); }));
+uploadBox.addEventListener('drop', e => { const f = e.dataTransfer.files[0]; if (f) loadFile(f); });
+
+function setLoading(on, text, pct) {
+  $('#loading').hidden = !on;
+  if (text) $('#loadingText').textContent = text;
+  if (pct != null) $('#loadingBar').style.width = `${Math.round(pct)}%`;
+}
+
+async function loadFile(file) {
+  if (!/\.(xlsx|xls|csv)$/i.test(file.name)) { toast('รองรับเฉพาะไฟล์ .xlsx .xls หรือ .csv', 'err'); return; }
+  if (typeof XLSX === 'undefined') { toast('โหลดตัวอ่าน Excel ไม่สำเร็จ กรุณาตรวจสอบอินเทอร์เน็ตแล้วรีเฟรช', 'err'); return; }
+  setLoading(true, `กำลังเปิด ${file.name}`, 5);
+  try {
+    await nextFrame();
+    const isCsv = /\.csv$/i.test(file.name);
+    const wb = isCsv
+      ? XLSX.read(await file.text(), { type: 'string', cellDates: true, raw: false })
+      : XLSX.read(await file.arrayBuffer(), { type: 'array', cellDates: true, dense: true });
+    setLoading(true, 'กำลังอ่านข้อมูลจาก Excel…', 25);
+    await nextFrame();
+    // เลือกชีตแรกที่มีคอลัมน์ครบ
+    let rows = null;
+    for (const name of wb.SheetNames) {
+      const data = XLSX.utils.sheet_to_json(wb.Sheets[name], { defval: '' });
+      if (!data.length) continue;
+      const h = Object.keys(data[0]);
+      if (findCol(h, 'product') && findCol(h, 'expiry') && findCol(h, 'stock')) { rows = data; break; }
+      if (!rows) rows = data;
     }
-  };
-  reader.readAsArrayBuffer(file);
-});
+    if (!rows || !rows.length) throw new Error('ไม่พบข้อมูลในไฟล์');
+    await prepareItems(rows);
+    state.fileName = file.name;
+    state.loadedAt = new Date();
+    showLoaded(rows.length);
+  } catch (err) {
+    console.error(err);
+    toast(`อ่านไฟล์ไม่สำเร็จ: ${err.message || 'รูปแบบไฟล์ไม่ถูกต้อง'}`, 'err');
+  } finally {
+    setLoading(false);
+  }
+}
 
 async function prepareItems(data) {
-  if (!data.length) throw new Error('ไม่พบข้อมูลในไฟล์');
   const headers = Object.keys(data[0]);
-  const productKey = find(headers, 'product');
-  const expiryKey = find(headers, 'expiry');
-  const stockKey = find(headers, 'stock');
-  if (!productKey || !expiryKey || !stockKey) throw new Error('ไม่พบคอลัมน์ Item Description, Stock หรือวันหมดอายุ');
+  const col = Object.fromEntries(Object.keys(ALIASES).map(k => [k, findCol(headers, k)]));
+  const missing = [['product', 'Item Description'], ['expiry', 'วันหมดอายุ / Received Date (Lot) + Expiry Days'], ['stock', 'Stock']].filter(([k]) => !col[k]).map(([, l]) => l);
+  if (missing.length) throw new Error(`ไม่พบคอลัมน์ ${missing.join(', ')}`);
 
-  const keys = ['itemno', 'sales', 'cost', 'price', 'division', 'department', 'class', 'received', 'receivedqty', 'thumbnail'];
-  const columns = Object.fromEntries(keys.map(key => [key, find(headers, key)]));
-  const today = new Date();
-  today.setHours(0, 0, 0, 0);
-  const items = [];
-
-  for (let index = 0; index < data.length; index += 1) {
-    const row = data[index];
-    const expiryDate = dateValue(row[expiryKey]);
-    const receivedDate = columns.received ? dateValue(row[columns.received]) : null;
-    const days = expiryDate ? Math.floor((expiryDate - today) / 86400000) : 9999;
-    const stock = Number(row[stockKey]) || 0;
-    const sales = columns.sales ? Number(row[columns.sales]) || 0 : 0;
-    const cost = columns.cost ? Number(row[columns.cost]) || 0 : (columns.price ? Number(row[columns.price]) || 0 : 0);
-    const cover = sales ? stock / sales : Infinity;
-    let status = days < 0 ? 'หมดอายุ' : (days <= 7 || (cover !== Infinity && cover > days)) ? 'ต้องเร่งขาย' : days <= 45 ? 'เสี่ยงสูง' : 'ปกติ';
-    const action = status === 'หมดอายุ' ? 'ห้ามจำหน่าย\n- คัดออกรอทำลาย' : status === 'ต้องเร่งขาย' ? 'ลดราคา\n- ตรวจสอบคุณภาพ' : status === 'เสี่ยงสูง' ? 'ขอโปรโมชัน\n- ทำจัดชิมผลักดันการขาย' : 'ติดตาม Movement สินค้า';
-    const received = formatDate(receivedDate);
-    items.push({
-      division: columns.division ? row[columns.division] : 'ไม่ระบุ', department: columns.department ? row[columns.department] : '-', class: columns.class ? row[columns.class] : '-',
-      itemno: columns.itemno ? row[columns.itemno] : '-', name: row[productKey], stock, received, receivedqty: columns.receivedqty ? row[columns.receivedqty] : '-',
-      expiry: formatDate(expiryDate), receivedIso: received === '-' ? '' : received.split('-').reverse().join('-'), days, risk: stock * cost,
-      status, action, thumbnail: columns.thumbnail ? String(row[columns.thumbnail] || '') : ''
-    });
-    if (index && index % 2000 === 0) {
-      setMessage(`กำลังวิเคราะห์ข้อมูล ${index.toLocaleString()} / ${data.length.toLocaleString()} รายการ...`, true);
-      await waitForPaint();
+  const today = new Date(); today.setHours(0, 0, 0, 0);
+  const items = new Array(data.length);
+  for (let i = 0; i < data.length; i++) {
+    const row = data[i];
+    const exp = parseDate(row[col.expiry]);
+    const rec = col.received ? parseDate(row[col.received]) : null;
+    const days = exp ? Math.round((exp - today) / 86400000) : null;
+    const stock = Number(row[col.stock]) || 0;
+    const sales = col.sales ? Number(row[col.sales]) || 0 : 0;
+    const cover = sales > 0 ? stock / sales : Infinity;
+    const status = days === null ? ST.OK
+      : days < 0 ? ST.EXP
+      : (days <= 7 || (cover !== Infinity && cover > days)) ? ST.URG
+      : days <= 45 ? ST.HIGH : ST.OK;
+    const rq = col.receivedqty ? row[col.receivedqty] : '';
+    const name = String(row[col.product] ?? '').trim();
+    const itemno = col.itemno ? String(row[col.itemno] ?? '').trim() : '';
+    items[i] = {
+      id: i, status, action: STATUS_META[status].action,
+      division: col.division ? String(row[col.division] ?? '').trim() : '',
+      department: col.department ? String(row[col.department] ?? '').trim() : '',
+      class: col.class ? String(row[col.class] ?? '').trim() : '',
+      itemno, name, stock,
+      received: fmtDate(rec), receivedIso: isoDate(rec),
+      receivedqty: rq === '' || isNaN(Number(rq)) ? '' : Number(rq),
+      expiry: fmtDate(exp), days,
+      thumbnail: col.thumbnail ? String(row[col.thumbnail] ?? '').trim() : '',
+      search: `${itemno} ${name}`.toLowerCase()
+    };
+    if (i && i % 3000 === 0) {
+      setLoading(true, `กำลังวิเคราะห์ ${i.toLocaleString('th-TH')} / ${data.length.toLocaleString('th-TH')} รายการ`, 30 + (i / data.length) * 65);
+      await nextFrame();
     }
   }
+  state.items = items;
+  state.hasThumbs = items.some(r => r.thumbnail);
+}
 
-  window.allItems = items.sort((left, right) => left.days - right.days);
-  expiredPanelOpen = false;
-  const options = [
-    ['divisionSelect', 'division', 'ทุก Division'], ['departmentSelect', 'department', 'ทุก Department'], ['classSelect', 'class', 'ทุก Class']
-  ];
-  options.forEach(([id, key, label]) => {
-    const values = [...new Set(window.allItems.map(item => item[key]))]
-      .filter(value => String(value ?? '').replace(/[\s\u200B-\u200D\uFEFF]/g, '').length > 0).sort();
-    document.getElementById(id).innerHTML = `<option value="">${label}</option>` + values.map(value => `<option>${escape(value)}</option>`).join('');
-    document.getElementById(id).value = '';
-  });
-  document.getElementById('statusSelect').innerHTML = '<option value="">ทุกสถานะที่ยังไม่หมดอายุ</option><option>ต้องเร่งขาย</option><option>เสี่ยงสูง</option><option>ปกติ</option>';
-  document.getElementById('itemSearch').value = '';
-  document.getElementById('periodSelect').value = 'all';
-  const receivedDates = window.allItems.map(item => item.receivedIso).filter(Boolean).sort();
-  document.getElementById('receivedDate').value = receivedDates.at(-1) || '';
-  document.getElementById('divisionFilter').classList.remove('hide');
-  visibleRowCount = ROWS_PER_PAGE;
+function showLoaded(count) {
+  uploadBox.classList.add('compact');
+  $('#pickBtn').textContent = 'เปลี่ยนไฟล์';
+  $('#fileName').textContent = state.fileName;
+  $('#fileInfo').textContent = `${count.toLocaleString('th-TH')} รายการ • อัปเดต ${state.loadedAt.toLocaleTimeString('th-TH', { hour: '2-digit', minute: '2-digit' })} น.`;
+  $('#resetBtn').hidden = false;
+  // reset filters
+  $('#search').value = ''; $('#fStatus').value = ''; $('#fPeriod').value = 'all';
+  $('#fDivision').value = ''; $('#fDepartment').value = ''; $('#fClass').value = '';
+  const latest = state.items.map(r => r.receivedIso).filter(Boolean).sort().at(-1) || '';
+  $('#fDate').value = latest;
+  state.expOpen = false;
+  buildOptions();
   applyFilters();
-  setMessage(`อ่านข้อมูลและวิเคราะห์แล้ว ${data.length.toLocaleString()} รายการ`, false);
+  toast(`วิเคราะห์แล้ว ${count.toLocaleString('th-TH')} รายการ`, 'ok');
+  if (location.hash === '#summary') syncRoute(); else $('#app').hidden = false;
+}
+
+$('#resetBtn').onclick = async () => {
+  if (!(await confirmBox('ล้างข้อมูลที่อัปโหลดและเริ่มใหม่ใช่หรือไม่?', 'ล้างข้อมูล'))) return;
+  state.items = []; state.matching = []; state.list = []; state.expired = [];
+  uploadBox.classList.remove('compact');
+  $('#pickBtn').textContent = 'อัปโหลด Excel';
+  $('#resetBtn').hidden = true;
+  $('#app').hidden = true;
+  if (location.hash === '#summary') location.hash = ''; else syncRoute();
+  scrollTo({ top: 0 });
+};
+
+/* ---------- Filters ---------- */
+const uniq = (arr) => [...new Set(arr.filter(v => !isBlank(v)))].sort(collator.compare);
+function fillSelect(sel, values, allLabel) {
+  const cur = sel.value;
+  sel.innerHTML = `<option value="">${allLabel}</option>` + values.map(v => `<option>${esc(v)}</option>`).join('');
+  sel.value = values.includes(cur) ? cur : '';
+}
+function buildOptions() {
+  // ตัวกรองสัมพันธ์กัน: Division → Department → Class
+  fillSelect($('#fDivision'), uniq(state.items.map(r => r.division)), 'ทุก Division');
+  const div = $('#fDivision').value;
+  const byDiv = state.items.filter(r => !div || r.division === div);
+  fillSelect($('#fDepartment'), uniq(byDiv.map(r => r.department)), 'ทุก Department');
+  const dep = $('#fDepartment').value;
+  fillSelect($('#fClass'), uniq(byDiv.filter(r => !dep || r.department === dep).map(r => r.class)), 'ทุก Class');
+}
+
+function periodRange() {
+  const p = $('#fPeriod').value, ref = $('#fDate').value;
+  $('#fDate').disabled = p === 'all';
+  if (p === 'all' || !ref) return null;
+  if (p === 'daily') return [ref, ref];
+  if (p === 'mtd') return [`${ref.slice(0, 8)}01`, ref];
+  if (p === 'ytd') return [`${ref.slice(0, 4)}-01-01`, ref];
+  if (p === 'ly') { const d = `${Number(ref.slice(0, 4)) - 1}${ref.slice(4)}`; return [d, d]; }
+  return null;
 }
 
 function applyFilters() {
-  if (!window.allItems) return;
-  const division = document.getElementById('divisionSelect').value;
-  const department = document.getElementById('departmentSelect').value;
-  const itemClass = document.getElementById('classSelect').value;
-  const status = document.getElementById('statusSelect').value;
-  const received = document.getElementById('receivedDate').value;
-  const period = document.getElementById('periodSelect').value;
-  const item = document.getElementById('itemSearch').value.trim().toLowerCase();
-  const start = period === 'all' ? '' : period === 'mtd' ? `${received.slice(0, 8)}01` : period === 'ytd' ? `${received.slice(0, 4)}-01-01` : period === 'previous_year' ? `${Number(received.slice(0, 4)) - 1}${received.slice(4)}` : received;
-  const end = period === 'previous_year' ? start : received;
-  visibleRowCount = ROWS_PER_PAGE;
-  const matching = window.allItems.filter(row => (!division || row.division === division) && (!department || row.department === department) && (!itemClass || row.class === itemClass) && (!item || String(row.itemno).toLowerCase().includes(item)) && (!start || (row.receivedIso >= start && row.receivedIso <= end)));
-  window.summaryItems = matching;
-  window.expiredItems = matching.filter(row => row.status === 'หมดอายุ');
-  expiredVisibleCount = ROWS_PER_PAGE;
-  renderItems(matching.filter(row => row.status !== 'หมดอายุ' && (!status || row.status === status)));
-  renderExpiredItems();
+  const q = $('#search').value.trim().toLowerCase();
+  const div = $('#fDivision').value, dep = $('#fDepartment').value, cls = $('#fClass').value, st = $('#fStatus').value;
+  const range = periodRange();
+  state.matching = state.items.filter(r =>
+    (!div || r.division === div) && (!dep || r.department === dep) && (!cls || r.class === cls) &&
+    (!q || r.search.includes(q)) &&
+    (!range || (r.receivedIso && r.receivedIso >= range[0] && r.receivedIso <= range[1])));
+  state.expired = sortRows(state.matching.filter(r => r.status === ST.EXP));
+  state.list = sortRows(state.matching.filter(r => r.status !== ST.EXP && (!st || r.status === st)));
+  state.shown = PAGE_SIZE; state.expShown = PAGE_SIZE;
+  renderAll();
 }
 
-function renderItems(list) {
-  window.filteredItems = list;
-  const counts = { 'หมดอายุ': 0, 'ต้องเร่งขาย': 0, 'เสี่ยงสูง': 0, 'ปกติ': 0 };
-  (window.summaryItems || list).forEach(row => counts[row.status] += 1);
-  document.getElementById('expired').textContent = counts['หมดอายุ'];
-  document.getElementById('urgent').textContent = counts['ต้องเร่งขาย'];
-  document.getElementById('watching').textContent = counts['เสี่ยงสูง'];
-  document.getElementById('normal').textContent = counts['ปกติ'];
-  const selectedStatus = document.getElementById('statusSelect').value;
-  document.querySelectorAll('.card[data-status]').forEach(card => {
-    const active = card.dataset.status === 'หมดอายุ' ? expiredPanelOpen : card.dataset.status === selectedStatus;
-    card.classList.toggle('active', active);
-    card.setAttribute('aria-pressed', String(active));
+let searchTimer;
+$('#search').addEventListener('input', () => { clearTimeout(searchTimer); searchTimer = setTimeout(applyFilters, 160); });
+$('#fDivision').addEventListener('change', () => { $('#fDepartment').value = ''; $('#fClass').value = ''; buildOptions(); applyFilters(); });
+$('#fDepartment').addEventListener('change', () => { $('#fClass').value = ''; buildOptions(); applyFilters(); });
+['#fClass', '#fStatus', '#fPeriod', '#fDate'].forEach(s => $(s).addEventListener('change', applyFilters));
+
+$('#filterToggle').onclick = () => setFiltersOpen($('#filters').classList.contains('collapsed'));
+function setFiltersOpen(open) {
+  $('#filters').classList.toggle('collapsed', !open);
+  $('#filterToggle').setAttribute('aria-expanded', String(open));
+  $('#filterToggle').firstElementChild.textContent = open ? '✕ ปิดตัวกรอง' : '⚙ ตัวกรองสินค้า';
+}
+
+function renderChips() {
+  const per = $('#fPeriod');
+  const entries = [
+    ['ค้นหา', $('#search').value.trim(), () => { $('#search').value = ''; }],
+    ['Division', $('#fDivision').value, () => { $('#fDivision').value = ''; $('#fDepartment').value = ''; $('#fClass').value = ''; buildOptions(); }],
+    ['Department', $('#fDepartment').value, () => { $('#fDepartment').value = ''; $('#fClass').value = ''; buildOptions(); }],
+    ['Class', $('#fClass').value, () => { $('#fClass').value = ''; }],
+    ['สถานะ', $('#fStatus').value, () => { $('#fStatus').value = ''; }],
+    ['ช่วง', per.value !== 'all' ? `${per.options[per.selectedIndex].text} • ${$('#fDate').value || '-'}` : '', () => { per.value = 'all'; }]
+  ].filter(e => e[1]);
+  const box = $('#chips');
+  box.innerHTML = '';
+  entries.forEach(([label, val, clear]) => {
+    const c = document.createElement('span');
+    c.className = 'chip';
+    c.innerHTML = `${esc(label)}: ${esc(val)} <button type="button" aria-label="ลบตัวกรอง ${esc(label)}">×</button>`;
+    c.querySelector('button').onclick = () => { clear(); applyFilters(); };
+    box.appendChild(c);
   });
-  const shownRows = list.slice(0, visibleRowCount);
-  document.getElementById('rows').innerHTML = shownRows.map(renderItemRow).join('') || '<tr><td colspan="13" class="green">ไม่พบข้อมูลตามตัวกรอง</td></tr>';
-  const loadMore = document.getElementById('loadMore');
-  if (list.length > shownRows.length) {
-    loadMore.textContent = `แสดงเพิ่ม (${shownRows.length.toLocaleString()} / ${list.length.toLocaleString()} รายการ)`;
-    loadMore.classList.remove('hide');
-  } else loadMore.classList.add('hide');
-  document.getElementById('results').classList.remove('hide');
+  if (entries.length > 1) {
+    const all = document.createElement('button');
+    all.type = 'button'; all.className = 'chip clear'; all.textContent = 'ล้างทั้งหมด';
+    all.onclick = () => { entries.forEach(e => e[2]()); buildOptions(); applyFilters(); };
+    box.appendChild(all);
+  }
+  $('#filterCount').textContent = entries.length ? `${entries.length} ตัวกรอง` : 'ยังไม่กรอง';
 }
 
-function renderItemRow(row) {
-    const cssClass = row.status === 'หมดอายุ' ? 'danger' : row.status === 'ต้องเร่งขาย' ? 'urgent' : row.status === 'เสี่ยงสูง' ? 'high' : 'normal';
-    const timeLeft = row.days < 0 ? `หมดอายุ ${Math.abs(row.days)} วัน` : `${row.days} วัน`;
-    const image = row.thumbnail ? `<img class="thumb" src="${escape(row.thumbnail)}" alt="สินค้า" loading="lazy">` : '-';
-    return `<tr><td><span class="badge ${cssClass}">${row.status}</span></td><td class="action-cell">${row.action}</td><td>${escape(row.division)}</td><td>${escape(row.department)}</td><td>${escape(row.class)}</td><td>${image}</td><td>${escape(row.itemno)}</td><td>${escape(row.name)}</td><td>${row.stock.toLocaleString()}</td><td>${escape(row.received)}</td><td>${Number(row.receivedqty).toLocaleString()}</td><td>${row.expiry}</td><td>${timeLeft}</td></tr>`;
+/* ---------- Sorting ---------- */
+function sortRows(rows) {
+  const col = COLUMNS.find(c => c.key === state.sort.key) || COLUMNS.find(c => c.key === 'days');
+  const dir = state.sort.dir;
+  const get = col.sort;
+  return rows.slice().sort((a, b) => {
+    let x = get(a), y = get(b);
+    const xe = x === '' || x == null, ye = y === '' || y == null;
+    if (xe || ye) return xe && ye ? 0 : xe ? 1 : -1; // ค่าว่างไว้ท้ายเสมอ
+    const r = typeof x === 'number' && typeof y === 'number' ? x - y : collator.compare(String(x), String(y));
+    return r * dir || (a.days ?? 1e9) - (b.days ?? 1e9);
+  });
+}
+function setSort(key) {
+  state.sort = state.sort.key === key ? { key, dir: -state.sort.dir } : { key, dir: 1 };
+  store.set('sx-sort', state.sort);
+  state.list = sortRows(state.list);
+  state.expired = sortRows(state.expired);
+  renderAll();
 }
 
-function showMoreRows() {
-  visibleRowCount += ROWS_PER_PAGE;
-  renderItems(window.filteredItems || []);
+/* ---------- Columns menu ---------- */
+function buildColMenu() {
+  $('#colList').innerHTML = COLUMNS.map(c => `<label><input type="checkbox" value="${c.key}" ${state.hidden.has(c.key) ? '' : 'checked'} ${c.lock ? 'disabled' : ''}> ${esc(c.label)}</label>`).join('');
+  $('#colList').onchange = e => {
+    const k = e.target.value;
+    e.target.checked ? state.hidden.delete(k) : state.hidden.add(k);
+    store.set('sx-hidden', [...state.hidden]);
+    renderAll();
+  };
 }
-// A separate hash-routed summary view keeps the uploaded workbook in memory.
-const summaryCard = document.createElement('button');
-summaryCard.type = 'button';
-summaryCard.className = 'card summary-card';
-summaryCard.innerHTML = 'สรุป<b>ดูภาพรวม →</b>';
-summaryCard.onclick = () => { location.hash = 'summary'; };
-document.querySelector('.cards').appendChild(summaryCard);
-const summaryPage = document.createElement('div');
-summaryPage.id = 'summaryPage';
-summaryPage.className = 'hide';
-summaryPage.innerHTML = `<style>
-.cards{grid-template-columns:repeat(5,minmax(0,1fr))}.summary-card{background:#eef4ff;border-color:#b9cff8;color:#234d97;font-family:inherit}.summary-card:before{background:#3972cc}.summary-card b{font-size:22px}
-#summaryPage{margin-top:24px}.summary-heading{display:flex;align-items:center;justify-content:space-between;gap:16px;flex-wrap:wrap;margin-bottom:14px}.summary-heading h2{font-size:25px}.summary-note{color:#60748a;margin-bottom:18px}.division-summary{margin:20px 0;border:1px solid #d7e5f1;border-radius:16px;background:white;padding:20px}.division-summary h3{margin:0 0 6px;color:#185382;font-size:21px}.department-summary{border:1px solid #e1e9f1;border-radius:10px;margin-top:12px;overflow:hidden}.department-summary summary{padding:14px;cursor:pointer;background:#f3f8fd;font-weight:700}.department-summary summary .badge{margin-left:8px}.summary-table-wrap{overflow:auto}.summary-table-wrap table{min-width:900px}.summary-table-wrap .action-cell{min-width:190px}.summary-table-wrap .urgent-row td:first-child{border-left:4px solid #ea8300}.summary-table-wrap .high-row td:first-child{border-left:4px solid #d4a400}.summary-count{padding:10px 14px;color:#60748a;font-size:13px}
-@media(max-width:1100px){.cards{grid-template-columns:repeat(3,minmax(0,1fr))}}@media(max-width:700px){.cards{grid-template-columns:repeat(2,minmax(0,1fr))}.division-summary{padding:12px}.summary-card b{font-size:19px}}
-</style><div class="summary-heading"><h2 tabindex="-1" id="summaryTitle">สรุปรายการที่ต้องรีบจัดการ</h2><button type="button" class="export-btn" onclick="location.hash = ''">← กลับหน้าหลัก</button></div><p class="summary-note">สรุปจากไฟล์ที่อัปโหลดทั้งหมด • ไม่เกิน 20 รหัสสินค้าต่อ Department • เรียงสีส้ม ต้องเร่งขาย → สีเหลือง เสี่ยงสูง แล้วเรียงวันคงเหลือน้อยที่สุด<br>รหัสสินค้าที่มีหลายล็อตจะแสดงล็อตที่ต้องจัดการก่อน • สินค้าหมดอายุแยกอยู่ในการ์ดหมดอายุหน้าหลัก</p><div id="summaryContent"></div>`;
-document.querySelector('main').appendChild(summaryPage);
-const overviewExportButton = document.createElement('button');
-overviewExportButton.id = 'overviewExportButton';
-overviewExportButton.type = 'button';
-overviewExportButton.className = 'export-btn';
-overviewExportButton.textContent = '⇩ Export ภาพรวมสำหรับ LINE';
-overviewExportButton.onclick = () => exportOverviewImage(overviewExportButton);
-document.querySelector('#summaryPage .summary-heading').appendChild(overviewExportButton);
+document.addEventListener('click', e => { const m = $('#colMenu'); if (m.open && !m.contains(e.target)) m.open = false; });
+const visibleCols = () => COLUMNS.filter(c => !state.hidden.has(c.key) && (c.key !== 'thumb' || state.hasThumbs));
 
+/* ---------- Rendering ---------- */
+function cellHTML(c, r) {
+  const meta = STATUS_META[r.status];
+  switch (c.key) {
+    case 'status': return `<span class="badge ${meta.cls}">${r.status}</span>`;
+    case 'action': return esc(r.action);
+    case 'thumb': return r.thumbnail ? `<img class="thumb" src="${esc(r.thumbnail)}" alt="" loading="lazy" onerror="this.replaceWith(Object.assign(document.createElement('div'),{className:'thumb-ph'}))">` : '<div class="thumb-ph"></div>';
+    case 'stock': return fmtNum(r.stock);
+    case 'receivedqty': return fmtNum(r.receivedqty);
+    case 'days': {
+      const p = r.days === null ? 100 : Math.max(3, Math.min(100, (r.days / 60) * 100));
+      return `<div class="days ${meta.cls}"><b>${daysText(r.days)}</b><i style="--p:${r.days !== null && r.days < 0 ? 100 : p}%"></i></div>`;
+    }
+    default: { const v = r[c.key]; return isBlank(v) ? '-' : esc(v); }
+  }
+}
+function headHTML(cols) {
+  return '<tr>' + cols.map(c => {
+    const sorted = state.sort.key === c.key;
+    const arrow = sorted ? (state.sort.dir === 1 ? '▲' : '▼') : '↕';
+    return c.sortable
+      ? `<th class="sortable ${sorted ? 'sorted' : ''} ${c.num ? 'num' : ''}" data-sort="${c.key}" aria-sort="${sorted ? (state.sort.dir === 1 ? 'ascending' : 'descending') : 'none'}" tabindex="0">${esc(c.label)}<span class="arrow">${arrow}</span></th>`
+      : `<th>${esc(c.label)}</th>`;
+  }).join('') + '</tr>';
+}
+function rowsHTML(rows, cols, emptyText) {
+  if (!rows.length) return `<tr class="empty-row"><td colspan="${cols.length}" class="empty">${emptyText}</td></tr>`;
+  const hasSec = cols.some(c => c.sec);
+  return rows.map(r => `<tr data-id="${r.id}">` + cols.map(c =>
+    `<td class="c-${c.key}${c.num ? ' num' : ''}${c.sec ? ' sec' : ''}" data-label="${esc(c.label)}">${cellHTML(c, r)}</td>`).join('') +
+    (hasSec ? '<td class="row-toggle" role="button" tabindex="0">ดูรายละเอียด ▾</td>' : '') + '</tr>').join('');
+}
+function bindTable(wrap) {
+  wrap.querySelectorAll('th[data-sort]').forEach(th => {
+    th.onclick = () => setSort(th.dataset.sort);
+    th.onkeydown = e => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); setSort(th.dataset.sort); } };
+  });
+}
+// เปิด/ปิดรายละเอียดบนมือถือ (event delegation)
+document.addEventListener('click', e => {
+  const t = e.target.closest('.row-toggle'); if (!t) return;
+  const tr = t.closest('tr'); tr.classList.toggle('open');
+  t.textContent = tr.classList.contains('open') ? 'ซ่อนรายละเอียด ▴' : 'ดูรายละเอียด ▾';
+});
+
+function renderTable(prefix, rows, shown, emptyText) {
+  const cols = visibleCols();
+  const wrap = $(`#${prefix}Wrap`);
+  wrap.classList.toggle('no-thumbs', !state.hasThumbs || state.hidden.has('thumb'));
+  $(`#${prefix}Head`).innerHTML = headHTML(cols);
+  $(`#${prefix}Rows`).innerHTML = rowsHTML(rows.slice(0, shown), cols, emptyText);
+  bindTable(wrap);
+  const more = $(`#${prefix}More`);
+  more.hidden = rows.length <= shown;
+  more.textContent = `แสดงเพิ่ม (${Math.min(shown, rows.length).toLocaleString('th-TH')} / ${rows.length.toLocaleString('th-TH')})`;
+}
+
+function renderAll() {
+  // นับการ์ด จากรายการที่ผ่านตัวกรอง (ไม่รวมตัวกรองสถานะ)
+  const counts = { [ST.EXP]: 0, [ST.URG]: 0, [ST.HIGH]: 0, [ST.OK]: 0 };
+  state.matching.forEach(r => counts[r.status]++);
+  $$('[data-count]').forEach(el => { el.textContent = counts[el.dataset.count].toLocaleString('th-TH'); });
+  const st = $('#fStatus').value;
+  $$('.card[data-status]').forEach(c => {
+    const on = c.dataset.status === ST.EXP ? state.expOpen : c.dataset.status === st;
+    c.classList.toggle('active', on); c.setAttribute('aria-pressed', String(on));
+  });
+  $('#resultInfo').textContent = `${state.list.length.toLocaleString('th-TH')} รายการ (ไม่รวมสินค้าหมดอายุ)`;
+  renderTable('main', state.list, state.shown, 'ไม่พบข้อมูลตามตัวกรอง');
+  $('#expiredPanel').hidden = !state.expOpen;
+  if (state.expOpen) {
+    $('#expiredInfo').textContent = `${state.expired.length.toLocaleString('th-TH')} รายการ ตามตัวกรองสินค้าและช่วงข้อมูล`;
+    renderTable('expired', state.expired, state.expShown, 'ไม่พบสินค้าหมดอายุตามตัวกรอง');
+  }
+  renderChips();
+}
+
+$('#mainMore').onclick = () => { state.shown += PAGE_SIZE; renderTable('main', state.list, state.shown, ''); };
+$('#expiredMore').onclick = () => { state.expShown += PAGE_SIZE; renderTable('expired', state.expired, state.expShown, ''); };
+
+/* ---------- Cards ---------- */
+$$('.card[data-status]').forEach(card => card.onclick = () => {
+  const s = card.dataset.status;
+  if (s === ST.EXP) {
+    state.expOpen = !state.expOpen; state.expShown = PAGE_SIZE; renderAll();
+    if (state.expOpen) $('#expiredPanel').scrollIntoView({ behavior: 'smooth', block: 'start' });
+    return;
+  }
+  $('#fStatus').value = $('#fStatus').value === s ? '' : s;
+  applyFilters();
+});
+$('#expiredClose').onclick = () => { state.expOpen = false; renderAll(); };
+$('#summaryCard').onclick = () => { location.hash = 'summary'; };
+
+/* ---------- Export Excel ---------- */
+function exportExcel(rows, expiredOnly) {
+  if (!rows.length) { toast('ไม่พบข้อมูลสำหรับ Export', 'err'); return; }
+  const data = rows.map(r => ({
+    'สถานะ': r.status, 'Action (แนะนำ)': r.action.replace(/\n/g, ' '),
+    'Division': r.division, 'Department': r.department, 'Class': r.class,
+    'รูปภาพ (URL)': r.thumbnail, 'Item No': r.itemno, 'Item Description': r.name,
+    'Stock': r.stock, 'Received Date (Lot)': r.received, 'Received Qty (Lot)': r.receivedqty,
+    'Received Date (Lot) + Expiry Days': r.expiry, 'เหลือเวลาในการขาย': daysText(r.days)
+  }));
+  const ws = XLSX.utils.json_to_sheet(data);
+  ws['!cols'] = [14, 34, 16, 24, 30, 32, 14, 38, 12, 21, 21, 32, 20].map(wch => ({ wch }));
+  ws['!autofilter'] = { ref: ws['!ref'] };
+  const wb = XLSX.utils.book_new();
+  XLSX.utils.book_append_sheet(wb, ws, expiredOnly ? 'Expired Items' : 'Daily AI Action Plan');
+  XLSX.writeFile(wb, `${expiredOnly ? 'smart-expiry-expired-items' : 'smart-expiry-action-plan'}-${isoDate(new Date())}.xlsx`);
+  toast(`Export ${rows.length.toLocaleString('th-TH')} รายการแล้ว`, 'ok');
+}
+$('#exportBtn').onclick = () => exportExcel(state.list, false);
+$('#expiredExport').onclick = () => exportExcel(state.expired, true);
+
+/* ---------- Summary page ---------- */
 function buildDivisionSummary(items) {
   const divisions = new Map();
-  const label = value => String(value ?? '').trim() || 'ไม่ระบุ';
-  const priority = row => row.status === 'ต้องเร่งขาย' ? 0 : 1;
-  const compare = (a, b) => priority(a) - priority(b) || a.days - b.days || String(a.itemno).localeCompare(String(b.itemno));
-  for (const row of items) {
-    const division = label(row.division), department = label(row.department);
-    if (division === 'ไม่ระบุ' || division === '-' || !division.replace(/[\s\u200B-\u200D\uFEFF]/g, '')) continue;
+  const label = v => String(v ?? '').trim() || 'ไม่ระบุ';
+  const pri = r => r.status === ST.URG ? 0 : 1;
+  const cmp = (a, b) => pri(a) - pri(b) || a.days - b.days || collator.compare(a.itemno, b.itemno);
+  for (const r of items) {
+    const division = label(r.division), department = label(r.department);
+    if (division === 'ไม่ระบุ' || division === '-' || isBlank(division)) continue;
     if (!divisions.has(division)) divisions.set(division, new Map());
-    const departments = divisions.get(division);
-    if (!departments.has(department)) departments.set(department, new Map());
-    if (!['ต้องเร่งขาย', 'เสี่ยงสูง'].includes(row.status)) continue;
-    const products = departments.get(department);
-    const id = label(row.itemno);
-    const key = id === '-' || id === 'ไม่ระบุ' ? `name:${label(row.name)}` : `item:${id}`;
-    const current = products.get(key);
-    if (!current || compare(row, current) < 0) products.set(key, row);
+    const deps = divisions.get(division);
+    if (!deps.has(department)) deps.set(department, new Map());
+    if (r.status !== ST.URG && r.status !== ST.HIGH) continue;
+    const products = deps.get(department);
+    const key = isBlank(r.itemno) ? `name:${r.name}` : `item:${r.itemno}`;
+    const cur = products.get(key);
+    if (!cur || cmp(r, cur) < 0) products.set(key, r);
   }
-  return [...divisions].sort(([a], [b]) => a.localeCompare(b)).map(([name, departments]) => ({
+  return [...divisions].sort(([a], [b]) => collator.compare(a, b)).map(([name, deps]) => ({
     name,
-    departments: [...departments].sort(([a], [b]) => a.localeCompare(b)).map(([name, products]) => {
-      const ranked = [...products.values()].sort(compare);
-      return {name, total: ranked.length, urgent: ranked.filter(row => row.status === 'ต้องเร่งขาย').length,
-        high: ranked.filter(row => row.status === 'เสี่ยงสูง').length, items: ranked.slice(0, 20)};
+    departments: [...deps].sort(([a], [b]) => collator.compare(a, b)).map(([dname, products]) => {
+      const ranked = [...products.values()].sort(cmp);
+      return { name: dname, total: ranked.length, urgent: ranked.filter(r => r.status === ST.URG).length,
+        high: ranked.filter(r => r.status === ST.HIGH).length, items: ranked.slice(0, 20) };
     })
   }));
 }
 
-function renderSummaryPage() {
-  const groups = buildDivisionSummary(window.allItems || []);
-  const content = document.getElementById('summaryContent');
-  content.innerHTML = '';
+const SUM_COLS = ['status', 'itemno', 'name', 'class', 'stock', 'expiry', 'days', 'action'].map(k => COLUMNS.find(c => c.key === k));
+function renderSummary() {
+  const groups = buildDivisionSummary(state.items);
+  const box = $('#summaryContent');
+  box.innerHTML = '';
+  const deps = groups.flatMap(g => g.departments);
+  const urg = deps.reduce((s, d) => s + d.urgent, 0), high = deps.reduce((s, d) => s + d.high, 0);
+  $('#sumStats').innerHTML = groups.length ? `
+    <div class="sum-stat"><span style="color:var(--urg)">ต้องเร่งขาย</span><b style="color:var(--urg)">${urg.toLocaleString('th-TH')}</b></div>
+    <div class="sum-stat"><span style="color:var(--high)">เสี่ยงสูง</span><b style="color:var(--high)">${high.toLocaleString('th-TH')}</b></div>
+    <div class="sum-stat"><span>Department ที่ต้องจัดการ</span><b>${deps.filter(d => d.total).length.toLocaleString('th-TH')} / ${deps.length.toLocaleString('th-TH')}</b></div>` : '';
   if (!groups.length) {
-    content.innerHTML = '<section>ยังไม่มีข้อมูล กรุณากลับหน้าหลักเพื่ออัปโหลด Excel</section>';
+    box.innerHTML = `<section class="panel empty">${state.items.length ? 'ไม่พบข้อมูล Division ในไฟล์' : 'ยังไม่มีข้อมูล กรุณากลับหน้าหลักเพื่ออัปโหลด Excel'}</section>`;
     return;
   }
-  for (const division of groups) {
-    const container = document.createElement('div');
-    container.className = 'division-summary';
-    container.innerHTML = `<h3>Division: ${escape(division.name)}</h3><p class="hint">${division.departments.length} Department • ${division.departments.reduce((n, department) => n + department.total, 0).toLocaleString()} รหัสสินค้าที่ต้องจัดการ (นับแยกตาม Department)</p>`;
-    for (const department of division.departments) {
-      const detail = document.createElement('details');
-      detail.className = 'department-summary';
-      detail.innerHTML = `<summary>${escape(department.name)} <span class="badge urgent">ต้องเร่งขาย ${department.urgent}</span><span class="badge high">เสี่ยงสูง ${department.high}</span></summary>`;
-      detail.addEventListener('toggle', () => {
-        if (!detail.open || detail.dataset.loaded) return;
-        detail.dataset.loaded = 'true';
+  for (const g of groups) {
+    const el = document.createElement('div');
+    el.className = 'division';
+    el.innerHTML = `<h3>Division: ${esc(g.name)}</h3><p class="note">${g.departments.length} Department • ${g.departments.reduce((n, d) => n + d.total, 0).toLocaleString('th-TH')} รหัสสินค้าที่ต้องจัดการ</p>`;
+    for (const d of g.departments) {
+      const det = document.createElement('details');
+      det.className = 'dept';
+      det.innerHTML = `<summary><span class="dname">${esc(d.name)}</span><span class="badge s-urg">ต้องเร่งขาย ${d.urgent}</span><span class="badge s-high">เสี่ยงสูง ${d.high}</span></summary>`;
+      det.addEventListener('toggle', () => {
+        if (!det.open || det.dataset.loaded) return;
+        det.dataset.loaded = '1';
         const body = document.createElement('div');
-        body.innerHTML = department.total ? `<p class="summary-count">แสดง ${department.items.length} จาก ${department.total.toLocaleString()} รหัสสินค้า • ข้อมูลของล็อตที่ต้องจัดการก่อน</p><div class="summary-table-wrap"><table><thead><tr><th>สถานะ</th><th>Item No</th><th>Item Description</th><th>Class</th><th>Stock</th><th>วันหมดอายุ</th><th>เหลือเวลาขาย</th><th>Action แนะนำ</th></tr></thead><tbody>${department.items.map(row => `<tr class="${row.status === 'ต้องเร่งขาย' ? 'urgent' : 'high'}-row"><td><span class="badge ${row.status === 'ต้องเร่งขาย' ? 'urgent' : 'high'}">${escape(row.status)}</span></td><td>${escape(row.itemno)}</td><td>${escape(row.name)}</td><td>${escape(row.class)}</td><td>${row.stock.toLocaleString()}</td><td>${escape(row.expiry)}</td><td>${row.days} วัน</td><td class="action-cell">${escape(row.action)}</td></tr>`).join('')}</tbody></table></div>` : '<p class="summary-count">ไม่มีสินค้าสถานะต้องเร่งขายหรือเสี่ยงสูงในแผนกนี้</p>';
-        detail.appendChild(body);
-        if (false && department.items.length) {
-          const exportButton = document.createElement('button');
-          exportButton.type = 'button';
-          exportButton.className = 'export-btn';
-          exportButton.style.margin = '14px';
-          exportButton.textContent = '⇩ Export รูปภาพสำหรับ LINE';
-          exportButton.onclick = () => exportDepartmentImage(division.name, department, exportButton);
-          body.prepend(exportButton);
-        }
+        body.innerHTML = d.total
+          ? `<p class="cnt">แสดง ${d.items.length} จาก ${d.total.toLocaleString('th-TH')} รหัสสินค้า • ข้อมูลของล็อตที่ต้องจัดการก่อน</p><div class="table-wrap no-thumbs"><table><thead>${'<tr>' + SUM_COLS.map(c => `<th class="${c.num ? 'num' : ''}">${esc(c.label)}</th>`).join('') + '</tr>'}</thead><tbody>${rowsHTML(d.items, SUM_COLS, '')}</tbody></table></div>`
+          : '<p class="cnt">ไม่มีสินค้าสถานะต้องเร่งขายหรือเสี่ยงสูงในแผนกนี้</p>';
+        det.appendChild(body);
       });
-      container.appendChild(detail);
+      el.appendChild(det);
     }
-    content.appendChild(container);
+    box.appendChild(el);
   }
 }
 
-function syncSummaryRoute() {
-  const isSummary = location.hash === '#summary';
-  document.querySelector('.upload').classList.toggle('hide', isSummary);
-  document.getElementById('results').classList.toggle('hide', isSummary || !window.allItems);
-  summaryPage.classList.toggle('hide', !isSummary);
-  if (isSummary) { renderSummaryPage(); document.getElementById('summaryTitle').focus(); }
-  window.scrollTo(0, 0);
+function syncRoute() {
+  const isSum = location.hash === '#summary';
+  uploadBox.hidden = isSum;
+  $('#app').hidden = isSum || !state.items.length;
+  $('#summaryPage').hidden = !isSum;
+  if (isSum) { renderSummary(); $('#summaryTitle').focus({ preventScroll: true }); }
+  scrollTo({ top: 0 });
 }
-function wrapImageText(ctx, value, maxWidth) {
+addEventListener('hashchange', syncRoute);
+$('#backBtn').onclick = () => { location.hash = ''; };
+
+/* ---------- LINE overview image ---------- */
+function wrapText(ctx, value, maxWidth) {
   const text = String(value ?? '');
-  const segments = typeof Intl.Segmenter === 'function'
-    ? [...new Intl.Segmenter('th', {granularity: 'grapheme'}).segment(text)].map(x => x.segment)
-    : Array.from(text);
+  const parts = typeof Intl.Segmenter === 'function'
+    ? [...new Intl.Segmenter('th', { granularity: 'grapheme' }).segment(text)].map(x => x.segment) : Array.from(text);
   const lines = []; let line = '';
-  for (const part of segments) {
-    if (part === '\n') { lines.push(line); line = ''; continue; }
-    if (line && ctx.measureText(line + part).width > maxWidth) { lines.push(line); line = part; }
-    else line += part;
+  for (const p of parts) {
+    if (p === '\n') { lines.push(line); line = ''; continue; }
+    if (line && ctx.measureText(line + p).width > maxWidth) { lines.push(line); line = p; } else line += p;
   }
   lines.push(line);
   return lines;
 }
 
-function createDepartmentCanvas(division, department, now = new Date()) {
-  const canvas = document.createElement('canvas');
-  const ctx = canvas.getContext('2d');
-  if (!ctx) throw new Error('เบราว์เซอร์นี้ไม่รองรับการสร้างภาพ');
-  const font = '"Anuphan", Tahoma, sans-serif';
-  ctx.font = `600 30px ${font}`;
-  const heading = wrapImageText(ctx, `Department: ${department.name}`, 944);
-  const divisionLines = wrapImageText(ctx, `Division: ${division}`, 944);
-  const headerHeight = 218 + (heading.length + divisionLines.length) * 42;
-  const cards = department.items.slice(0, 20).map(row => {
-    ctx.font = `700 30px ${font}`;
-    const name = wrapImageText(ctx, row.name, 912);
-    ctx.font = `400 25px ${font}`;
-    const code = wrapImageText(ctx, `Item No: ${row.itemno}`, 912);
-    const action = wrapImageText(ctx, `Action: ${String(row.action).replace(/\n/g, ' ')}`, 912);
-    return {row, name, code, action, height: 130 + name.length * 40 + code.length * 34 + action.length * 34};
-  });
-  canvas.width = 1080;
-  canvas.height = headerHeight + cards.reduce((sum, card) => sum + card.height + 16, 0) + 104;
-  ctx.fillStyle = '#f1f5fb'; ctx.fillRect(0, 0, canvas.width, canvas.height);
-  ctx.fillStyle = '#12466f'; ctx.fillRect(0, 0, 1080, headerHeight - 20);
-  const drawLines = (lines, x, y, step, color, style) => {
-    ctx.fillStyle = color; ctx.font = `${style} ${font}`;
-    for (const line of lines) { ctx.fillText(line, x, y); y += step; }
-    return y;
-  };
-  drawLines(['Smart Expiry • สรุปเร่งจัดการ'], 60, 62, 44, '#ffffff', '700 36px');
-  let y = drawLines(divisionLines, 60, 114, 42, '#ddecfa', '600 30px');
-  y = drawLines(heading, 60, y, 42, '#ffffff', '700 30px');
-  const stamp = now.toLocaleString('th-TH', {timeZone:'Asia/Bangkok',year:'numeric',month:'2-digit',day:'2-digit',hour:'2-digit',minute:'2-digit'});
-  drawLines([`จัดทำ ${stamp} • แสดง ${cards.length} / ${department.total} รหัสสินค้า`, `ต้องเร่งขาย ${department.urgent}  |  เสี่ยงสูง ${department.high}`], 60, y + 12, 38, '#ddecfa', '400 26px');
-  y = headerHeight;
-  for (let index = 0; index < cards.length; index++) {
-    const {row, name, code, action, height} = cards[index];
-    const urgent = row.status === 'ต้องเร่งขาย';
-    ctx.fillStyle = urgent ? '#fff6e9' : '#fffde8'; ctx.fillRect(44, y, 992, height);
-    ctx.fillStyle = urgent ? '#e78200' : '#d1a500'; ctx.fillRect(44, y, 8, height);
-    drawLines([`${index + 1}. ${row.status} • เหลือ ${row.days} วัน`], 76, y + 44, 38, urgent ? '#9f4d00' : '#806300', '700 28px');
-    let textY = drawLines(code, 76, y + 84, 34, '#49617a', '400 25px');
-    textY = drawLines(name, 76, textY + 4, 40, '#173651', '700 30px');
-    textY = drawLines([`Stock: ${Number(row.stock).toLocaleString('th-TH')}  •  หมดอายุ: ${row.expiry}`], 76, textY + 4, 34, '#49617a', '400 25px');
-    drawLines(action, 76, textY + 4, 34, '#173651', '400 25px');
-    y += height + 16;
-  }
-  drawLines(['ข้อมูลล็อตที่ต้องจัดการก่อน • ไม่รวมสินค้าหมดอายุ', 'Smart Expiry Sales Assistant'], 60, y + 28, 32, '#60748a', '400 23px');
-  return canvas;
-}
-
-async function exportDepartmentImage(division, department, button) {
-  if (!department.items.length) return;
-  button.disabled = true; button.textContent = 'กำลังสร้างรูปภาพ…';
-  try {
-    if (document.fonts) await Promise.race([document.fonts.load('700 30px "Anuphan"'), new Promise(resolve => setTimeout(resolve, 3000))]);
-    const canvas = createDepartmentCanvas(division, department);
-    const blob = await new Promise((resolve, reject) => canvas.toBlob(result => result ? resolve(result) : reject(new Error('สร้างรูปภาพไม่สำเร็จ')), 'image/png'));
-    const url = URL.createObjectURL(blob);
-    const dialog = document.createElement('dialog');
-    dialog.style.cssText = 'width:min(640px,94vw);max-height:90vh;border:1px solid #cbdcec;border-radius:16px;padding:20px;color:#173651';
-    const filename = `SmartExpiry-${division}-${department.name}-${new Date().toISOString().slice(0,10)}.png`.replace(/[<>:"/\\|?*\u0000-\u001f]/g, '_');
-    dialog.innerHTML = `<div class="summary-heading"><b>รูปภาพพร้อมส่งใน LINE</b><button type="button" class="export-btn">ปิด</button></div><p class="summary-note">กดดาวน์โหลด แล้วแนบรูปภาพใน LINE ได้เลย</p><a class="export-btn" style="display:inline-block;margin-bottom:16px" download="${escape(filename)}" href="${url}">⇩ ดาวน์โหลด PNG</a><img alt="ภาพสรุปสินค้า ${escape(department.name)}" src="${url}" style="display:block;width:100%;height:auto">`;
-    dialog.querySelector('button').onclick = () => dialog.close();
-    dialog.addEventListener('close', () => { URL.revokeObjectURL(url); dialog.remove(); }, {once:true});
-    document.body.appendChild(dialog);
-    dialog.showModal();
-  } catch (error) { alert(`สร้างภาพไม่สำเร็จ: ${error.message}`); }
-  finally { button.disabled = false; button.textContent = '⇩ Export รูปภาพสำหรับ LINE'; }
-}
 function createOverviewCanvas(groups, now = new Date()) {
-  const visibleGroups = groups.map(group => ({...group, departments: group.departments.filter(department => department.total > 0)}))
-    .filter(group => group.departments.length > 0);
-  if (!visibleGroups.length) throw new Error('ไม่พบสินค้าที่ต้องเร่งขายหรือเสี่ยงสูง');
+  const visible = groups.map(g => ({ ...g, departments: g.departments.filter(d => d.total > 0) })).filter(g => g.departments.length);
+  if (!visible.length) throw new Error('ไม่พบสินค้าที่ต้องเร่งขายหรือเสี่ยงสูง');
   const canvas = document.createElement('canvas');
   const ctx = canvas.getContext('2d');
   if (!ctx) throw new Error('เบราว์เซอร์นี้ไม่รองรับการสร้างภาพ');
   const font = '"Anuphan", Tahoma, sans-serif';
-  const width = 1080, margin = 42, contentWidth = width - margin * 2;
-  const allDepartments = visibleGroups.flatMap(group => group.departments);
-  const urgentTotal = allDepartments.reduce((sum, department) => sum + department.urgent, 0);
-  const highTotal = allDepartments.reduce((sum, department) => sum + department.high, 0);
-  const prepare = limit => visibleGroups.map(group => ({
-    ...group,
-    cards: group.departments.map(department => {
-      const rows = department.items.slice(0, limit).map(row => {
+  const W = 1080, M = 42, CW = W - M * 2;
+  const allDeps = visible.flatMap(g => g.departments);
+  const urgentTotal = allDeps.reduce((s, d) => s + d.urgent, 0);
+  const highTotal = allDeps.reduce((s, d) => s + d.high, 0);
+  const prepare = limit => visible.map(g => ({
+    ...g,
+    cards: g.departments.map(d => {
+      const rows = d.items.slice(0, limit).map(r => {
         ctx.font = `600 28px ${font}`;
-        let nameLines = wrapImageText(ctx, row.name, 560);
+        let nameLines = wrapText(ctx, r.name, 560);
         if (nameLines.length > 2) nameLines = [nameLines[0], `${nameLines[1].slice(0, -1)}…`];
-        return {row, nameLines, height: nameLines.length > 1 ? 126 : 94};
+        return { r, nameLines, h: nameLines.length > 1 ? 126 : 94 };
       });
-      return {department, rows, height: 86 + rows.reduce((sum, row) => sum + row.height, 0) + 18};
+      return { d, rows, h: 86 + rows.reduce((s, x) => s + x.h, 0) + 18 };
     })
   }));
+  const heightOf = data => 354 + data.reduce((s, g) => s + 86 + g.cards.reduce((c, k) => c + k.h + 16, 0) + 22, 0) + 118;
   let prepared = prepare(2);
-  const heightOf = data => 354 + data.reduce((sum, group) => sum + 86 + group.cards.reduce((cardSum, card) => cardSum + card.height + 16, 0) + 22, 0) + 118;
   if (heightOf(prepared) > 30000) prepared = prepare(1);
-  canvas.width = width;
+  canvas.width = W;
   canvas.height = Math.min(heightOf(prepared), 32000);
-  const fill = (color, x, y, w, h) => { ctx.fillStyle = color; ctx.fillRect(x, y, w, h); };
-  const text = (value, x, y, color, style, align = 'left') => { ctx.fillStyle = color; ctx.font = `${style} ${font}`; ctx.textAlign = align; ctx.fillText(String(value), x, y); ctx.textAlign = 'left'; };
-  fill('#f3f7fc', 0, 0, canvas.width, canvas.height);
-  fill('#114d78', 0, 0, width, 326);
-  text('SMART EXPIRY SALES ASSISTANT', margin, 62, '#bfe2f7', '700 25px');
-  text('สรุปสินค้าที่ต้องรีบจัดการ', margin, 122, '#ffffff', '800 46px');
-  const stamp = now.toLocaleString('th-TH', {timeZone:'Asia/Bangkok',year:'numeric',month:'2-digit',day:'2-digit',hour:'2-digit',minute:'2-digit'});
-  text(`ข้อมูล ณ ${stamp} • ${visibleGroups.length} Division • ${allDepartments.length} Department`, margin, 170, '#dceefa', '500 25px');
-  const statY = 202, statW = 302, gap = 22;
-  [['#fff1dc','#a95100','ต้องเร่งขาย',urgentTotal],['#fff8c9','#806300','เสี่ยงสูง',highTotal],['#e9f3ff','#185382','Department',allDepartments.length]].forEach((stat, index) => {
-    const x = margin + index * (statW + gap); fill(stat[0], x, statY, statW, 94);
-    text(stat[2], x + 18, statY + 34, stat[1], '700 23px'); text(Number(stat[3]).toLocaleString('th-TH'), x + 18, statY + 76, stat[1], '800 36px');
+  const fill = (c, x, y, w, h) => { ctx.fillStyle = c; ctx.fillRect(x, y, w, h); };
+  const round = (c, x, y, w, h, r) => { ctx.fillStyle = c; ctx.beginPath(); ctx.roundRect ? ctx.roundRect(x, y, w, h, r) : ctx.rect(x, y, w, h); ctx.fill(); };
+  const text = (v, x, y, c, style, align = 'left') => { ctx.fillStyle = c; ctx.font = `${style} ${font}`; ctx.textAlign = align; ctx.fillText(String(v), x, y); ctx.textAlign = 'left'; };
+
+  fill('#f3f7fc', 0, 0, W, canvas.height);
+  const grad = ctx.createLinearGradient(0, 0, W, 326); grad.addColorStop(0, '#0c4b78'); grad.addColorStop(1, '#1471a9');
+  ctx.fillStyle = grad; ctx.fillRect(0, 0, W, 326);
+  text('SMART EXPIRY SALES ASSISTANT', M, 62, '#bfe2f7', '700 25px');
+  text('สรุปสินค้าที่ต้องรีบจัดการ', M, 122, '#ffffff', '800 46px');
+  const stamp = now.toLocaleString('th-TH', { timeZone: 'Asia/Bangkok', year: 'numeric', month: '2-digit', day: '2-digit', hour: '2-digit', minute: '2-digit' });
+  text(`ข้อมูล ณ ${stamp} • ${visible.length} Division • ${allDeps.length} Department`, M, 170, '#dceefa', '500 25px');
+  const statW = 302, gap = 22;
+  [['#fff1dc', '#a95100', 'ต้องเร่งขาย', urgentTotal], ['#fff8c9', '#806300', 'เสี่ยงสูง', highTotal], ['#e9f3ff', '#185382', 'Department', allDeps.length]].forEach((s, i) => {
+    const x = M + i * (statW + gap); round(s[0], x, 202, statW, 94, 14);
+    text(s[2], x + 18, 236, s[1], '700 23px'); text(Number(s[3]).toLocaleString('th-TH'), x + 18, 278, s[1], '800 36px');
   });
   let y = 354;
-  for (const group of prepared) {
-    fill('#dcecf8', margin, y, contentWidth, 70);
-    text(`DIVISION  ${group.name}`, margin + 20, y + 47, '#154f7c', '800 31px');
+  for (const g of prepared) {
+    round('#dcecf8', M, y, CW, 70, 12);
+    text(`DIVISION  ${g.name}`, M + 20, y + 47, '#154f7c', '800 31px');
     y += 86;
-    for (const card of group.cards) {
-      const {department, rows} = card;
-      fill('#ffffff', margin, y, contentWidth, card.height);
-      fill('#eef5fb', margin, y, contentWidth, 70);
-      text(department.name, margin + 20, y + 46, '#173d60', '800 30px');
-      text(`เร่งขาย ${department.urgent}  •  เสี่ยงสูง ${department.high}  •  ทั้งหมด ${department.total}`, width - margin - 20, y + 44, '#536b82', '600 23px', 'right');
-      let rowY = y + 80;
-      for (const item of rows) {
-        const urgent = item.row.status === 'ต้องเร่งขาย';
-        fill(urgent ? '#fff8ee' : '#fffced', margin + 12, rowY, contentWidth - 24, item.height - 7);
-        fill(urgent ? '#ea8300' : '#d4a400', margin + 12, rowY, 7, item.height - 7);
-        text(urgent ? 'ต้องเร่งขาย' : 'เสี่ยงสูง', margin + 34, rowY + 36, urgent ? '#a34e00' : '#806300', '800 25px');
-        text(`${item.row.days} วัน`, margin + 34, rowY + 70, '#536b82', '600 22px');
-        text(`Item ${item.row.itemno}`, margin + 220, rowY + 36, '#173d60', '700 26px');
-        let nameY = rowY + 72;
-        for (const line of item.nameLines) { text(line, margin + 220, nameY, '#173d60', '600 28px'); nameY += 36; }
-        text(`Stock ${Number(item.row.stock).toLocaleString('th-TH')}  •  หมดอายุ ${item.row.expiry}`, width - margin - 26, rowY + 36, '#536b82', '500 22px', 'right');
-        rowY += item.height;
+    for (const card of g.cards) {
+      const { d, rows } = card;
+      round('#ffffff', M, y, CW, card.h, 14);
+      fill('#eef5fb', M, y + 14, CW, 56); round('#eef5fb', M, y, CW, 40, 14);
+      text(d.name, M + 20, y + 46, '#173d60', '800 30px');
+      text(`เร่งขาย ${d.urgent}  •  เสี่ยงสูง ${d.high}  •  ทั้งหมด ${d.total}`, W - M - 20, y + 44, '#536b82', '600 23px', 'right');
+      let ry = y + 80;
+      for (const it of rows) {
+        const u = it.r.status === ST.URG;
+        round(u ? '#fff8ee' : '#fffced', M + 12, ry, CW - 24, it.h - 7, 10);
+        fill(u ? '#ea8300' : '#d4a400', M + 12, ry, 7, it.h - 7);
+        text(u ? 'ต้องเร่งขาย' : 'เสี่ยงสูง', M + 34, ry + 36, u ? '#a34e00' : '#806300', '800 25px');
+        text(`${it.r.days} วัน`, M + 34, ry + 70, '#536b82', '600 22px');
+        text(`Item ${it.r.itemno || '-'}`, M + 220, ry + 36, '#173d60', '700 26px');
+        let ny = ry + 72;
+        for (const line of it.nameLines) { text(line, M + 220, ny, '#173d60', '600 28px'); ny += 36; }
+        text(`Stock ${Number(it.r.stock).toLocaleString('th-TH')}  •  หมดอายุ ${it.r.expiry}`, W - M - 26, ry + 36, '#536b82', '500 22px', 'right');
+        ry += it.h;
       }
-      if (department.total > rows.length) text(`แสดง ${rows.length} รายการแรกจาก ${department.total} รหัสสินค้า • ดูครบ 20 รายการได้ในหน้าสรุป`, margin + 20, y + card.height - 15, '#718499', '500 21px');
-      y += card.height + 16;
+      if (d.total > rows.length) text(`แสดง ${rows.length} รายการแรกจาก ${d.total} รหัสสินค้า • ดูครบ 20 รายการได้ในหน้าสรุป`, M + 20, y + card.h - 15, '#718499', '500 21px');
+      y += card.h + 16;
     }
     y += 20;
   }
-  fill('#e8f0f7', 0, canvas.height - 104, width, 104);
-  text('สีส้ม: ลดราคาและตรวจสอบคุณภาพ  •  สีเหลือง: ขอโปรโมชันและจัดชิมผลักดันการขาย', margin, canvas.height - 61, '#38546e', '600 22px');
-  text('แสดง 2 สินค้าเร่งด่วนสูงสุดของแต่ละ Department • ไม่รวมสินค้าหมดอายุ', margin, canvas.height - 25, '#60748a', '500 20px');
+  fill('#e8f0f7', 0, canvas.height - 104, W, 104);
+  text('สีส้ม: ลดราคาและตรวจสอบคุณภาพ  •  สีเหลือง: ขอโปรโมชันและจัดชิมผลักดันการขาย', M, canvas.height - 61, '#38546e', '600 22px');
+  text('แสดง 2 สินค้าเร่งด่วนสูงสุดของแต่ละ Department • ไม่รวมสินค้าหมดอายุ', M, canvas.height - 25, '#60748a', '500 20px');
   return canvas;
 }
 
-const LINE_WORKER_URL = 'https://smart-expiry-line.boss2431024310.workers.dev';
-
+const toBlob = (canvas, type, q) => new Promise((res, rej) => canvas.toBlob(b => b ? res(b) : rej(new Error('สร้างรูปภาพไม่สำเร็จ')), type, q));
 async function canvasToLineJpeg(canvas) {
-  const qualities = [0.88, 0.8, 0.72, 0.64, 0.56];
-  for (const quality of qualities) {
-    const blob = await new Promise((resolve, reject) => canvas.toBlob(
-      result => result ? resolve(result) : reject(new Error('ไม่สามารถสร้างรูปภาพสำหรับ LINE ได้')),
-      'image/jpeg',
-      quality
-    ));
-    if (blob.size <= 950000) return blob;
+  for (const q of [0.88, 0.8, 0.72, 0.64, 0.56]) {
+    const b = await toBlob(canvas, 'image/jpeg', q);
+    if (b.size <= 950000) return b;
   }
   throw new Error('รูปภาพมีขนาดใหญ่เกินไป กรุณาลดจำนวนข้อมูลในสรุป');
 }
 
-async function exportOverviewImage(button) {
-  button.disabled = true; button.textContent = 'กำลังสร้างภาพรวม…';
+async function openLineDialog(btn) {
+  if (!state.items.length) { toast('กรุณาอัปโหลด Excel ก่อน', 'err'); return; }
+  const old = btn?.textContent; if (btn) { btn.disabled = true; btn.textContent = 'กำลังสร้างภาพ…'; }
   try {
-    if (document.fonts) await Promise.race([document.fonts.load('800 46px "Anuphan"'), new Promise(resolve => setTimeout(resolve, 3000))]);
-    const groups = buildDivisionSummary(window.allItems || []);
-    const canvas = createOverviewCanvas(groups);
-    const blob = await new Promise((resolve, reject) => canvas.toBlob(result => result ? resolve(result) : reject(new Error('สร้างรูปภาพไม่สำเร็จ')), 'image/png'));
-    const lineBlob = await canvasToLineJpeg(canvas);
-    const url = URL.createObjectURL(blob);
-    const dialog = document.createElement('dialog');
-    dialog.style.cssText = 'width:min(680px,94vw);max-height:92vh;border:1px solid #cbdcec;border-radius:16px;padding:20px;color:#173651';
-    const filename = `SmartExpiry-Overview-${new Date().toISOString().slice(0,10)}.png`;
-    dialog.innerHTML = `<div class="summary-heading"><b>ภาพรวมพร้อมส่งใน LINE</b><button type="button" class="export-btn">ปิด</button></div><p class="summary-note">กดแชร์บนมือถือ แล้วเลือกห้อง “Expired product x Next Gen” ภาพจะถูกแนบไปพร้อมส่ง</p><button type="button" class="btn" data-line-share style="margin:0 8px 16px 0">แชร์ไป LINE</button><a class="export-btn" style="display:inline-block;margin-bottom:16px" download="${filename}" href="${url}">⇩ ดาวน์โหลด PNG</a><img alt="ภาพรวมสินค้าที่ต้องรีบจัดการ" src="${url}" style="display:block;width:100%;height:auto;border:1px solid #dbe6ef;border-radius:10px">`;
-    dialog.querySelector('.summary-heading button').onclick = () => dialog.close();
-    const shareButton = dialog.querySelector('[data-line-share]');
-    shareButton.onclick = event => shareOverviewToLine(blob, filename, event.currentTarget);
-    const lineOaButton = document.createElement('button');
-    lineOaButton.type = 'button';
-    lineOaButton.className = 'btn';
-    lineOaButton.textContent = 'ส่งเข้า LINE OA';
-    lineOaButton.style.cssText = 'margin:0 8px 16px 0;background:#06c755';
-    shareButton.insertAdjacentElement('afterend', lineOaButton);
-    lineOaButton.onclick = () => sendOverviewToLineOA(lineBlob, lineOaButton);
-    dialog.addEventListener('close', () => { URL.revokeObjectURL(url); dialog.remove(); }, {once:true});
-    document.body.appendChild(dialog); dialog.showModal();
-  } catch (error) { alert(`สร้างภาพรวมไม่สำเร็จ: ${error.message}`); }
-  finally { button.disabled = false; button.textContent = '⇩ Export ภาพรวมสำหรับ LINE'; }
+    if (document.fonts) await Promise.race([document.fonts.load('800 46px "Anuphan"'), new Promise(r => setTimeout(r, 3000))]);
+    const canvas = createOverviewCanvas(buildDivisionSummary(state.items));
+    const png = await toBlob(canvas, 'image/png');
+    const jpg = await canvasToLineJpeg(canvas);
+    const url = URL.createObjectURL(png);
+    const filename = `SmartExpiry-Overview-${isoDate(new Date())}.png`;
+    let savedKey = ''; try { savedKey = sessionStorage.getItem('sx-send-key') || ''; } catch (_) {}
+    const d = document.createElement('dialog');
+    d.innerHTML = `
+      <div class="dlg-head"><b>ภาพรวมพร้อมส่งใน LINE</b><button type="button" class="btn-ghost" data-close aria-label="ปิด">✕</button></div>
+      <div class="dlg-body">
+        <p class="note">บนมือถือกด “แชร์ไป LINE” แล้วเลือกห้อง “${esc(LINE_ROOM)}”</p>
+        <div class="dlg-actions">
+          <button type="button" class="btn" data-share>แชร์ไป LINE</button>
+          <a class="btn-outline" download="${esc(filename)}" href="${url}">⇩ ดาวน์โหลด PNG</a>
+          <button type="button" class="btn line" data-oa>ส่งเข้า LINE OA</button>
+        </div>
+        <div class="oa-box" data-oabox hidden>
+          <label for="sendKey" style="font-weight:700;font-size:14px">รหัส SEND_KEY</label>
+          <div class="row"><input type="password" id="sendKey" autocomplete="off" value="${esc(savedKey)}" placeholder="กรอกรหัสเพื่อส่งเข้า LINE OA"><button type="button" class="btn line" data-send>ส่ง</button></div>
+          <label class="remember"><input type="checkbox" data-remember ${savedKey ? 'checked' : ''}> จำรหัสไว้จนกว่าจะปิดแท็บนี้</label>
+        </div>
+        <img class="dlg-preview" alt="ภาพรวมสินค้าที่ต้องรีบจัดการ" src="${url}">
+      </div>`;
+    document.body.appendChild(d);
+    d.querySelector('[data-close]').onclick = () => d.close();
+    d.addEventListener('close', () => { URL.revokeObjectURL(url); d.remove(); }, { once: true });
+    d.querySelector('[data-share]').onclick = e => shareToLine(png, filename, e.currentTarget);
+    d.querySelector('[data-oa]').onclick = () => { const b = d.querySelector('[data-oabox]'); b.hidden = !b.hidden; if (!b.hidden) d.querySelector('#sendKey').focus(); };
+    const send = () => sendToLineOA(jpg, d.querySelector('#sendKey').value.trim(), d.querySelector('[data-remember]').checked, d.querySelector('[data-send]'));
+    d.querySelector('[data-send]').onclick = send;
+    d.querySelector('#sendKey').onkeydown = e => { if (e.key === 'Enter') send(); };
+    d.showModal();
+  } catch (err) {
+    toast(`สร้างภาพรวมไม่สำเร็จ: ${err.message}`, 'err');
+  } finally {
+    if (btn) { btn.disabled = false; btn.textContent = old; }
+  }
 }
-async function shareOverviewToLine(blob, filename, button) {
-  button.disabled = true;
-  button.textContent = 'กำลังเปิดเมนูแชร์…';
+
+async function shareToLine(blob, filename, btn) {
+  btn.disabled = true;
   try {
-    const file = new File([blob], filename, {type: 'image/png'});
-    if (navigator.share && (!navigator.canShare || navigator.canShare({files: [file]}))) {
-      await navigator.share({
-        files: [file],
-        title: 'Smart Expiry Sales Assistant',
-        text: 'สรุปสินค้าที่ต้องรีบจัดการ — กรุณาส่งไปห้อง Expired product x Next Gen'
-      });
+    const file = new File([blob], filename, { type: 'image/png' });
+    if (navigator.share && (!navigator.canShare || navigator.canShare({ files: [file] }))) {
+      await navigator.share({ files: [file], title: 'Smart Expiry Sales Assistant', text: `สรุปสินค้าที่ต้องรีบจัดการ — กรุณาส่งไปห้อง ${LINE_ROOM}` });
       return;
     }
-    const link = document.createElement('a');
-    link.href = URL.createObjectURL(blob);
-    link.download = filename;
-    document.body.appendChild(link);
-    link.click();
-    setTimeout(() => { URL.revokeObjectURL(link.href); link.remove(); }, 1000);
-    alert('เบราว์เซอร์นี้ยังแชร์ไฟล์โดยตรงไม่ได้ ระบบดาวน์โหลดภาพให้แล้ว กรุณาแนบภาพในห้อง Expired product x Next Gen');
-  } catch (error) {
-    if (error.name !== 'AbortError') alert(`แชร์ภาพไม่สำเร็จ: ${error.message}`);
-  } finally {
-    button.disabled = false;
-    button.textContent = 'แชร์ไป LINE';
-  }
+    const a = Object.assign(document.createElement('a'), { href: URL.createObjectURL(blob), download: filename });
+    document.body.appendChild(a); a.click();
+    setTimeout(() => { URL.revokeObjectURL(a.href); a.remove(); }, 1000);
+    toast(`เบราว์เซอร์นี้แชร์ไฟล์ตรงไม่ได้ — ดาวน์โหลดภาพให้แล้ว กรุณาแนบในห้อง ${LINE_ROOM}`);
+  } catch (err) {
+    if (err.name !== 'AbortError') toast(`แชร์ภาพไม่สำเร็จ: ${err.message}`, 'err');
+  } finally { btn.disabled = false; }
 }
-async function sendOverviewToLineOA(blob, button) {
-  const sendKey = prompt('กรอกรหัส SEND_KEY เพื่อส่งภาพเข้า LINE OA');
-  if (!sendKey) return;
-  button.disabled = true;
-  const oldText = button.textContent;
-  button.textContent = 'กำลังส่งเข้า LINE...';
+
+async function sendToLineOA(blob, key, remember, btn) {
+  if (!key) { toast('กรุณากรอกรหัส SEND_KEY', 'err'); return; }
+  try { remember ? sessionStorage.setItem('sx-send-key', key) : sessionStorage.removeItem('sx-send-key'); } catch (_) {}
+  const old = btn.textContent; btn.disabled = true; btn.textContent = 'กำลังส่ง…';
   try {
-    const response = await fetch(`${LINE_WORKER_URL}/send`, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'image/jpeg',
-        'X-Send-Key': sendKey.trim()
-      },
-      body: blob
-    });
-    let result = {};
-    try { result = await response.json(); } catch (_) {}
-    if (!response.ok) throw new Error(result.error || `ส่งไม่สำเร็จ (${response.status})`);
-    alert('ส่งภาพสรุปเข้า LINE OA เรียบร้อยแล้ว');
-  } catch (error) {
-    alert(`ส่งเข้า LINE OA ไม่สำเร็จ: ${error.message}`);
-  } finally {
-    button.disabled = false;
-    button.textContent = oldText;
-  }
+    const res = await fetch(`${LINE_WORKER_URL}/send`, { method: 'POST', headers: { 'Content-Type': 'image/jpeg', 'X-Send-Key': key }, body: blob });
+    let result = {}; try { result = await res.json(); } catch (_) {}
+    if (!res.ok) throw new Error(result.error || `ส่งไม่สำเร็จ (${res.status})`);
+    toast('ส่งภาพสรุปเข้า LINE OA เรียบร้อยแล้ว', 'ok');
+  } catch (err) {
+    toast(`ส่งเข้า LINE OA ไม่สำเร็จ: ${err.message}`, 'err');
+  } finally { btn.disabled = false; btn.textContent = old; }
 }
+$('#lineBtn').onclick = e => openLineDialog(e.currentTarget);
 
-window.addEventListener('hashchange', syncSummaryRoute);
-syncSummaryRoute();
+/* ---------- Mobile nav, shortcuts, back-to-top ---------- */
+$('#mFilter').onclick = () => {
+  if (!state.items.length) { toast('กรุณาอัปโหลด Excel ก่อน', 'err'); return; }
+  if (location.hash === '#summary') location.hash = '';
+  setTimeout(() => { setFiltersOpen(true); $('#filterToggle').scrollIntoView({ behavior: 'smooth', block: 'start' }); }, 60);
+};
+$('#mSummary').onclick = () => { if (!state.items.length) { toast('กรุณาอัปโหลด Excel ก่อน', 'err'); return; } location.hash = 'summary'; };
+$('#mLine').onclick = e => openLineDialog(e.currentTarget);
+document.addEventListener('keydown', e => {
+  if (e.key === '/' && !/INPUT|SELECT|TEXTAREA/.test(document.activeElement.tagName) && !$('#app').hidden) {
+    e.preventDefault(); setFiltersOpen(true); $('#search').focus();
+  }
+});
+addEventListener('scroll', () => $('#toTop').classList.toggle('show', scrollY > 650), { passive: true });
+$('#toTop').onclick = () => scrollTo({ top: 0, behavior: 'smooth' });
+if (matchMedia('(min-width:721px)').matches) setFiltersOpen(true);
+
+buildColMenu();
+syncRoute();
 </script>
-<style>
-body,button,input,select{font-family:"Anuphan",system-ui,sans-serif}
-@media(max-width:700px){
-body{font-size:14px;line-height:1.5}.wrap{padding:12px 10px 36px}.topbar{padding:18px 16px;border-radius:16px;gap:10px}.topbar h1{font-size:24px;line-height:1.35}.topbar p{font-size:13px;line-height:1.55;margin-top:6px}.refresh-btn{padding:8px 10px;font-size:13px}.upload{margin:16px 0;padding:22px 14px}.upload b{font-size:18px;line-height:1.45}.upload p{font-size:13px}.btn{min-height:46px;font-size:15px}
-.cards{grid-template-columns:repeat(2,minmax(0,1fr));gap:10px;margin:16px 0}.card{min-height:108px;padding:15px 16px;border-radius:13px;font-size:14px}.card b{font-size:30px;margin-top:10px}.summary-card{grid-column:1/-1;min-height:92px}section{padding:12px;margin-top:14px;border-radius:14px;overflow:visible}.filter-bar{grid-template-columns:repeat(2,minmax(0,1fr));gap:12px;padding:14px 12px}.filter-bar>div:nth-child(5),.filter-bar>div:nth-child(7){grid-column:1/-1}.filter-bar label{font-size:13px;margin-bottom:5px}.filter-bar select,.filter-bar input{height:48px;padding:9px 10px;font-size:16px;min-width:0}.plan-heading{align-items:center;flex-wrap:wrap;gap:10px;margin:22px 0 12px}.plan-heading h2{font-size:22px;line-height:1.3}.export-btn{min-height:42px;padding:8px 12px}
-section>table{display:block;width:100%;min-width:0;border-collapse:separate}section>table thead{display:none}section>table tbody{display:grid;gap:12px}section>table tbody tr{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:0 10px;padding:14px;border:1px solid #dce8f2;border-radius:14px;background:#fff!important;box-shadow:0 4px 14px #173a5e0b}section>table tbody tr:hover{background:#fff}section>table td{display:block;min-width:0;padding:7px 4px;border:0;overflow-wrap:anywhere}section>table td::before{display:block;margin-bottom:2px;color:#6d8295;font-size:11px;font-weight:700;line-height:1.3}section>table td:nth-child(1)::before{content:"สถานะ"}section>table td:nth-child(2)::before{content:"Action แนะนำ"}section>table td:nth-child(3)::before{content:"Division"}section>table td:nth-child(4)::before{content:"Department"}section>table td:nth-child(5)::before{content:"Class"}section>table td:nth-child(6)::before{content:"รูปภาพ"}section>table td:nth-child(7)::before{content:"Item No"}section>table td:nth-child(8)::before{content:"Item Description"}section>table td:nth-child(9)::before{content:"Stock"}section>table td:nth-child(10)::before{content:"Received Date (Lot)"}section>table td:nth-child(11)::before{content:"Received Qty (Lot)"}section>table td:nth-child(12)::before{content:"วันหมดอายุ"}section>table td:nth-child(13)::before{content:"เหลือเวลาในการขาย"}section>table td:nth-child(2),section>table td:nth-child(8){grid-column:1/-1}.action-cell{min-width:0;max-width:none;font-size:15px}.badge{font-size:13px;padding:6px 10px}.thumb{width:58px;height:58px}.load-more{min-height:44px;width:100%}
-.summary-page{padding:14px 10px}.summary-heading{align-items:flex-start;gap:10px}.summary-heading h2{font-size:22px}.summary-heading h2:focus{outline:none}.division-summary{padding:14px}.division-summary h3{font-size:20px}.department-summary summary{padding:13px 12px;line-height:1.7}.summary-table-wrap{overflow-x:auto}.summary-table-wrap table{min-width:900px}dialog{padding:14px!important}.summary-note{font-size:13px}
-}
-</style>
-<style id="smart-expiry-ux-2026">
-:root{--sx-navy:#123d61;--sx-blue:#0878b9;--sx-sky:#eaf4fc;--sx-line:#d7e6f2;--sx-muted:#647a8f;--sx-shadow:0 10px 30px rgba(24,61,94,.09)}
-.dashboard-meta.hide{display:none!important}
-html{scroll-behavior:smooth}body{font-family:"Anuphan",system-ui,sans-serif}.wrap{max-width:1760px}.topbar{position:relative;overflow:hidden}.topbar:after{content:"";position:absolute;width:240px;height:240px;border-radius:50%;right:-90px;bottom:-150px;background:rgba(255,255,255,.08);pointer-events:none}.topbar h1{letter-spacing:-.5px}.upload{transition:padding .25s ease,border-color .25s ease,box-shadow .25s ease}.upload.has-data{display:grid;grid-template-columns:minmax(220px,1fr) auto;align-items:center;text-align:left;gap:4px 18px;padding:17px 20px;border-style:solid;border-color:#bdd8ea}.upload.has-data>b{font-size:15px}.upload.has-data>.hint:first-of-type{display:none}.upload.has-data #message{grid-column:1;margin:0;color:#41647f}.upload.has-data .btn{grid-column:2;grid-row:1/3;box-shadow:none}.dashboard-meta{display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin:-8px 0 16px;color:var(--sx-muted);font-size:12px}.dashboard-meta span{display:inline-flex;align-items:center;gap:5px;padding:5px 9px;border:1px solid var(--sx-line);border-radius:999px;background:#fff}.dashboard-meta .line-ready{color:#087f40;border-color:#bee5cd;background:#f1fbf5}.cards{align-items:stretch}.card{min-height:112px;background:#fff}.card .card-help{display:block;margin-top:10px;color:#718396;font-size:11px;font-weight:600}.filter-toggle{display:none;width:100%;align-items:center;justify-content:space-between;border:1px solid #b9d4e8;background:#f4f9fd;color:#194d75;border-radius:11px;padding:11px 13px;font:800 14px "Anuphan",sans-serif;cursor:pointer}.filter-summary{display:flex;gap:7px;flex-wrap:wrap;margin-top:10px}.filter-chip{padding:5px 9px;border-radius:999px;background:#e7f3fb;color:#17577f;font-size:11px;font-weight:700}.filter-chip-clear{border:0;cursor:pointer;background:#ffeceb;color:#a8322b}.loading-shade{display:none;position:fixed;inset:0;z-index:5000;background:rgba(7,34,55,.38);backdrop-filter:blur(2px);align-items:center;justify-content:center;padding:24px}.loading-shade.show{display:flex}.loading-panel{width:min(360px,90vw);padding:25px;border-radius:18px;background:#fff;box-shadow:0 24px 70px rgba(0,0,0,.2);text-align:center;color:var(--sx-navy);font-weight:800}.loading-spinner{width:38px;height:38px;margin:0 auto 13px;border:4px solid #dcecf7;border-top-color:var(--sx-blue);border-radius:50%;animation:sx-spin .8s linear infinite}@keyframes sx-spin{to{transform:rotate(360deg)}}.mobile-actions{display:none}.back-to-top{position:fixed;right:20px;bottom:22px;z-index:80;width:44px;height:44px;border:0;border-radius:50%;background:#0d659c;color:#fff;font-size:20px;box-shadow:0 7px 22px rgba(13,101,156,.3);cursor:pointer;opacity:0;pointer-events:none;transform:translateY(8px);transition:.2s}.back-to-top.show{opacity:1;pointer-events:auto;transform:none}
-@media(max-width:700px){
-body{padding-bottom:74px;background:#f5f8fb}.wrap{padding:10px 9px 24px}.topbar{min-height:142px;padding:18px 16px 16px;border-radius:15px;align-items:flex-start}.topbar h1{max-width:250px;font-size:23px}.topbar p{max-width:315px}.topbar .refresh-btn{font-size:0;width:42px;height:42px;padding:0;border-radius:50%}.topbar .refresh-btn:first-letter{font-size:18px}.upload{margin:13px 0;padding:19px 13px;border-radius:14px}.upload.has-data{display:grid;grid-template-columns:1fr auto;gap:5px 10px;padding:12px 13px}.upload.has-data>b{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.upload.has-data #message{grid-column:1;font-size:11px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.upload.has-data .btn{grid-column:2;grid-row:1/3;min-height:40px;padding:7px 11px;font-size:12px}.dashboard-meta{margin:0 2px 12px}.cards{gap:8px;margin:12px 0}.card{min-height:98px;padding:13px 14px;font-size:13px}.card b{font-size:27px;margin-top:5px}.card .card-help{display:none}.summary-card{min-height:76px}.summary-card b{font-size:18px!important}.filter-toggle{display:flex}.filter-bar{margin-top:9px;transition:.2s}.filter-bar.sx-collapsed{display:none}.filter-summary:empty{display:none}section{padding:10px 9px;margin-top:11px}.plan-heading{margin:16px 0 10px}.plan-heading h2{font-size:19px}.plan-heading .export-btn{font-size:12px;min-height:38px}.action-cell{font-size:13px!important}
-section>table tbody{gap:10px}section>table tbody tr{position:relative;grid-template-columns:62px minmax(0,1fr) auto;gap:2px 10px;padding:12px 11px 34px;border-radius:13px;cursor:pointer}section>table tbody tr::after{content:"ดูรายละเอียด  ▾";position:absolute;left:82px;bottom:9px;color:#2872a3;font-size:11px;font-weight:800}section>table tbody tr.sx-expanded::after{content:"ซ่อนรายละเอียด  ▴"}section>table td{padding:3px 2px}section>table td::before{margin-bottom:1px;font-size:10px}section>table td:nth-child(1){grid-column:1;grid-row:1}section>table td:nth-child(1)::before,section>table td:nth-child(6)::before,section>table td:nth-child(7)::before,section>table td:nth-child(8)::before,section>table td:nth-child(13)::before{display:none}section>table td:nth-child(6){grid-column:1;grid-row:2/5}section>table td:nth-child(7){grid-column:2;grid-row:1;font-weight:800;color:#315873}section>table td:nth-child(7):before{display:inline;content:"Item ";color:#8194a4}section>table td:nth-child(8){grid-column:2/4;grid-row:2;font-weight:700;font-size:14px;line-height:1.42}section>table td:nth-child(9){grid-column:2;grid-row:3}section>table td:nth-child(9):before{display:inline;content:"Stock ";margin-right:3px}section>table td:nth-child(13){grid-column:3;grid-row:1;color:#9b5600;font-size:12px;font-weight:800;text-align:right}section>table td:nth-child(2){grid-column:2/4;grid-row:4;padding-top:6px;border-top:1px dashed #dce7ef}section>table td:nth-child(3),section>table td:nth-child(4),section>table td:nth-child(5),section>table td:nth-child(10),section>table td:nth-child(11),section>table td:nth-child(12){display:none}section>table tr.sx-expanded td:nth-child(3),section>table tr.sx-expanded td:nth-child(4),section>table tr.sx-expanded td:nth-child(5),section>table tr.sx-expanded td:nth-child(10),section>table tr.sx-expanded td:nth-child(11),section>table tr.sx-expanded td:nth-child(12){display:block;grid-column:1/4;padding:7px 4px;border-top:1px solid #edf2f6}section>table tr.sx-expanded td:nth-child(3){margin-top:5px}.thumb{width:56px;height:56px}.badge{padding:5px 8px;font-size:11px}section>table tr.sx-empty{display:block;padding:18px;cursor:default}section>table tr.sx-empty::after{display:none}
-.mobile-actions{display:grid;position:fixed;z-index:100;left:8px;right:8px;bottom:7px;grid-template-columns:repeat(3,1fr);gap:6px;padding:7px;background:rgba(255,255,255,.95);border:1px solid #d9e6ef;border-radius:16px;box-shadow:0 10px 35px rgba(19,58,89,.2);backdrop-filter:blur(12px)}.mobile-actions button{border:0;border-radius:10px;background:#eef6fb;color:#184d73;min-height:48px;font:800 12px "Anuphan",sans-serif}.mobile-actions button:last-child{background:#06c755;color:#fff}.back-to-top{display:none}.summary-heading{padding-top:5px}.division-summary{border-radius:13px}.department-summary summary{font-size:13px}.summary-table-wrap table{min-width:780px}
-}
-</style>
-<script>
-(function improveSmartExpiryUX(){
-  const uploadBox = document.querySelector('.upload');
-  if (!uploadBox || typeof uploadBox.querySelector !== 'function') return;
-  const resultsBox = document.getElementById('results');
-  const filterBar = document.getElementById('divisionFilter');
-  const mainSection = resultsBox && typeof resultsBox.querySelector === 'function' ? resultsBox.querySelector('section') : document.querySelector('section');
-  const uploadButton = uploadBox && uploadBox.querySelector('.btn');
-  let currentFileName = '';
-
-  const title = document.querySelector('.topbar h1');
-  if (title) title.innerHTML = '⏳ Smart Expiry<span class="desktop-title"> Sales Assistant</span>';
-
-  document.querySelectorAll('.card[data-status]').forEach(card => {
-    if (!card.querySelector('.card-help')) card.insertAdjacentHTML('beforeend','<span class="card-help">กดเพื่อกรองรายการ</span>');
-  });
-
-  const meta = document.createElement('div');
-  meta.className = 'dashboard-meta hide';
-  meta.innerHTML = '<span data-file-meta>ยังไม่ได้เลือกไฟล์</span><span data-time-meta>ยังไม่มีข้อมูล</span><span class="line-ready">● LINE OA พร้อมใช้งาน</span>';
-  if (resultsBox) resultsBox.insertAdjacentElement('beforebegin', meta);
-
-  const toggle = document.createElement('button');
-  toggle.type = 'button';
-  toggle.className = 'filter-toggle';
-  toggle.setAttribute('aria-expanded','false');
-  toggle.innerHTML = '<span>⚙ ตัวกรองสินค้า</span><span data-filter-count>ยังไม่กรอง</span>';
-  const chips = document.createElement('div');
-  chips.className = 'filter-summary';
-  if (filterBar && mainSection) {
-    mainSection.insertBefore(toggle, filterBar);
-    filterBar.insertAdjacentElement('afterend', chips);
-    filterBar.classList.add('sx-collapsed');
-  }
-  toggle.onclick = () => {
-    const collapsed = filterBar.classList.toggle('sx-collapsed');
-    toggle.setAttribute('aria-expanded', String(!collapsed));
-    toggle.firstElementChild.textContent = collapsed ? '⚙ ตัวกรองสินค้า' : '✕ ปิดตัวกรอง';
-  };
-
-  function selectedFilterEntries(){
-    return [
-      ['Division', document.getElementById('divisionSelect')],
-      ['Department', document.getElementById('departmentSelect')],
-      ['Class', document.getElementById('classSelect')],
-      ['Item', document.getElementById('itemSearch')],
-      ['สถานะ', document.getElementById('statusSelect')],
-      ['ช่วง', document.getElementById('periodSelect')]
-    ].filter(([,el]) => el && el.value && !(el.id === 'periodSelect' && el.value === 'all'));
-  }
-  function updateFilterChips(){
-    const entries = selectedFilterEntries();
-    const count = toggle.querySelector('[data-filter-count]');
-    if (count) count.textContent = entries.length ? `${entries.length} ตัวกรอง` : 'ยังไม่กรอง';
-    chips.innerHTML = entries.map(([label,el]) => `<span class="filter-chip">${label}: ${escape(el.options ? el.options[el.selectedIndex].text : el.value)}</span>`).join('');
-    if (entries.length) chips.insertAdjacentHTML('beforeend','<button type="button" class="filter-chip filter-chip-clear">ล้างตัวกรอง</button>');
-    const clear = chips.querySelector('.filter-chip-clear');
-    if (clear) clear.onclick = () => {
-      ['divisionSelect','departmentSelect','classSelect','statusSelect','itemSearch'].forEach(id => { const el=document.getElementById(id); if(el) el.value=''; });
-      const period=document.getElementById('periodSelect'); if(period) period.value='all';
-      applyFilters();
-    };
-  }
-  ['divisionSelect','departmentSelect','classSelect','itemSearch','statusSelect','periodSelect','receivedDate'].forEach(id => {
-    const el=document.getElementById(id); if(el) el.addEventListener(id==='itemSearch'?'input':'change', updateFilterChips);
-  });
-
-  function decorateRows(){
-    document.querySelectorAll('#rows tr,#expiredRows tr').forEach(row => {
-      if (row.children.length < 5) { row.classList.add('sx-empty'); return; }
-      row.tabIndex = 0;
-      row.setAttribute('role','button');
-      row.setAttribute('aria-expanded','false');
-      const toggleRow = event => {
-        if (window.innerWidth > 700 || event.target.closest('a,button')) return;
-        row.classList.toggle('sx-expanded');
-        row.setAttribute('aria-expanded', String(row.classList.contains('sx-expanded')));
-      };
-      row.onclick = toggleRow;
-      row.onkeydown = event => { if (event.key === 'Enter' || event.key === ' ') { event.preventDefault(); toggleRow(event); } };
-    });
-  }
-
-  const originalRenderItemsUX = renderItems;
-  renderItems = function(list){ originalRenderItemsUX(list); decorateRows(); updateFilterChips(); };
-  const originalRenderExpiredUX = renderExpiredItems;
-  renderExpiredItems = function(){ originalRenderExpiredUX(); decorateRows(); };
-  const originalPrepareItemsUX = prepareItems;
-  prepareItems = async function(data){
-    await originalPrepareItemsUX(data);
-    uploadBox.classList.add('has-data');
-    if (uploadButton) uploadButton.textContent = 'เปลี่ยนไฟล์';
-    meta.classList.remove('hide');
-    meta.querySelector('[data-file-meta]').textContent = `📄 ${currentFileName || 'Dashboard Excel'} • ${data.length.toLocaleString('th-TH')} รายการ`;
-    meta.querySelector('[data-time-meta]').textContent = `อัปเดตล่าสุด ${new Date().toLocaleTimeString('th-TH',{hour:'2-digit',minute:'2-digit'})}`;
-    filterBar.classList.add('sx-collapsed');
-    toggle.setAttribute('aria-expanded','false');
-    updateFilterChips();
-  };
-  const fileInputUX = document.getElementById('file');
-  if (fileInputUX) fileInputUX.addEventListener('change', event => { currentFileName = event.target.files[0]?.name || ''; });
-
-  const shade = document.createElement('div');
-  shade.className = 'loading-shade';
-  shade.innerHTML = '<div class="loading-panel"><div class="loading-spinner"></div><div>กำลังอ่านและวิเคราะห์ Excel</div><small style="display:block;margin-top:5px;color:#718396;font-weight:500">ไฟล์ขนาดใหญ่อาจใช้เวลาสักครู่</small></div>';
-  document.body.appendChild(shade);
-  const message = document.getElementById('message');
-  if (message) new MutationObserver(() => shade.classList.toggle('show', message.classList.contains('loading'))).observe(message,{attributes:true,childList:true,subtree:true});
-
-  const mobileActions = document.createElement('nav');
-  mobileActions.className = 'mobile-actions';
-  mobileActions.setAttribute('aria-label','เมนูลัด');
-  mobileActions.innerHTML = '<button type="button" data-mobile-filter>⚙ ตัวกรอง</button><button type="button" data-mobile-summary>▦ สรุป</button><button type="button" data-mobile-line>LINE OA</button>';
-  document.body.appendChild(mobileActions);
-  mobileActions.querySelector('[data-mobile-filter]').onclick = () => { if (location.hash === '#summary') location.hash=''; filterBar.classList.remove('sx-collapsed'); toggle.setAttribute('aria-expanded','true'); setTimeout(() => toggle.scrollIntoView({behavior:'smooth',block:'start'}),80); };
-  mobileActions.querySelector('[data-mobile-summary]').onclick = () => { if (!window.allItems?.length) return alert('กรุณาอัปโหลด Excel ก่อนเปิดหน้าสรุป'); location.hash='summary'; };
-  mobileActions.querySelector('[data-mobile-line]').onclick = event => { if (!window.allItems?.length) return alert('กรุณาอัปโหลด Excel ก่อนส่ง LINE'); exportOverviewImage(event.currentTarget); };
-
-  const topButton = document.createElement('button');
-  topButton.type='button'; topButton.className='back-to-top'; topButton.setAttribute('aria-label','กลับด้านบน'); topButton.textContent='↑'; topButton.onclick=()=>scrollTo({top:0,behavior:'smooth'}); document.body.appendChild(topButton);
-  addEventListener('scroll',()=>topButton.classList.toggle('show',scrollY>650),{passive:true});
-})();
-</script>
-</body></html>
+</body>
+</html>
