@@ -72,9 +72,8 @@ a.btn-outline,a.btn{text-decoration:none}
 .file-meta small{color:var(--muted);font-size:12.5px}
 
 /* ---------- Cards ---------- */
-.cards{display:grid;grid-template-columns:repeat(6,minmax(0,1fr));gap:14px;margin:18px 0 8px}
-.count-note{margin:0 2px 18px;font-size:12.5px;color:var(--muted)}
-.card{position:relative;overflow:hidden;display:flex;flex-direction:column;align-items:flex-start;text-align:left;min-height:118px;padding:16px 18px;border-radius:var(--radius);border:1px solid var(--border);background:var(--surface);box-shadow:var(--shadow);cursor:pointer;transition:transform .15s,box-shadow .15s}
+.cards{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:14px;margin:18px 0 8px}
+.count-note{margin:0 2px 18px;font-size:12.5px;color:var(--muted)}.card{position:relative;overflow:hidden;display:flex;flex-direction:column;align-items:flex-start;text-align:left;min-height:118px;padding:16px 18px;border-radius:var(--radius);border:1px solid var(--border);background:var(--surface);box-shadow:var(--shadow);cursor:pointer;transition:transform .15s,box-shadow .15s}
 .card:hover{transform:translateY(-2px)}
 .card:before{content:"";position:absolute;inset:0 auto 0 0;width:5px;background:var(--c)}
 .card .lbl{font-weight:700;font-size:14.5px;color:var(--text)}
@@ -87,7 +86,6 @@ a.btn-outline,a.btn{text-decoration:none}
 .card.c-urg{--c:var(--urg);--cbg:var(--urg-bg)}
 .card.c-high{--c:var(--high);--cbg:var(--high-bg)}
 .card.c-ok{--c:var(--ok);--cbg:var(--ok-bg)}
-.card.c-chk{--c:var(--chk);--cbg:var(--chk-bg)}
 .card.c-sum{--c:var(--sum);--cbg:var(--sum-bg);background:var(--sum-bg);border-color:var(--sum-line)}
 .card.c-sum .num{font-size:21px;margin-top:10px}
 
@@ -383,10 +381,9 @@ dialog::backdrop{background:rgba(5,20,35,.5);backdrop-filter:blur(2px)}
       <button type="button" class="card c-urg" data-status="ต้องเร่งขาย" aria-pressed="false"><span class="lbl">ต้องเร่งขาย</span><span class="num" data-count="ต้องเร่งขาย">0</span><span class="unit">ล็อต • <b data-items="ต้องเร่งขาย">0</b> รหัสสินค้า</span><span class="hint">≤ 7 วัน หรือสต็อกขายไม่ทัน</span></button>
       <button type="button" class="card c-high" data-status="เสี่ยงสูง" aria-pressed="false"><span class="lbl">เสี่ยงสูง</span><span class="num" data-count="เสี่ยงสูง">0</span><span class="unit">ล็อต • <b data-items="เสี่ยงสูง">0</b> รหัสสินค้า</span><span class="hint">8 – 45 วัน</span></button>
       <button type="button" class="card c-ok" data-status="ปกติ" aria-pressed="false"><span class="lbl">ปกติ</span><span class="num" data-count="ปกติ">0</span><span class="unit">ล็อต • <b data-items="ปกติ">0</b> รหัสสินค้า</span><span class="hint">มากกว่า 45 วัน</span></button>
-      <button type="button" class="card c-chk" data-status="ไม่มีวันหมดอายุ / ตรวจข้อมูล" aria-pressed="false"><span class="lbl" title="ไม่มีวันหมดอายุ / ตรวจข้อมูล">ไม่มีวันหมดอายุ</span><span class="num" data-count="ไม่มีวันหมดอายุ / ตรวจข้อมูล">0</span><span class="unit">ล็อต • <b data-items="ไม่มีวันหมดอายุ / ตรวจข้อมูล">0</b> รหัสสินค้า</span><span class="hint">ตรวจข้อมูล: วันหมดอายุว่างหรืออ่านไม่ได้</span></button>
       <button type="button" class="card c-sum" id="summaryCard"><span class="lbl">สรุปภาพรวม</span><span class="num">ดูสรุป →</span><span class="hint">แยกตาม Division / Department</span></button>
     </div>
-    <p class="count-note">ตัวเลขใหญ่ = จำนวนล็อต (1 แถวในไฟล์ = 1 ล็อต) • รหัสสินค้าที่มีหลายล็อตนับครั้งเดียวในสถานะที่ด่วนที่สุด (กติกาเดียวกับหน้าสรุป) • นับตามตัวกรองที่เลือก</p>
+    <p class="count-note">ตัวเลขใหญ่ = จำนวนล็อต • สินค้าที่มีหลายล็อตนับเป็น 1 รหัสสินค้า</p>
 
     <section class="panel" id="mainPanel">
       <button type="button" class="filter-toggle" id="filterToggle" aria-expanded="false" aria-controls="filters">
@@ -494,8 +491,8 @@ const STATUS_META = {
   [ST.EXP]:  { cls: 's-exp',  order: 0, action: 'ห้ามจำหน่าย\n- คัดออกรอทำลาย' },
   [ST.URG]:  { cls: 's-urg',  order: 1, action: 'ลดราคา\n- ตรวจสอบคุณภาพ' },
   [ST.HIGH]: { cls: 's-high', order: 2, action: 'ขอโปรโมชัน\n- ทำจัดชิมผลักดันการขาย' },
-  [ST.CHK]:  { cls: 's-chk',  order: 3, action: 'ตรวจสอบวันหมดอายุ\n- แก้ข้อมูลล็อตในระบบ' },
-  [ST.OK]:   { cls: 's-ok',   order: 4, action: 'ติดตาม Movement สินค้า' }
+  [ST.OK]:   { cls: 's-ok',   order: 3, action: 'ติดตาม Movement สินค้า' },
+  [ST.CHK]:  { cls: 's-chk',  order: 4, action: 'ตรวจสอบวันหมดอายุ\n- แก้ข้อมูลล็อตในระบบ' }
 };
 
 const ALIASES = {
@@ -915,8 +912,7 @@ function renderAll() {
   $$('.card[data-status]').forEach(c => {
     const on = c.dataset.status === ST.EXP ? state.expOpen : c.dataset.status === st;
     c.classList.toggle('active', on); c.setAttribute('aria-pressed', String(on));
-  });
-  $('#resultInfo').textContent = `${state.list.length.toLocaleString('th-TH')} ล็อต (1 แถว = 1 ล็อต • ไม่รวมสินค้าหมดอายุ)`;
+  });  $('#resultInfo').textContent = `${state.list.length.toLocaleString('th-TH')} ล็อต (1 แถว = 1 ล็อต • ไม่รวมสินค้าหมดอายุ)`;
   renderTable('main', state.list, state.shown, 'ไม่พบข้อมูลตามตัวกรอง');
   $('#expiredPanel').hidden = !state.expOpen;
   if (state.expOpen) {
@@ -940,7 +936,7 @@ $$('.card[data-status]').forEach(card => card.onclick = () => {
   $('#fStatus').value = $('#fStatus').value === s ? '' : s;
   applyFilters();
 });
-$('#expiredClose').onclick = () => { state.expOpen = false; renderAll(); };
+$('#expiredClose').onclick =() => { state.expOpen = false; renderAll(); };
 $('#summaryCard').onclick = () => { location.hash = 'summary'; };
 
 /* ---------- Export Excel ---------- */
