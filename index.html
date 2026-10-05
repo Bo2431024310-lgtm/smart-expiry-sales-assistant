@@ -7,7 +7,7 @@
 <title>Smart Expiry Sales Assistant</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Anuphan:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Prompt:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
 <style>
 :root{
@@ -27,7 +27,7 @@
 }
 *{box-sizing:border-box}
 html{scroll-behavior:smooth}
-body{margin:0;background:var(--bg);color:var(--text);font:15px/1.55 "Anuphan",system-ui,sans-serif;-webkit-font-smoothing:antialiased}
+body{margin:0;background:var(--bg);color:var(--text);font:15px/1.55 "Prompt",system-ui,sans-serif;-webkit-font-smoothing:antialiased}
 button,input,select{font:inherit;color:inherit}
 h1,h2,h3,p{margin:0}
 [hidden]{display:none!important}
@@ -1275,7 +1275,7 @@ function createOverviewCanvas(allGroups, divisionFilter = '', stampDate = new Da
   const gs = allGroups.filter(g => !divisionFilter || g.name === divisionFilter)
     .map(g => ({ ...g, departments: g.departments.filter(d => d.total) })).filter(g => g.departments.length);
   if (!gs.length) throw new Error('ไม่พบสินค้าที่ต้องเร่งขายหรือเสี่ยงสูง');
-  const W = 1080, M = 40, CW = W - M * 2, F = '"Anuphan", Tahoma, sans-serif';
+  const W = 1080, M = 40, CW = W - M * 2, F = '"Prompt", Tahoma, sans-serif';
   const ROW = 84, DEPT_HEAD = 92, DIV_HEAD = 74, HEADER = 330, LEGEND = 74, FOOT = 90, MAX_H = 32000;
   const deptH = d => DEPT_HEAD + d.items.length * ROW + (d.total > d.items.length ? 44 : 14);
   let H = HEADER + LEGEND + 20;
@@ -1378,7 +1378,7 @@ async function openLineDialog(btn) {
   if (!state.items.length) { toast('กรุณาอัปโหลด Excel ก่อน', 'err'); return; }
   const old = btn?.textContent; if (btn) { btn.disabled = true; btn.textContent = 'กำลังสร้างภาพ…'; }
   try {
-    if (document.fonts) await Promise.race([document.fonts.load('800 46px "Anuphan"'), new Promise(r => setTimeout(r, 3000))]);
+    if (document.fonts) await Promise.race([document.fonts.load('800 46px "Prompt"'), new Promise(r => setTimeout(r, 3000))]);
     const groups = buildDivisionSummary(state.items);
     const usable = groups.filter(g => g.departments.some(d => d.total));
     let scope = location.hash === '#summary' && usable.some(g => g.name === sumDivision) ? sumDivision : '';
