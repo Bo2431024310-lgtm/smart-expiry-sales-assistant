@@ -18,6 +18,7 @@
   --urg:#ad5300;--urg-bg:#fff1dd;--urg-line:#ffd9a6;
   --high:#866500;--high-bg:#fff7c9;--high-line:#f1df8a;
   --ok:#1d7a3e;--ok-bg:#e6f5eb;--ok-line:#bfe3cb;
+  --chk:#5a4fa8;--chk-bg:#efedfb;--chk-line:#d3cdf3;
   --sum:#2f5fb3;--sum-bg:#edf3ff;--sum-line:#c3d5f6;
   --shadow:0 1px 2px rgba(20,50,80,.05),0 6px 20px rgba(20,50,80,.06);
   --shadow-lg:0 20px 60px rgba(10,30,50,.22);
@@ -71,18 +72,22 @@ a.btn-outline,a.btn{text-decoration:none}
 .file-meta small{color:var(--muted);font-size:12.5px}
 
 /* ---------- Cards ---------- */
-.cards{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:14px;margin:18px 0}
+.cards{display:grid;grid-template-columns:repeat(6,minmax(0,1fr));gap:14px;margin:18px 0 8px}
+.count-note{margin:0 2px 18px;font-size:12.5px;color:var(--muted)}
 .card{position:relative;overflow:hidden;display:flex;flex-direction:column;align-items:flex-start;text-align:left;min-height:118px;padding:16px 18px;border-radius:var(--radius);border:1px solid var(--border);background:var(--surface);box-shadow:var(--shadow);cursor:pointer;transition:transform .15s,box-shadow .15s}
 .card:hover{transform:translateY(-2px)}
 .card:before{content:"";position:absolute;inset:0 auto 0 0;width:5px;background:var(--c)}
 .card .lbl{font-weight:700;font-size:14.5px;color:var(--text)}
 .card .num{font-size:32px;font-weight:800;line-height:1.1;margin-top:6px;color:var(--c);font-variant-numeric:tabular-nums}
+.card .unit{font-size:12.5px;font-weight:600;color:var(--muted)}
+.card .unit b{color:var(--text);font-variant-numeric:tabular-nums}
 .card .hint{margin-top:auto;padding-top:6px;font-size:12px;color:var(--faint)}
 .card.active{background:var(--cbg);border-color:var(--c);box-shadow:0 0 0 2px var(--c) inset,var(--shadow)}
 .card.c-exp{--c:var(--exp);--cbg:var(--exp-bg)}
 .card.c-urg{--c:var(--urg);--cbg:var(--urg-bg)}
 .card.c-high{--c:var(--high);--cbg:var(--high-bg)}
 .card.c-ok{--c:var(--ok);--cbg:var(--ok-bg)}
+.card.c-chk{--c:var(--chk);--cbg:var(--chk-bg)}
 .card.c-sum{--c:var(--sum);--cbg:var(--sum-bg);background:var(--sum-bg);border-color:var(--sum-line)}
 .card.c-sum .num{font-size:21px;margin-top:10px}
 
@@ -141,7 +146,7 @@ td.num,th.num{text-align:right;font-variant-numeric:tabular-nums}
 .thumb-ph{width:46px;height:46px;border-radius:9px;background:var(--surface-2);border:1px dashed var(--border)}
 .badge{display:inline-flex;align-items:center;gap:6px;padding:4px 10px;border-radius:999px;font-size:12.5px;font-weight:800;white-space:nowrap;background:var(--bbg);color:var(--bc)}
 .badge:before{content:"";width:7px;height:7px;border-radius:50%;background:currentColor}
-.s-exp{--bc:var(--exp);--bbg:var(--exp-bg)}.s-urg{--bc:var(--urg);--bbg:var(--urg-bg)}.s-high{--bc:var(--high);--bbg:var(--high-bg)}.s-ok{--bc:var(--ok);--bbg:var(--ok-bg)}
+.s-exp{--bc:var(--exp);--bbg:var(--exp-bg)}.s-urg{--bc:var(--urg);--bbg:var(--urg-bg)}.s-high{--bc:var(--high);--bbg:var(--high-bg)}.s-ok{--bc:var(--ok);--bbg:var(--ok-bg)}.s-chk{--bc:var(--chk);--bbg:var(--chk-bg)}
 .days{min-width:96px}
 .days b{display:block;font-weight:800;color:var(--bc);font-size:14px;white-space:nowrap}
 .days i{display:block;height:5px;margin-top:5px;border-radius:9px;background:var(--surface-3);overflow:hidden}
@@ -355,12 +360,14 @@ dialog::backdrop{background:rgba(5,20,35,.5);backdrop-filter:blur(2px)}
 
   <div id="app" hidden>
     <div class="cards">
-      <button type="button" class="card c-exp" data-status="หมดอายุ" aria-pressed="false"><span class="lbl">หมดอายุ</span><span class="num" data-count="หมดอายุ">0</span><span class="hint">กดเพื่อดูรายการแยกคัดออก</span></button>
-      <button type="button" class="card c-urg" data-status="ต้องเร่งขาย" aria-pressed="false"><span class="lbl">ต้องเร่งขาย</span><span class="num" data-count="ต้องเร่งขาย">0</span><span class="hint">≤ 7 วัน หรือสต็อกขายไม่ทัน</span></button>
-      <button type="button" class="card c-high" data-status="เสี่ยงสูง" aria-pressed="false"><span class="lbl">เสี่ยงสูง</span><span class="num" data-count="เสี่ยงสูง">0</span><span class="hint">8 – 45 วัน</span></button>
-      <button type="button" class="card c-ok" data-status="ปกติ" aria-pressed="false"><span class="lbl">ปกติ</span><span class="num" data-count="ปกติ">0</span><span class="hint">มากกว่า 45 วัน</span></button>
+      <button type="button" class="card c-exp" data-status="หมดอายุ" aria-pressed="false"><span class="lbl">หมดอายุ</span><span class="num" data-count="หมดอายุ">0</span><span class="unit">ล็อต • <b data-items="หมดอายุ">0</b> รหัสสินค้า</span><span class="hint">กดเพื่อดูรายการแยกคัดออก</span></button>
+      <button type="button" class="card c-urg" data-status="ต้องเร่งขาย" aria-pressed="false"><span class="lbl">ต้องเร่งขาย</span><span class="num" data-count="ต้องเร่งขาย">0</span><span class="unit">ล็อต • <b data-items="ต้องเร่งขาย">0</b> รหัสสินค้า</span><span class="hint">≤ 7 วัน หรือสต็อกขายไม่ทัน</span></button>
+      <button type="button" class="card c-high" data-status="เสี่ยงสูง" aria-pressed="false"><span class="lbl">เสี่ยงสูง</span><span class="num" data-count="เสี่ยงสูง">0</span><span class="unit">ล็อต • <b data-items="เสี่ยงสูง">0</b> รหัสสินค้า</span><span class="hint">8 – 45 วัน</span></button>
+      <button type="button" class="card c-ok" data-status="ปกติ" aria-pressed="false"><span class="lbl">ปกติ</span><span class="num" data-count="ปกติ">0</span><span class="unit">ล็อต • <b data-items="ปกติ">0</b> รหัสสินค้า</span><span class="hint">มากกว่า 45 วัน</span></button>
+      <button type="button" class="card c-chk" data-status="ไม่มีวันหมดอายุ / ตรวจข้อมูล" aria-pressed="false"><span class="lbl" title="ไม่มีวันหมดอายุ / ตรวจข้อมูล">ไม่มีวันหมดอายุ</span><span class="num" data-count="ไม่มีวันหมดอายุ / ตรวจข้อมูล">0</span><span class="unit">ล็อต • <b data-items="ไม่มีวันหมดอายุ / ตรวจข้อมูล">0</b> รหัสสินค้า</span><span class="hint">ตรวจข้อมูล: วันหมดอายุว่างหรืออ่านไม่ได้</span></button>
       <button type="button" class="card c-sum" id="summaryCard"><span class="lbl">สรุปภาพรวม</span><span class="num">ดูสรุป →</span><span class="hint">แยกตาม Division / Department</span></button>
     </div>
+    <p class="count-note">ตัวเลขใหญ่ = จำนวนล็อต (1 แถวในไฟล์ = 1 ล็อต) • รหัสสินค้าที่มีหลายล็อตนับครั้งเดียวในสถานะที่ด่วนที่สุด (กติกาเดียวกับหน้าสรุป) • นับตามตัวกรองที่เลือก</p>
 
     <section class="panel" id="mainPanel">
       <button type="button" class="filter-toggle" id="filterToggle" aria-expanded="false" aria-controls="filters">
@@ -379,7 +386,7 @@ dialog::backdrop{background:rgba(5,20,35,.5);backdrop-filter:blur(2px)}
         <div class="field"><label for="fDepartment">Department</label><select id="fDepartment"></select></div>
         <div class="field"><label for="fClass">Class</label><select id="fClass"></select></div>
         <div class="field"><label for="fStatus">สถานะ</label>
-          <select id="fStatus"><option value="">ทุกสถานะ (ไม่รวมหมดอายุ)</option><option>ต้องเร่งขาย</option><option>เสี่ยงสูง</option><option>ปกติ</option></select>
+          <select id="fStatus"><option value="">ทุกสถานะ (ไม่รวมหมดอายุ)</option><option>ต้องเร่งขาย</option><option>เสี่ยงสูง</option><option>ปกติ</option><option>ไม่มีวันหมดอายุ / ตรวจข้อมูล</option></select>
         </div>
         <div class="field"><label for="fPeriod">ช่วงวันรับเข้า</label>
           <select id="fPeriod"><option value="all">ทั้งหมด</option><option value="daily">รายวัน</option><option value="mtd">MTD</option><option value="ytd">YTD</option><option value="ly">LY (วันเดียวกันปีก่อน)</option></select>
@@ -430,7 +437,7 @@ dialog::backdrop{background:rgba(5,20,35,.5);backdrop-filter:blur(2px)}
     <div class="legend">
       <div class="k"><i class="dot urg"></i><b>ต้องเร่งขาย</b><span>ลดราคา • ตรวจสอบคุณภาพ</span></div>
       <div class="k"><i class="dot high"></i><b>เสี่ยงสูง</b><span>ขอโปรโมชัน • จัดชิมผลักดันการขาย</span></div>
-      <div class="k"><span>Top 10 ต่อ Department • เรียงจากเร่งด่วนที่สุด • สินค้าหลายล็อตแสดงล็อตที่ต้องจัดการก่อน • ไม่รวมสินค้าหมดอายุ</span></div>
+      <div class="k"><span>Top 10 ต่อ Department • เรียงจากเร่งด่วนที่สุด • สินค้าหลายล็อตแสดงล็อตที่ต้องจัดการก่อน • ไม่รวมสินค้าหมดอายุและไม่มีวันหมดอายุ</span></div>
     </div>
     <div class="pills" id="sumPills"></div>
     <div id="summaryContent"></div>
@@ -462,12 +469,14 @@ const LINE_WORKER_URL = 'https://smart-expiry-line.boss2431024310.workers.dev';
 const LINE_ROOM = 'Expired product x Next Gen';
 const PAGE_SIZE = 250;
 
-const ST = { EXP: 'หมดอายุ', URG: 'ต้องเร่งขาย', HIGH: 'เสี่ยงสูง', OK: 'ปกติ' };
+const ST = { EXP: 'หมดอายุ', URG: 'ต้องเร่งขาย', HIGH: 'เสี่ยงสูง', CHK: 'ไม่มีวันหมดอายุ / ตรวจข้อมูล', OK: 'ปกติ' };
+// order = ความด่วน ใช้ทั้งเรียงตารางและเลือกสถานะตัวแทนของรหัสสินค้าที่มีหลายล็อต
 const STATUS_META = {
   [ST.EXP]:  { cls: 's-exp',  order: 0, action: 'ห้ามจำหน่าย\n- คัดออกรอทำลาย' },
   [ST.URG]:  { cls: 's-urg',  order: 1, action: 'ลดราคา\n- ตรวจสอบคุณภาพ' },
   [ST.HIGH]: { cls: 's-high', order: 2, action: 'ขอโปรโมชัน\n- ทำจัดชิมผลักดันการขาย' },
-  [ST.OK]:   { cls: 's-ok',   order: 3, action: 'ติดตาม Movement สินค้า' }
+  [ST.CHK]:  { cls: 's-chk',  order: 3, action: 'ตรวจสอบวันหมดอายุ\n- แก้ข้อมูลล็อตในระบบ' },
+  [ST.OK]:   { cls: 's-ok',   order: 4, action: 'ติดตาม Movement สินค้า' }
 };
 
 const ALIASES = {
@@ -509,13 +518,32 @@ const fmtNum = n => (n === '' || n == null || isNaN(n)) ? '-' : Number(n).toLoca
 const pad = n => String(n).padStart(2, '0');
 const fmtDate = d => d ? `${pad(d.getDate())}-${pad(d.getMonth() + 1)}-${d.getFullYear()}` : '-';
 const isoDate = d => d ? `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}` : '';
-const daysText = d => d === null ? '-' : d < 0 ? `หมดอายุ ${Math.abs(d)} วัน` : `${d} วัน`;
+const daysText = d => d === null ? 'ไม่มีวันหมดอายุ' :d < 0 ? `หมดอายุ ${Math.abs(d)} วัน` : `${d} วัน`;
 const nextFrame = () => new Promise(r => requestAnimationFrame(() => setTimeout(r, 0)));
 const store = {
   get(k, f = null) { try { const v = localStorage.getItem(k); return v === null ? f : JSON.parse(v); } catch (_) { return f; } },
   set(k, v) { try { localStorage.setItem(k, JSON.stringify(v)); } catch (_) {} }
 };
 const collator = new Intl.Collator('th', { numeric: true, sensitivity: 'base' });
+
+const itemKey = r => isBlank(r.itemno) ? `name:${r.name}` : `item:${r.itemno}`;
+// นับ 2 แบบจากแถวชุดเดียวกัน: lots = จำนวนแถว (1 แถว = 1 ล็อต), items = รหัสสินค้าไม่ซ้ำ
+// รหัสสินค้าที่มีหลายล็อตนับครั้งเดียว ในสถานะที่ด่วนที่สุดของล็อตที่ยังไม่หมดอายุ (กติกาเดียวกับหน้าสรุป)
+// ส่วนหมดอายุนับรหัสสินค้าที่มีล็อตหมดอายุอย่างน้อย 1 ล็อต
+function countByStatus(rows) {
+  const lots = {}, items = {}, best = new Map(), expired = new Set();
+  Object.values(ST).forEach(s => { lots[s] = 0; items[s] = 0; });
+  for (const r of rows) {
+    lots[r.status]++;
+    const k = itemKey(r);
+    if (r.status === ST.EXP) { expired.add(k); continue; }
+    const cur = best.get(k);
+    if (!cur || STATUS_META[r.status].order < STATUS_META[cur].order) best.set(k, r.status);
+  }
+  items[ST.EXP] = expired.size;
+  best.forEach(s => { items[s]++; });
+  return { lots, items };
+}
 
 function findCol(headers, key) { return headers.find(h => ALIASES[key].includes(norm(h))); }
 
@@ -627,7 +655,7 @@ async function prepareItems(data) {
     const stock = Number(row[col.stock]) || 0;
     const sales = col.sales ? Number(row[col.sales]) || 0 : 0;
     const cover = sales > 0 ? stock / sales : Infinity;
-    const status = days === null ? ST.OK
+    const status = days === null ? ST.CHK
       : days < 0 ? ST.EXP
       : (days <= 7 || (cover !== Infinity && cover > days)) ? ST.URG
       : days <= 45 ? ST.HIGH : ST.OK;
@@ -861,19 +889,19 @@ function renderTable(prefix, rows, shown, emptyText) {
 
 function renderAll() {
   // นับการ์ด จากรายการที่ผ่านตัวกรอง (ไม่รวมตัวกรองสถานะ)
-  const counts = { [ST.EXP]: 0, [ST.URG]: 0, [ST.HIGH]: 0, [ST.OK]: 0 };
-  state.matching.forEach(r => counts[r.status]++);
-  $$('[data-count]').forEach(el => { el.textContent = counts[el.dataset.count].toLocaleString('th-TH'); });
+  const { lots, items } = countByStatus(state.matching);
+  $$('[data-count]').forEach(el => { el.textContent = lots[el.dataset.count].toLocaleString('th-TH'); });
+  $$('[data-items]').forEach(el => { el.textContent = items[el.dataset.items].toLocaleString('th-TH'); });
   const st = $('#fStatus').value;
   $$('.card[data-status]').forEach(c => {
     const on = c.dataset.status === ST.EXP ? state.expOpen : c.dataset.status === st;
     c.classList.toggle('active', on); c.setAttribute('aria-pressed', String(on));
   });
-  $('#resultInfo').textContent = `${state.list.length.toLocaleString('th-TH')} รายการ (ไม่รวมสินค้าหมดอายุ)`;
+  $('#resultInfo').textContent = `${state.list.length.toLocaleString('th-TH')} ล็อต (1 แถว = 1 ล็อต • ไม่รวมสินค้าหมดอายุ)`;
   renderTable('main', state.list, state.shown, 'ไม่พบข้อมูลตามตัวกรอง');
   $('#expiredPanel').hidden = !state.expOpen;
   if (state.expOpen) {
-    $('#expiredInfo').textContent = `${state.expired.length.toLocaleString('th-TH')} รายการ ตามตัวกรองสินค้าและช่วงข้อมูล`;
+    $('#expiredInfo').textContent = `${state.expired.length.toLocaleString('th-TH')} ล็อต • ${items[ST.EXP].toLocaleString('th-TH')} รหัสสินค้า ตามตัวกรองสินค้าและช่วงข้อมูล`;
     renderTable('expired', state.expired, state.expShown, 'ไม่พบสินค้าหมดอายุตามตัวกรอง');
   }
   renderChips();
@@ -929,18 +957,19 @@ function buildDivisionSummary(items) {
     if (division === 'ไม่ระบุ' || division === '-' || isBlank(division)) continue;
     if (!divisions.has(division)) divisions.set(division, new Map());
     const deps = divisions.get(division);
-    if (!deps.has(department)) deps.set(department, new Map());
+    if (!deps.has(department)) deps.set(department, { products: new Map(), urgentLots: 0, highLots: 0 });
     if (r.status !== ST.URG && r.status !== ST.HIGH) continue;
-    const products = deps.get(department);
-    const key = isBlank(r.itemno) ? `name:${r.name}` : `item:${r.itemno}`;
-    const cur = products.get(key);
-    if (!cur || cmp(r, cur) < 0) products.set(key, r);
+    const dep = deps.get(department);
+    r.status === ST.URG ? dep.urgentLots++ : dep.highLots++;
+    const key = itemKey(r);
+    const cur = dep.products.get(key);
+    if (!cur || cmp(r, cur) < 0) dep.products.set(key, r);
   }
   return [...divisions].sort(([a], [b]) => collator.compare(a, b)).map(([name, deps]) => {
-    const departments = [...deps].map(([dname, products]) => {
+    const departments = [...deps].map(([dname, { products, urgentLots, highLots }]) => {
       const ranked = [...products.values()].sort(cmp);
       return { name: dname, total: ranked.length, urgent: ranked.filter(r => r.status === ST.URG).length,
-        high: ranked.filter(r => r.status === ST.HIGH).length, items: ranked.slice(0, TOP_N) };
+        high: ranked.filter(r => r.status === ST.HIGH).length, urgentLots, highLots, items: ranked.slice(0, TOP_N) };
     }).sort((a, b) => b.urgent - a.urgent || b.total - a.total || collator.compare(a.name, b.name));
     return { name, departments, urgent: departments.reduce((s, d) => s + d.urgent, 0), high: departments.reduce((s, d) => s + d.high, 0) };
   });
@@ -954,14 +983,17 @@ function renderSummary() {
   sumGroups = buildDivisionSummary(state.items);
   if (sumDivision && !sumGroups.some(g => g.name === sumDivision)) sumDivision = '';
   const deps = sumGroups.flatMap(g => g.departments);
-  const urg = deps.reduce((s, d) => s + d.urgent, 0), high = deps.reduce((s, d) => s + d.high, 0);
+  const sum = k => deps.reduce((s, d) => s + d[k], 0);
+  const urg = sum('urgent'), high = sum('high');
   const in7 = deps.reduce((s, d) => s + d.items.filter(r => r.days <= 7).length, 0);
+  // แถวที่ไม่มี Division ไม่อยู่ในหน้าสรุป แจ้งไว้เพื่อให้เทียบกับการ์ดหน้าหลักได้
+  const noDiv = state.items.filter(r => (r.status === ST.URG || r.status === ST.HIGH) && (isBlank(r.division) || r.division.trim() === '-')).length;
   $('#sumStamp').textContent = state.loadedAt
-    ? `ข้อมูล ณ ${state.loadedAt.toLocaleString('th-TH', { dateStyle: 'medium', timeStyle: 'short' })} • ${sumGroups.length} Division • ${deps.length} Department`
+    ? `ข้อมูล ณ ${state.loadedAt.toLocaleString('th-TH', { dateStyle: 'medium', timeStyle: 'short' })} • ${sumGroups.length} Division • ${deps.length} Department • นับทีละรหัสสินค้า จากข้อมูลทั้งไฟล์ (ไม่ใช้ตัวกรองหน้าหลัก)${noDiv ? ` • ไม่รวม ${fmtTH(noDiv)} ล็อตที่ไม่ระบุ Division` : ''}`
     : '';
   $('#sumKpis').innerHTML = sumGroups.length ? `
-    <div class="kpi urg"><span>ต้องเร่งขาย</span><b>${fmtTH(urg)}</b><small>รหัสสินค้า</small></div>
-    <div class="kpi high"><span>เสี่ยงสูง</span><b>${fmtTH(high)}</b><small>รหัสสินค้า</small></div>
+    <div class="kpi urg"><span>ต้องเร่งขาย</span><b>${fmtTH(urg)}</b><small>รหัสสินค้า • ${fmtTH(sum('urgentLots'))} ล็อต</small></div>
+    <div class="kpi high"><span>เสี่ยงสูง</span><b>${fmtTH(high)}</b><small>รหัสสินค้า • ${fmtTH(sum('highLots'))} ล็อต</small></div>
     <div class="kpi"><span>หมดอายุภายใน 7 วัน</span><b>${fmtTH(in7)}</b><small>จากรายการ Top 10</small></div>
     <div class="kpi"><span>Department ที่ต้องจัดการ</span><b>${deps.filter(d => d.total).length} / ${deps.length}</b><small>มีสินค้าเร่งขายหรือเสี่ยงสูง</small></div>` : '';
   renderSumPills();
@@ -1072,11 +1104,14 @@ function createOverviewCanvas(allGroups, divisionFilter = '', stampDate = new Da
   const stamp = stampDate.toLocaleString('th-TH', { timeZone: 'Asia/Bangkok', day: '2-digit', month: 'short', year: 'numeric', hour: '2-digit', minute: '2-digit' });
   const deps = gs.flatMap(g => g.departments);
   txt(`ข้อมูล ณ ${stamp} น. • ${gs.length} Division • ${deps.length} Department • Top ${TOP_N} ต่อ Department`, M, 168, '#d3e8f7', '500 23px');
-  const stats = [['ต้องเร่งขาย', deps.reduce((s, d) => s + d.urgent, 0), '#fff1dd', '#a14a00'],
-                 ['เสี่ยงสูง', deps.reduce((s, d) => s + d.high, 0), '#fff7c9', '#7a5c00'],
-                 ['Department', deps.length, '#e8f2fc', '#164e7c']];
+  const stats = [['ต้องเร่งขาย', deps.reduce((s, d) => s + d.urgent, 0), '#fff1dd', '#a14a00', 'รหัสสินค้า'],
+                 ['เสี่ยงสูง', deps.reduce((s, d) => s + d.high, 0), '#fff7c9', '#7a5c00', 'รหัสสินค้า'],
+                 ['Department', deps.length, '#e8f2fc', '#164e7c', '']];
   const sw = (CW - 32) / 3;
-  stats.forEach(([l, v, bg, fg], i) => { const sx = M + i * (sw + 16); rect(bg, sx, 200, sw, 100, 16); txt(l, sx + 22, 236, fg, '700 23px'); txt(fmtTH(v), sx + 22, 284, fg, '800 40px'); });
+  stats.forEach(([l, v, bg, fg, unit], i) => {
+    const sx = M + i * (sw + 16); rect(bg, sx, 200, sw, 100, 16); txt(l, sx + 22, 236, fg, '700 23px'); txt(fmtTH(v), sx + 22, 284, fg, '800 40px');
+    if (unit) { x.font = `800 40px ${F}`; txt(unit, sx + 32 + x.measureText(fmtTH(v)).width, 282, fg, '600 20px'); }
+  });
 
   let y = HEADER + 16;
   rect('#ffffff', M, y, CW, LEGEND - 14, 14);
@@ -1124,7 +1159,7 @@ function createOverviewCanvas(allGroups, divisionFilter = '', stampDate = new Da
     }
   }
   rect('#e5edf5', 0, c.height - FOOT, W, FOOT);
-  txt(truncated ? 'ภาพยาวเกินกำหนด แสดงไม่ครบ — กรุณาเลือกส่งทีละ Division' : 'Smart Expiry Sales Assistant • ไม่รวมสินค้าหมดอายุ (ดูในการ์ด "หมดอายุ" บนเว็บ)',
+  txt(truncated ? 'ภาพยาวเกินกำหนด แสดงไม่ครบ — กรุณาเลือกส่งทีละ Division' : 'Smart Expiry • นับทีละรหัสสินค้า • ไม่รวมสินค้าหมดอายุและไม่มีวันหมดอายุ (ดูบนเว็บ)',
     M, c.height - 38, truncated ? '#b3261e' : '#4f6780', '600 20px');
   return c;
 }
