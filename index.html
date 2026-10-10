@@ -101,6 +101,24 @@ body.dragging .drop-overlay{display:grid}
 /* ---------- Cards ---------- */
 .cards{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:14px;margin:4px 0 8px}
 .count-note{margin:0 2px 16px;font-size:12.5px;color:var(--muted)}
+/* แถบข้อมูลล่าสุด / เทียบกับครั้งก่อน */
+.data-bar{display:flex;align-items:center;gap:12px;margin:0 0 14px;padding:10px 12px 10px 14px;border-radius:14px;background:var(--brand-soft);border:1px solid var(--sum-line);color:var(--brand-strong)}
+.data-bar .db-icon{flex:none;display:grid;place-items:center;width:34px;height:34px;border-radius:10px;background:var(--surface);color:var(--brand)}
+.data-bar .db-icon svg{width:18px;height:18px}
+.data-bar .db-text{flex:1;min-width:0}
+.data-bar b{display:block;font-size:14px}
+.data-bar small{display:block;font-size:12.5px;color:var(--muted);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.data-bar .btn-outline{min-height:34px;padding:5px 12px;font-size:13px}
+.data-bar .btn-ghost{color:var(--muted)}
+.card .delta{align-self:flex-start;margin-top:6px;padding:1px 8px;border-radius:99px;font-size:11.5px;font-weight:700;white-space:nowrap}
+.card .delta:empty{display:none}
+.delta.bad{background:var(--exp-bg);color:var(--exp)}
+.delta.good{background:var(--ok-bg);color:var(--ok)}
+.delta.same{background:var(--surface-3);color:var(--muted)}
+.new-tag{display:inline-block;margin-left:6px;padding:0 7px;border-radius:99px;background:var(--exp-bg);color:var(--exp);font-size:11px;font-weight:800;vertical-align:1px;white-space:nowrap}
+.new-only{display:inline-flex;align-items:center;gap:7px;min-height:38px;padding:6px 12px;border:1px solid var(--exp-line);border-radius:10px;background:var(--surface);color:var(--exp);font-size:13.5px;font-weight:700;cursor:pointer;white-space:nowrap}
+.new-only input{width:16px;height:16px;accent-color:var(--exp)}
+.new-only:has(input:checked){background:var(--exp-bg)}
 .card{position:relative;display:flex;flex-direction:column;align-items:stretch;text-align:left;min-height:150px;padding:16px 18px;border-radius:16px;border:1px solid var(--border);background:var(--surface);box-shadow:var(--shadow);cursor:pointer;transition:transform .15s,box-shadow .15s,border-color .15s,background .15s}
 .card:hover{transform:translateY(-2px);border-color:var(--cl)}
 .card-top{display:flex;align-items:center;gap:9px}
@@ -354,6 +372,9 @@ dialog::backdrop{background:rgba(5,20,35,.5);backdrop-filter:blur(2px)}
   .brand h1{font-size:16px}
   .file-chip{display:none}
   .search-box kbd{display:none}
+  .data-bar{padding:9px 6px 9px 12px;margin-bottom:10px}
+  .data-bar .db-icon,.data-bar .btn-outline{display:none}
+  .data-bar small{white-space:normal}
   .icon-btn{width:36px;height:36px}
   .welcome-main{padding:20px 16px}
   .welcome h2{font-size:22px}
@@ -464,7 +485,7 @@ tbody tr{transition:background .12s}
         <b>ลากไฟล์มาวางที่ไหนก็ได้ในหน้านี้</b>
         <span>หรือ</span>
         <button type="button" class="btn" id="pickBtn">เลือกไฟล์ Excel</button>
-        <small>รองรับ .xlsx .xls .csv • ไฟล์อยู่ในเครื่องคุณ ไม่ถูกอัปโหลดขึ้นเซิร์ฟเวอร์</small>
+        <small>รองรับ .xlsx .xls .csv • ไฟล์อยู่ในเครื่องคุณ ไม่ถูกอัปโหลดขึ้นเซิร์ฟเวอร์ • เว็บจะจำไฟล์ล่าสุดไว้ในเบราว์เซอร์นี้</small>
       </div>
       <div class="sample-row">
         <button type="button" class="btn-outline" id="demoBtn">▶ ลองใช้ข้อมูลตัวอย่าง</button>
@@ -488,25 +509,31 @@ tbody tr{transition:background .12s}
   </section>
 
   <div id="app" hidden>
+    <div class="data-bar" id="dataBar" hidden>
+      <span class="db-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 12a9 9 0 1 0 3-6.7L3 8"/><path d="M3 3v5h5"/><path d="M12 7v5l3 2"/></svg></span>
+      <div class="db-text"><b id="dbTitle"></b><small id="dbSub"></small></div>
+      <button type="button" class="btn-outline" id="dbNew">อัปโหลดไฟล์ใหม่</button>
+      <button type="button" class="btn-ghost" id="dbClose" aria-label="ปิดแถบนี้">✕</button>
+    </div>
     <div class="cards">
       <button type="button" class="card c-exp" data-status="หมดอายุ" aria-pressed="false" title="เลยวันหมดอายุแล้ว">
         <span class="card-top"><span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M7.9 2h8.2L22 7.9v8.2L16.1 22H7.9L2 16.1V7.9z"/><path d="m15 9-6 6M9 9l6 6"/></svg></span><span class="lbl">หมดอายุ</span><span class="pct" data-pct="หมดอายุ">0%</span></span>
-        <span class="num" data-count="หมดอายุ">0</span><span class="unit">ล็อต • <b data-items="หมดอายุ">0</b> รหัสสินค้า</span>
+        <span class="num" data-count="หมดอายุ">0</span><span class="unit">ล็อต • <b data-items="หมดอายุ">0</b> รหัสสินค้า</span><span class="delta" data-delta="หมดอายุ"></span>
         <span class="meter"><i data-bar="หมดอายุ"></i></span><span class="todo">ห้ามจำหน่าย • คัดออกรอทำลาย</span>
       </button>
       <button type="button" class="card c-urg" data-status="ต้องเร่งขาย" aria-pressed="false" title="เหลือ ≤ 7 วัน หรือสต็อกขายไม่ทัน">
         <span class="card-top"><span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22c4 0 7-2.8 7-7 0-3-1.7-5.5-3.6-7.3-.3 1.9-1.4 3.3-2.9 3.8C12.8 8 11.4 5 9 2.5 9 6.6 5 9.6 5 15c0 4.2 3 7 7 7z"/></svg></span><span class="lbl">ต้องเร่งขาย</span><span class="pct" data-pct="ต้องเร่งขาย">0%</span></span>
-        <span class="num" data-count="ต้องเร่งขาย">0</span><span class="unit">ล็อต • <b data-items="ต้องเร่งขาย">0</b> รหัสสินค้า</span>
+        <span class="num" data-count="ต้องเร่งขาย">0</span><span class="unit">ล็อต • <b data-items="ต้องเร่งขาย">0</b> รหัสสินค้า</span><span class="delta" data-delta="ต้องเร่งขาย"></span>
         <span class="meter"><i data-bar="ต้องเร่งขาย"></i></span><span class="todo">ลดราคา • ตรวจสอบคุณภาพ</span>
       </button>
       <button type="button" class="card c-high" data-status="เสี่ยงสูง" aria-pressed="false" title="เหลือ 8 – 45 วัน">
         <span class="card-top"><span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10.3 3.9 1.8 18a2 2 0 0 0 1.7 3h17a2 2 0 0 0 1.7-3L13.7 3.9a2 2 0 0 0-3.4 0z"/><path d="M12 9v4M12 17h.01"/></svg></span><span class="lbl">เสี่ยงสูง</span><span class="pct" data-pct="เสี่ยงสูง">0%</span></span>
-        <span class="num" data-count="เสี่ยงสูง">0</span><span class="unit">ล็อต • <b data-items="เสี่ยงสูง">0</b> รหัสสินค้า</span>
+        <span class="num" data-count="เสี่ยงสูง">0</span><span class="unit">ล็อต • <b data-items="เสี่ยงสูง">0</b> รหัสสินค้า</span><span class="delta" data-delta="เสี่ยงสูง"></span>
         <span class="meter"><i data-bar="เสี่ยงสูง"></i></span><span class="todo">ขอโปรโมชัน • จัดชิมผลักดันการขาย</span>
       </button>
       <button type="button" class="card c-ok" data-status="ปกติ" aria-pressed="false" title="เหลือมากกว่า 45 วัน">
         <span class="card-top"><span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="m8 12 3 3 5-6"/></svg></span><span class="lbl">ปกติ</span><span class="pct" data-pct="ปกติ">0%</span></span>
-        <span class="num" data-count="ปกติ">0</span><span class="unit">ล็อต • <b data-items="ปกติ">0</b> รหัสสินค้า</span>
+        <span class="num" data-count="ปกติ">0</span><span class="unit">ล็อต • <b data-items="ปกติ">0</b> รหัสสินค้า</span><span class="delta" data-delta="ปกติ"></span>
         <span class="meter"><i data-bar="ปกติ"></i></span><span class="todo">ติดตาม Movement สินค้า</span>
       </button>
       <button type="button" class="card c-sum" id="summaryCard">
@@ -545,6 +572,7 @@ tbody tr{transition:background .12s}
       <div class="panel-head" style="margin-top:16px">
         <div><h2>🎯 Daily AI Action Plan</h2><div class="sub" id="resultInfo"></div></div>
         <div class="head-actions">
+          <label class="new-only" id="newOnlyWrap" hidden><input type="checkbox" id="newOnly"><span>เฉพาะรายการใหม่ (<span id="newCount">0</span>)</span></label>
           <details class="colmenu" id="colMenu">
             <summary class="btn-outline">▥ คอลัมน์</summary>
             <div class="menu" id="colList"></div>
@@ -658,7 +686,8 @@ const pad = n => String(n).padStart(2, '0');
 const fmtDate = d => d ? `${pad(d.getDate())}-${pad(d.getMonth() + 1)}-${d.getFullYear()}` : '-';
 const isoDate = d => d ? `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}` : '';
 const daysText = d => d === null ? 'ไม่มีวันหมดอายุ' : d < 0 ? `หมดอายุ ${Math.abs(d)} วัน` : `${d} วัน`;
-const nextFrame = () => new Promise(r => requestAnimationFrame(() => setTimeout(r, 0)));
+// ให้หน้าจอได้วาดก่อนทำงานหนักต่อ; แท็บที่อยู่เบื้องหลังจะไม่เรียก requestAnimationFrame จึงมี timer สำรอง
+const nextFrame = () => new Promise(r => { let done = false; const go = () => { if (!done) { done = true; setTimeout(r, 0); } }; requestAnimationFrame(go); setTimeout(go, 60); });
 const store = {
   get(k, f = null) { try { const v = localStorage.getItem(k); return v === null ? f : JSON.parse(v); } catch (_) { return f; } },
   set(k, v) { try { localStorage.setItem(k, JSON.stringify(v)); } catch (_) {} }
@@ -705,7 +734,8 @@ const state = {
   sort: store.get('sx-sort', { key: 'days', dir: 1 }),
   hidden: new Set(store.get('sx-hidden', [])),
   shown: PAGE_SIZE, expShown: PAGE_SIZE, expOpen: false,
-  fileName: '', loadedAt: null, hasThumbs: false
+  fileName: '', loadedAt: null, hasThumbs: false,
+  prev: null, restored: false, barClosed: false
 };
 
 /* ---------- Toast / confirm ---------- */
@@ -782,11 +812,76 @@ function sampleWorkbook() {
 const needXlsx = () => { if (typeof XLSX !== 'undefined') return true; toast('โหลดตัวอ่าน Excel ไม่สำเร็จ กรุณาตรวจสอบอินเทอร์เน็ตแล้วรีเฟรช', 'err'); return false; };
 $('#demoBtn').onclick = () => {
   if (!needXlsx()) return;
-  loadFile(new File([XLSX.write(sampleWorkbook(), { type: 'array', bookType: 'xlsx' })], 'ข้อมูลตัวอย่าง.xlsx'));
+  // ข้อมูลตัวอย่างไม่บันทึก เพื่อไม่ทับไฟล์จริงที่จำไว้
+  loadFile(new File([XLSX.write(sampleWorkbook(), { type: 'array', bookType: 'xlsx' })], 'ข้อมูลตัวอย่าง.xlsx'), { persist: false });
 };
+
+/* ---------- จำไฟล์ล่าสุด + เทียบกับครั้งก่อน ----------
+   เก็บใน IndexedDB ของเบราว์เซอร์นี้เท่านั้น (ไม่ส่งออกนอกเครื่อง)
+   - current:  แถวดิบของไฟล์ล่าสุด (เปิดใหม่จะคำนวณวันคงเหลือตามวันนี้)
+   - previous: สรุปย่อของไฟล์ก่อนหน้า (สถานะ ณ วันที่โหลด) ใช้คิดตัวเลข ▲▼ และป้าย "ใหม่" */
+const FLAGGED = new Set([ST.EXP, ST.URG, ST.HIGH]);
+const idb = {
+  open() {
+    return new Promise((res, rej) => {
+      const r = indexedDB.open('smart-expiry', 1);
+      r.onupgradeneeded = () => r.result.createObjectStore('kv');
+      r.onsuccess = () => res(r.result); r.onerror = () => rej(r.error);
+    });
+  },
+  async run(mode, fn) {
+    const db = await this.open();
+    return new Promise((res, rej) => {
+      const tx = db.transaction('kv', mode), req = fn(tx.objectStore('kv'));
+      tx.oncomplete = () => { db.close(); res(req?.result); };
+      tx.onerror = tx.onabort = () => { db.close(); rej(tx.error); };
+    });
+  },
+  get(k) { return this.run('readonly', s => s.get(k)); },
+  set(k, v) { return this.run('readwrite', s => s.put(v, k)); },
+  clear() { return this.run('readwrite', s => s.clear()); }
+};
+const liteRows = items => items.map(r => ({ k: itemKey(r), status: r.status, division: r.division, department: r.department, class: r.class, search: r.search, receivedIso: r.receivedIso }));
+const fileSig = (name, rows) => `${name}|${rows.length}|${JSON.stringify(rows[0])}|${JSON.stringify(rows.at(-1))}`;
+
+function setPrev(p) {
+  state.prev = p?.rows?.length ? { ...p, flagged: new Set(p.rows.filter(r => FLAGGED.has(r.status)).map(r => r.k)) } : null;
+}
+// ไฟล์ใหม่ → ไฟล์ปัจจุบันเดิมเลื่อนเป็น "ครั้งก่อน" (ถ้าโหลดไฟล์เดิมซ้ำจะไม่เลื่อน)
+async function persistLoad(rows) {
+  try {
+    const sig = fileSig(state.fileName, rows), cur = await idb.get('current');
+    if (cur && cur.sig !== sig) await idb.set('previous', { fileName: cur.fileName, loadedAt: cur.loadedAt, rows: cur.lite });
+    await idb.set('current', { fileName: state.fileName, loadedAt: state.loadedAt.getTime(), sig, rows, lite: liteRows(state.items) });
+    setPrev(await idb.get('previous'));
+  } catch (err) { console.warn('บันทึกข้อมูลในเครื่องไม่สำเร็จ', err); setPrev(null); }
+}
+async function restoreLast() {
+  uploadBox.hidden = true; // กันหน้าแรกกระพริบก่อนเปิดข้อมูลเดิม
+  try {
+    if (typeof indexedDB === 'undefined' || typeof XLSX === 'undefined') return;
+    const cur = await idb.get('current');
+    if (!cur?.rows?.length) return;
+    setLoading(true, `กำลังเปิดข้อมูลล่าสุด ${cur.fileName}`, 30);
+    await nextFrame();
+    await prepareItems(cur.rows);
+    state.fileName = cur.fileName; state.loadedAt = new Date(cur.loadedAt); state.restored = true;
+    setPrev(await idb.get('previous'));
+    showLoaded(cur.rows.length, true);
+  } catch (err) { console.warn('เปิดข้อมูลล่าสุดไม่สำเร็จ', err); }
+  finally { setLoading(false); syncRoute(); }
+}
+// ป้าย "ใหม่" = สินค้าที่ตอนนี้หมดอายุ/ต้องเร่งขาย/เสี่ยงสูง แต่ครั้งก่อนยังไม่อยู่ในกลุ่มเหล่านี้
+function markNew() {
+  const f = state.prev?.flagged;
+  state.items.forEach(r => { r.isNew = !!f && FLAGGED.has(r.status) && !f.has(itemKey(r)); });
+}
+const fmtWhen = ms => new Date(ms).toLocaleString('th-TH', { day: 'numeric', month: 'short', hour: '2-digit', minute: '2-digit' }) + ' น.';
+$('#dbNew').onclick = () => fileInput.click();
+$('#dbClose').onclick = () => { state.barClosed = true; $('#dataBar').hidden = true; };
 $('#sampleBtn').onclick = () => { if (needXlsx()) XLSX.writeFile(sampleWorkbook(), 'smart-expiry-ตัวอย่าง.xlsx'); };
 
-async function loadFile(file) {
+async function loadFile(file, { persist = true } = {}) {
   if (!/\.(xlsx|xls|csv)$/i.test(file.name)) { toast('รองรับเฉพาะไฟล์ .xlsx .xls หรือ .csv', 'err'); return; }
   if (typeof XLSX === 'undefined') { toast('โหลดตัวอ่าน Excel ไม่สำเร็จ กรุณาตรวจสอบอินเทอร์เน็ตแล้วรีเฟรช', 'err'); return; }
   setLoading(true, `กำลังเปิด ${file.name}`, 5);
@@ -811,6 +906,8 @@ async function loadFile(file) {
     await prepareItems(rows);
     state.fileName = file.name;
     state.loadedAt = new Date();
+    state.restored = false;
+    if (persist) await persistLoad(rows); else setPrev(null);
     showLoaded(rows.length);
   } catch (err) {
     console.error(err);
@@ -865,11 +962,14 @@ async function prepareItems(data) {
   state.hasThumbs = items.some(r => r.thumbnail);
 }
 
-function showLoaded(count) {
+function showLoaded(count, quiet = false) {
   $('#fileName').textContent = state.fileName;
   $('#fileName').title = state.fileName;
-  $('#fileInfo').textContent = `${count.toLocaleString('th-TH')} ล็อต • อัปเดต ${state.loadedAt.toLocaleTimeString('th-TH', { hour: '2-digit', minute: '2-digit' })} น.`;
+  $('#fileInfo').textContent = `${count.toLocaleString('th-TH')} ล็อต • อัปเดต ${fmtWhen(state.loadedAt.getTime())}`;
+  markNew();
+  state.barClosed = false;
   // reset filters
+  $('#newOnly').checked = false;
   $('#search').value = ''; $('#fStatus').value = ''; $('#fPeriod').value = 'all';
   $('#fDivision').value = ''; $('#fDepartment').value = ''; $('#fClass').value = '';
   const latest = state.items.map(r => r.receivedIso).filter(Boolean).sort().at(-1) || '';
@@ -877,12 +977,14 @@ function showLoaded(count) {
   state.expOpen = false;
   buildOptions();
   applyFilters();
-  toast(`วิเคราะห์แล้ว ${count.toLocaleString('th-TH')} ล็อต`, 'ok');
+  if (!quiet) toast(`วิเคราะห์แล้ว ${count.toLocaleString('th-TH')} ล็อต`, 'ok');
 }
 
 $('#resetBtn').onclick = async () => {
-  if (!(await confirmBox('ล้างข้อมูลที่อัปโหลดและเริ่มใหม่ใช่หรือไม่?', 'ล้างข้อมูล'))) return;
+  if (!(await confirmBox('ล้างข้อมูลที่อัปโหลด รวมถึงไฟล์ที่จำไว้ในเบราว์เซอร์นี้ และเริ่มใหม่ใช่หรือไม่?', 'ล้างข้อมูล'))) return;
+  try { await idb.clear(); } catch (_) {}
   state.items = []; state.matching = []; state.list = []; state.expired = [];
+  setPrev(null); state.restored = false;
   if (location.hash === '#summary') location.hash = ''; else syncRoute();
   scrollTo({ top: 0 });
 };
@@ -914,16 +1016,23 @@ function periodRange() {
   return null;
 }
 
-function applyFilters() {
+// ตัวกรองสินค้า/ช่วงข้อมูล (ไม่รวมสถานะ) ใช้ทั้งกับไฟล์ปัจจุบันและไฟล์ครั้งก่อน เพื่อให้ตัวเลข ▲▼ เทียบขอบเขตเดียวกัน
+function filterFn() {
   const q = $('#search').value.trim().toLowerCase();
-  const div = $('#fDivision').value, dep = $('#fDepartment').value, cls = $('#fClass').value, st = $('#fStatus').value;
+  const div = $('#fDivision').value, dep = $('#fDepartment').value, cls = $('#fClass').value;
   const range = periodRange();
-  state.matching = state.items.filter(r =>
+  return r =>
     (!div || r.division === div) && (!dep || r.department === dep) && (!cls || r.class === cls) &&
     (!q || r.search.includes(q)) &&
-    (!range || (r.receivedIso && r.receivedIso >= range[0] && r.receivedIso <= range[1])));
-  state.expired = sortRows(state.matching.filter(r => r.status === ST.EXP));
-  state.list = sortRows(state.matching.filter(r => r.status !== ST.EXP && (!st || r.status === st)));
+    (!range || (r.receivedIso && r.receivedIso >= range[0] && r.receivedIso <= range[1]));
+}
+
+function applyFilters() {
+  const st = $('#fStatus').value, newOnly = $('#newOnly').checked;
+  state.matching = state.items.filter(filterFn());
+  const shown = r => !newOnly || r.isNew;
+  state.expired = sortRows(state.matching.filter(r => r.status === ST.EXP && shown(r)));
+  state.list = sortRows(state.matching.filter(r => r.status !== ST.EXP && (!st || r.status === st) && shown(r)));
   state.shown = PAGE_SIZE; state.expShown = PAGE_SIZE;
   renderAll();
 }
@@ -932,7 +1041,7 @@ let searchTimer;
 $('#search').addEventListener('input', () => { clearTimeout(searchTimer); searchTimer = setTimeout(applyFilters, 160); });
 $('#fDivision').addEventListener('change', () => { $('#fDepartment').value = ''; $('#fClass').value = ''; buildOptions(); applyFilters(); });
 $('#fDepartment').addEventListener('change', () => { $('#fClass').value = ''; buildOptions(); applyFilters(); });
-['#fClass', '#fStatus', '#fPeriod'].forEach(s => $(s).addEventListener('change', applyFilters));
+['#fClass', '#fStatus', '#fPeriod', '#newOnly'].forEach(s => $(s).addEventListener('change', applyFilters));
 // เลือกวันอ้างอิงได้ตลอด ถ้าช่วงยังเป็น "ทั้งหมด" จะสลับเป็น "รายวัน" ให้อัตโนมัติ
 $('#fDate').addEventListener('change', () => { if ($('#fPeriod').value === 'all' && $('#fDate').value) $('#fPeriod').value = 'daily'; applyFilters(); });
 
@@ -951,6 +1060,7 @@ function renderChips() {
     ['Department', $('#fDepartment').value, () => { $('#fDepartment').value = ''; $('#fClass').value = ''; buildOptions(); }],
     ['Class', $('#fClass').value, () => { $('#fClass').value = ''; }],
     ['สถานะ', $('#fStatus').value, () => { $('#fStatus').value = ''; }],
+    ['แสดง', $('#newOnly').checked ? 'เฉพาะรายการใหม่' : '', () => { $('#newOnly').checked = false; }],
     ['ช่วง', per.value !== 'all' ? `${per.options[per.selectedIndex].text} • ${$('#fDate').value || '-'}` : '', () => { per.value = 'all'; }]
   ].filter(e => e[1]);
   const box = $('#chips');
@@ -1011,7 +1121,7 @@ function cellHTML(c, r) {
   const meta = STATUS_META[r.status];
   switch (c.key) {
     case 'status': return `<span class="badge ${meta.cls}" title="Action: ${esc(r.action.replace(/\n- /g, ' • '))}">${r.status}</span>`;
-    case 'name': { const cat = catLine(r); return `${esc(r.name || '-')}${cat ? `<div class="cat">${cat}</div>` : ''}`; }
+    case 'name': { const cat = catLine(r); return `${esc(r.name || '-')}${r.isNew ? '<span class="new-tag" title="เพิ่งเข้ากลุ่มเสี่ยงเมื่อเทียบกับไฟล์ครั้งก่อน">ใหม่</span>' : ''}${cat ? `<div class="cat">${cat}</div>` : ''}`; }
     case 'action': return esc(r.action);
     case 'thumb': return r.thumbnail ? `<img class="thumb" src="${esc(r.thumbnail)}" alt="" loading="lazy" onerror="this.replaceWith(Object.assign(document.createElement('div'),{className:'thumb-ph'}))">` : '<div class="thumb-ph"></div>';
     case 'stock': return fmtNum(r.stock);
@@ -1078,7 +1188,34 @@ function renderAll() {
   $$('.card[data-status]').forEach(c => {
     const on = c.dataset.status === ST.EXP ? state.expOpen : c.dataset.status === st;
     c.classList.toggle('active', on); c.setAttribute('aria-pressed', String(on));
-  });  $('#resultInfo').textContent = `${state.list.length.toLocaleString('th-TH')} ล็อต (1 แถว = 1 ล็อต • ไม่รวมสินค้าหมดอายุ)`;
+  });
+  // ▲▼ เทียบกับไฟล์ครั้งก่อน ด้วยตัวกรองเดียวกัน (สถานะในไฟล์ก่อน = ณ วันที่โหลดไฟล์นั้น)
+  const prev = state.prev;
+  const prevLots = {};
+  if (prev) prev.rows.filter(filterFn()).forEach(r => { prevLots[r.status] = (prevLots[r.status] || 0) + 1; });
+  $$('[data-delta]').forEach(el => {
+    const s = el.dataset.delta;
+    if (!prev) { el.textContent = ''; return; }
+    const d = lots[s] - (prevLots[s] || 0);
+    // ปกติเพิ่ม/ลดไม่ถือว่าดีหรือแย่ ส่วนกลุ่มเสี่ยงเพิ่ม = แย่
+    el.className = `delta ${d === 0 ? 'same' : s === ST.OK ? 'same' : d > 0 ? 'bad' : 'good'}`;
+    el.textContent = d === 0 ? 'เท่าครั้งก่อน' : `${d > 0 ? '▲' : '▼'} ${Math.abs(d).toLocaleString('th-TH')} จากครั้งก่อน`;
+    el.title = `ไฟล์ครั้งก่อน: ${prev.fileName} (${fmtWhen(prev.loadedAt)}) มี ${(prevLots[s] || 0).toLocaleString('th-TH')} ล็อต`;
+  });
+  // แถบบอกว่ากำลังใช้ไฟล์ไหน / เทียบกับไฟล์ไหน
+  const bar = $('#dataBar');
+  bar.hidden = state.barClosed || (!state.restored && !prev);
+  if (!bar.hidden) {
+    $('#dbTitle').textContent = state.restored ? 'เปิดข้อมูลล่าสุดให้แล้ว' : 'เทียบกับไฟล์ครั้งก่อนให้แล้ว';
+    $('#dbSub').textContent = [
+      state.restored ? `${state.fileName} • โหลดเมื่อ ${fmtWhen(state.loadedAt.getTime())}` : '',
+      prev ? `เทียบกับ ${prev.fileName} (${fmtWhen(prev.loadedAt)})` : ''
+    ].filter(Boolean).join(' • ');
+  }
+  const newCount = state.matching.filter(r => r.isNew).length;
+  $('#newOnlyWrap').hidden = !prev || (!newCount && !$('#newOnly').checked);
+  $('#newCount').textContent = newCount.toLocaleString('th-TH');
+  $('#resultInfo').textContent = `${state.list.length.toLocaleString('th-TH')} ล็อต (1 แถว = 1 ล็อต • ไม่รวมสินค้าหมดอายุ)`;
   renderTable('main', state.list, state.shown, 'ไม่พบข้อมูลตามตัวกรอง');
   $('#expiredPanel').hidden = !state.expOpen;
   if (state.expOpen) {
@@ -1499,6 +1636,7 @@ setHdr();
 
 buildColMenu();
 syncRoute();
+restoreLast();
 </script>
 </body>
 </html>
