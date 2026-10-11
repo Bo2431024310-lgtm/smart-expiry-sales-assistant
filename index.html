@@ -337,21 +337,25 @@ td.num,th.num{text-align:right;font-variant-numeric:tabular-nums}
 @keyframes spin{to{transform:rotate(360deg)}}
 dialog{width:min(680px,94vw);max-height:92vh;padding:0;border:1px solid var(--border);border-radius:18px;background:var(--surface);color:var(--text);box-shadow:var(--shadow-lg)}
 dialog::backdrop{background:rgba(5,20,35,.5);backdrop-filter:blur(2px)}
-.dlg-head{position:sticky;top:0;z-index:1;display:flex;align-items:center;justify-content:space-between;gap:10px;padding:16px 20px;background:var(--surface);border-bottom:1px solid var(--border)}
+.dlg-head{flex:none;position:sticky;top:0;z-index:1;display:flex;align-items:center;justify-content:space-between;gap:10px;padding:16px 20px;background:var(--surface);border-bottom:1px solid var(--border)}
 .dlg-head b{font-size:17px}
 .dlg-body{padding:18px 20px}
 /* หน้าต่างส่ง LINE: 2 ขั้นตอน + ปุ่มหลักปุ่มเดียว */
 .line-dlg{width:min(560px,94vw)}
-.ld-body{padding:16px 20px 6px}
+/* ส่วนปุ่มส่งติดด้านล่างเสมอ เนื้อหาด้านบนเลื่อนได้ */
+.line-dlg[open]{display:flex;flex-direction:column;overflow:hidden}
+.ld-body{padding:16px 20px 6px;overflow:auto;min-height:0;flex:1}
 .ld-step{display:flex;align-items:center;gap:8px;margin:2px 0 10px;font-size:15px}
 .ld-step b{font-weight:800}
 .ld-n{flex:none;display:grid;place-items:center;width:24px;height:24px;border-radius:50%;background:var(--brand);color:#fff;font-size:13px;font-weight:800}
 .ld-size{margin-left:auto;font-size:12.5px;color:var(--muted)}
 .ld-scope{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:18px}
 .ld-scope .pill:disabled{opacity:.6;cursor:wait}
-.ld-frame{max-height:min(42vh,400px);overflow:auto;border:1px solid var(--border);border-radius:12px;background:var(--surface-2)}
-.ld-frame img{display:block;width:100%;height:auto}
-.ld-foot{display:flex;flex-direction:column;gap:10px;padding:14px 20px 18px;margin-top:14px;border-top:1px solid var(--border)}
+.ld-frame{margin-bottom:12px;max-height:min(46vh,460px);overflow:auto;border:1px solid var(--border);border-radius:12px;background:var(--surface-2);padding:8px}
+.ld-frame img{display:block;width:100%;height:auto;border-radius:8px;box-shadow:0 1px 4px rgba(20,50,80,.12)}
+.ld-frame img+.ld-page{margin-top:14px}
+.ld-page{margin:2px 2px 6px;font-size:12.5px;font-weight:800;color:var(--muted)}
+.ld-foot{flex:none;display:flex;flex-direction:column;gap:10px;padding:14px 20px 18px;border-top:1px solid var(--border);background:var(--surface)}
 .ld-key{display:flex;flex-wrap:wrap;align-items:center;gap:8px 12px}
 .ld-key input[type=password]{flex:1;min-width:180px;height:46px;padding:8px 12px;border:1px solid var(--border-strong);border-radius:10px;background:var(--surface);font-size:15px}
 .ld-key .remember{display:flex;align-items:center;gap:6px;font-size:13px;color:var(--muted);white-space:nowrap}
@@ -701,7 +705,8 @@ const $$ = s => [...document.querySelectorAll(s)];
 const norm = s => String(s ?? '').trim().toLowerCase().replace(/\s+/g, ' ');
 const isBlank = v => !String(v ?? '').replace(/[\s​-‍﻿]/g, '');
 const esc = s => String(s ?? '').replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
-const fmtNum = n => (n === '' || n == null || isNaN(n)) ? '-' : Number(n).toLocaleString('th-TH');
+// ทศนิยมไม่เกิน 2 ตำแหน่ง (สินค้าชั่งน้ำหนัก เช่น 71.665 กก. → 71.67) จะได้ไม่สับสนกับหลักพัน
+const fmtNum = n => (n === '' || n == null || isNaN(n)) ? '-' : Number(n).toLocaleString('th-TH', { maximumFractionDigits: 2 });
 const pad = n => String(n).padStart(2, '0');
 const fmtDate = d => d ? `${pad(d.getDate())}-${pad(d.getMonth() + 1)}-${d.getFullYear()}` : '-';
 const isoDate = d => d ? `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}` : '';
@@ -1398,7 +1403,7 @@ function deptCardHTML(divName, d) {
       <span class="rank">${i + 1}</span>
       <div class="daybox ${u ? 'urg' : 'high'}" title="${esc(r.status)}"><b>${big}</b><small>${small}</small></div>
       <div class="info"><div class="name" title="${esc(r.name)}">${esc(r.name || '-')}${newTag(r)}</div><div class="meta">Item ${esc(r.itemno || '-')} • หมด ${esc(r.expiry)}</div></div>
-      <div class="stk"><b>${fmtTH(r.stock)}</b><small>Stock</small></div>
+      <div class="stk"><b>${fmtNum(r.stock)}</b><small>Stock</small></div>
     </li>`;
   }).join('');
   const go = `data-go-div="${esc(divName)}" data-go-dep="${esc(d.name)}"`;
@@ -1470,78 +1475,108 @@ function ellipsize(ctx, text, max) {
   return out + '…';
 }
 
-function createOverviewCanvas(allGroups, divisionFilter = '', stampDate = new Date()) {
+// ภาพ LINE: Top 5 ต่อแผนก และแบ่งเป็นหลายภาพ (ภาพละไม่เกิน PAGE_MAX px) ตัดระหว่างการ์ด ไม่ตัดกลางการ์ด
+// เพื่อให้เปิดดูใน LINE บนมือถือแล้วอ่านได้ ไม่ถูกย่อจนตัวเล็ก
+const LINE_TOP = 5, PAGE_MAX = 2400;
+function createOverviewPages(allGroups, divisionFilter = '', stampDate = new Date()) {
   const gs = allGroups.filter(g => !divisionFilter || g.name === divisionFilter)
     .map(g => ({ ...g, departments: g.departments.filter(needsAction) })).filter(g => g.departments.length);
   if (!gs.length) throw new Error('ไม่พบสินค้าที่ต้องจัดการ');
   const W = 1080, M = 40, CW = W - M * 2, F = '"Prompt", Tahoma, sans-serif';
-  const ROW = 84, DEPT_HEAD = 104, DIV_HEAD = 74, HEADER = 372, LEGEND = 112, FOOT = 90, MAX_H = 32000;
-  const deptH = d => DEPT_HEAD + (d.items.length ? d.items.length * ROW + (d.total > d.items.length ? 44 : 14) : 52);
-  let H = HEADER + LEGEND + 20;
-  gs.forEach(g => { H += DIV_HEAD + 12; g.departments.forEach(d => { H += deptH(d) + 18; }); });
-  H += FOOT;
-  const c = document.createElement('canvas');
-  c.width = W; c.height = Math.min(H, MAX_H);
-  const x = c.getContext('2d');
-  if (!x) throw new Error('เบราว์เซอร์นี้ไม่รองรับการสร้างภาพ');
-  const rect = (col, a, b, w, h, r = 0) => { x.fillStyle = col; x.beginPath(); r && x.roundRect ? x.roundRect(a, b, w, h, r) : x.rect(a, b, w, h); x.fill(); };
-  const txt = (v, a, b, col, st, al = 'left') => { x.fillStyle = col; x.font = `${st} ${F}`; x.textAlign = al; x.fillText(String(v), a, b); x.textAlign = 'left'; };
-  // ป้ายมน (pill) กึ่งกลางแนวตั้งที่ cy; คืนค่าความกว้าง
-  const pill = (label, px, cy, bg, fg, st = '700 19px', align = 'left') => {
-    x.font = `${st} ${F}`; const w = x.measureText(label).width + 24, left = align === 'right' ? px - w : px;
-    rect(bg, left, cy - 16, w, 32, 16); txt(label, left + 12, cy + 7, fg, st); return w;
-  };
-  const C = { exp: ['#fdecea', '#b3261e'], urg: ['#fff1dd', '#a14a00'], high: ['#fff7c9', '#7a5c00'], blue: ['#e8f2fc', '#164e7c'], nw: ['#f1ebfd', '#6a3fc4'] };
+  const ROW = 68, DEPT_HEAD = 92, DIV_HEAD = 74, HEADER = 372, LEGEND = 112, MINI = 118, FOOT = 72, GAP = 18;
+  const rowsOf = d => d.all.slice(0, LINE_TOP);
+  const deptH = d => DEPT_HEAD + (d.total ? rowsOf(d).length * ROW + (d.total > LINE_TOP ? 44 : 14) : 52);
 
-  rect('#f2f6fa', 0, 0, W, c.height);
-  const gr = x.createLinearGradient(0, 0, W, HEADER); gr.addColorStop(0, '#0b4470'); gr.addColorStop(1, '#1670ab');
-  x.fillStyle = gr; x.fillRect(0, 0, W, HEADER);
-  txt('SMART EXPIRY • สรุปประจำวัน', M, 64, '#a9d6f5', '700 24px');
-  x.font = `800 46px ${F}`;
-  txt(ellipsize(x, divisionFilter ? `สินค้าที่ต้องรีบจัดการ — ${divisionFilter}` : 'สินค้าที่ต้องรีบจัดการ', CW), M, 122, '#ffffff', '800 46px');
-  const stamp = stampDate.toLocaleString('th-TH', { timeZone: 'Asia/Bangkok', day: '2-digit', month: 'short', year: 'numeric', hour: '2-digit', minute: '2-digit' });
-  const deps = gs.flatMap(g => g.departments), sum = k => deps.reduce((s, d) => s + d[k], 0);
-  x.font = `500 22px ${F}`;
-  txt(ellipsize(x, `ข้อมูล ณ ${stamp} น. • ${gs.length} Division • ${deps.length} Department${state.prev ? ` • เทียบกับ ${state.prev.fileName}` : ''}`, CW), M, 166, '#d3e8f7', '500 22px');
-  // กล่องตัวเลข 4 ช่อง + ▲▼ เทียบกับไฟล์ครั้งก่อน (ถ้ามี)
-  const stats = [
-    ['หมดอายุ — คัดออก', sum('expired'), C.exp, summaryDelta('exp', divisionFilter)],
-    ['ต้องเร่งขาย', sum('urgent'), C.urg, summaryDelta('urg', divisionFilter)],
-    ['เสี่ยงสูง', sum('high'), C.high, summaryDelta('high', divisionFilter)],
-    state.prev ? ['รายการใหม่', sum('newCount'), C.nw, null] : null
-  ];
-  const shown = stats.filter(Boolean), sw = (CW - 16 * (shown.length - 1)) / shown.length, sy = 196;
-  shown.forEach(([l, v, [bg, fg], dlt], i) => {
-    const sx = M + i * (sw + 16); rect(bg, sx, sy, sw, 140, 16);
-    x.font = `700 21px ${F}`; txt(ellipsize(x, l, sw - 40), sx + 20, sy + 38, fg, '700 21px');
-    txt(fmtTH(v), sx + 20, sy + 90, fg, '800 42px');
-    if (dlt != null) txt(deltaText(dlt), sx + 20, sy + 124, dlt > 0 ? '#b3261e' : dlt < 0 ? '#1d7a3e' : '#5f7287', '700 18px');
-    else txt('เพิ่งเข้ากลุ่มเสี่ยง', sx + 20, sy + 124, fg, '600 18px');
+  // จัดหน้า: หัว Division ต้องอยู่หน้าเดียวกับการ์ดแรก, หน้าที่เริ่มด้วยการ์ดต่อจากหน้าก่อนมีหัว Division "(ต่อ)"
+  const blocks = [];
+  gs.forEach(g => { blocks.push({ type: 'div', g, h: DIV_HEAD + 12 }); g.departments.forEach(d => blocks.push({ type: 'dept', g, d, h: deptH(d) + GAP })); });
+  const pages = [{ blocks: [], top: HEADER + LEGEND + 20 }];
+  let used = pages[0].top;
+  blocks.forEach((b, i) => {
+    const need = b.type === 'div' ? b.h + blocks[i + 1].h : b.h;
+    if (used + need + FOOT > PAGE_MAX && pages.at(-1).blocks.length) {
+      pages.push({ blocks: [], top: MINI + 16 }); used = MINI + 16;
+      if (b.type === 'dept') { const cont = { type: 'div', g: b.g, cont: true, h: DIV_HEAD + 12 }; pages.at(-1).blocks.push(cont); used += cont.h; }
+    }
+    pages.at(-1).blocks.push(b); used += b.h;
   });
 
-  let y = HEADER + 16;
-  rect('#ffffff', M, y, CW, LEGEND - 14, 14);
-  const dot = (col, lx, ly) => rect(col, lx, ly - 14, 16, 16, 8);
-  dot('#c5221f', M + 22, y + 40); txt('หมดอายุ = ห้ามจำหน่าย • คัดออก', M + 48, y + 40, '#38546e', '600 20px');
-  dot('#ea8300', M + 500, y + 40); txt('ต้องเร่งขาย = ลดราคา • ตรวจคุณภาพ', M + 526, y + 40, '#38546e', '600 20px');
-  dot('#d4a400', M + 22, y + 78); txt('เสี่ยงสูง = ขอโปรโมชัน • จัดชิม', M + 48, y + 78, '#38546e', '600 20px');
-  if (state.prev) { const pw = pill('ใหม่', M + 500, y + 71, C.nw[0], C.nw[1], '700 17px'); txt('= เพิ่งเข้ากลุ่มเสี่ยงเทียบกับครั้งก่อน', M + 508 + pw, y + 78, '#38546e', '600 20px'); }
-  else txt(`Top ${TOP_N} ต่อ Department • เรียงจากด่วนที่สุด`, M + 500, y + 78, '#38546e', '600 20px');
-  y += LEGEND + 4;
+  const C = { exp: ['#fdecea', '#b3261e'], urg: ['#fff1dd', '#a14a00'], high: ['#fff7c9', '#7a5c00'], blue: ['#e8f2fc', '#164e7c'], nw: ['#f1ebfd', '#6a3fc4'] };
+  const stamp = stampDate.toLocaleString('th-TH', { timeZone: 'Asia/Bangkok', day: '2-digit', month: 'short', year: 'numeric', hour: '2-digit', minute: '2-digit' });
+  const deps = gs.flatMap(g => g.departments), sum = k => deps.reduce((s, d) => s + d[k], 0);
+  const title = divisionFilter ? `สินค้าที่ต้องรีบจัดการ — ${divisionFilter}` : 'สินค้าที่ต้องรีบจัดการ';
 
-  let truncated = false;
-  outer: for (const g of gs) {
-    // ต้องมีที่พอสำหรับหัว Division + แผนกแรก ไม่อย่างนั้นหยุดและแจ้งว่าภาพไม่ครบ
-    if (y + DIV_HEAD + 12 + deptH(g.departments[0]) > c.height - FOOT) { truncated = true; break; }
-    rect('#dbe9f6', M, y, CW, DIV_HEAD - 10, 14);
-    x.font = `800 30px ${F}`;
-    txt(ellipsize(x, g.name.toUpperCase(), 460), M + 22, y + 44, '#123f66', '800 30px');
-    const gParts = [g.expired ? `หมดอายุ ${fmtTH(g.expired)}` : '', `เร่งขาย ${fmtTH(g.urgent)}`, `เสี่ยงสูง ${fmtTH(g.high)}`, g.newCount && state.prev ? `ใหม่ ${fmtTH(g.newCount)}` : ''];
-    txt(gParts.filter(Boolean).join(' • '), W - M - 22, y + 43, '#3d5f7e', '700 21px', 'right');
-    y += DIV_HEAD + 12;
-    for (const d of g.departments) {
-      const ch = deptH(d);
-      if (y + ch > c.height - FOOT) { truncated = true; break outer; }
+  return pages.map((page, pi) => {
+    const H = page.top + page.blocks.reduce((s, b) => s + b.h, 0) + FOOT;
+    const c = document.createElement('canvas');
+    c.width = W; c.height = H;
+    const x = c.getContext('2d');
+    if (!x) throw new Error('เบราว์เซอร์นี้ไม่รองรับการสร้างภาพ');
+    const rect = (col, a, b, w, h, r = 0) => { x.fillStyle = col; x.beginPath(); r && x.roundRect ? x.roundRect(a, b, w, h, r) : x.rect(a, b, w, h); x.fill(); };
+    const txt = (v, a, b, col, st, al = 'left') => { x.fillStyle = col; x.font = `${st} ${F}`; x.textAlign = al; x.fillText(String(v), a, b); x.textAlign = 'left'; };
+    // ป้ายมน (pill) กึ่งกลางแนวตั้งที่ cy; คืนค่าความกว้าง
+    const pill = (label, px, cy, bg, fg, st = '700 19px', align = 'left') => {
+      x.font = `${st} ${F}`; const w = x.measureText(label).width + 24, left = align === 'right' ? px - w : px;
+      rect(bg, left, cy - 16, w, 32, 16); txt(label, left + 12, cy + 7, fg, st); return w;
+    };
+    const pageTag = pages.length > 1 ? `หน้า ${pi + 1}/${pages.length}` : '';
+    rect('#f2f6fa', 0, 0, W, H);
+
+    if (pi === 0) {
+      const gr = x.createLinearGradient(0, 0, W, HEADER); gr.addColorStop(0, '#0b4470'); gr.addColorStop(1, '#1670ab');
+      x.fillStyle = gr; x.fillRect(0, 0, W, HEADER);
+      txt('SMART EXPIRY • สรุปประจำวัน', M, 64, '#a9d6f5', '700 24px');
+      if (pageTag) txt(pageTag, W - M, 64, '#a9d6f5', '700 22px', 'right');
+      x.font = `800 46px ${F}`;
+      txt(ellipsize(x, title, CW), M, 122, '#ffffff', '800 46px');
+      x.font = `500 22px ${F}`;
+      txt(ellipsize(x, `ข้อมูล ณ ${stamp} น. • ${gs.length} Division • ${deps.length} Department${state.prev ? ` • เทียบกับ ${state.prev.fileName}` : ''}`, CW), M, 166, '#d3e8f7', '500 22px');
+      // กล่องตัวเลข + ▲▼ เทียบกับไฟล์ครั้งก่อน (ถ้ามี)
+      const stats = [
+        ['หมดอายุ — คัดออก', sum('expired'), C.exp, summaryDelta('exp', divisionFilter)],
+        ['ต้องเร่งขาย', sum('urgent'), C.urg, summaryDelta('urg', divisionFilter)],
+        ['เสี่ยงสูง', sum('high'), C.high, summaryDelta('high', divisionFilter)],
+        state.prev ? ['รายการใหม่', sum('newCount'), C.nw, null] : null
+      ].filter(Boolean);
+      const sw = (CW - 16 * (stats.length - 1)) / stats.length, sy = 196;
+      stats.forEach(([l, v, [bg, fg], dlt], i) => {
+        const sx = M + i * (sw + 16); rect(bg, sx, sy, sw, 140, 16);
+        x.font = `700 21px ${F}`; txt(ellipsize(x, l, sw - 40), sx + 20, sy + 38, fg, '700 21px');
+        txt(fmtTH(v), sx + 20, sy + 90, fg, '800 42px');
+        if (dlt != null) txt(deltaText(dlt), sx + 20, sy + 124, dlt > 0 ? '#b3261e' : dlt < 0 ? '#1d7a3e' : '#5f7287', '700 18px');
+        else txt(l === 'รายการใหม่' ? 'เพิ่งเข้ากลุ่มเสี่ยง' : 'รหัสสินค้า', sx + 20, sy + 124, fg, '600 18px');
+      });
+      const ly = HEADER + 16;
+      rect('#ffffff', M, ly, CW, LEGEND - 14, 14);
+      const dot = (col, lx, yy) => rect(col, lx, yy - 14, 16, 16, 8);
+      dot('#c5221f', M + 22, ly + 40); txt('หมดอายุ = ห้ามจำหน่าย • คัดออก', M + 48, ly + 40, '#38546e', '600 20px');
+      dot('#ea8300', M + 500, ly + 40); txt('ต้องเร่งขาย = ลดราคา • ตรวจคุณภาพ', M + 526, ly + 40, '#38546e', '600 20px');
+      dot('#d4a400', M + 22, ly + 78); txt('เสี่ยงสูง = ขอโปรโมชัน • จัดชิม', M + 48, ly + 78, '#38546e', '600 20px');
+      if (state.prev) { const pw = pill('ใหม่', M + 500, ly + 71, C.nw[0], C.nw[1], '700 17px'); txt('= เพิ่งเข้ากลุ่มเสี่ยงเทียบกับครั้งก่อน', M + 508 + pw, ly + 78, '#38546e', '600 20px'); }
+      else txt(`Top ${LINE_TOP} ต่อ Department • เรียงจากด่วนที่สุด`, M + 500, ly + 78, '#38546e', '600 20px');
+    } else {
+      // หน้าต่อ: หัวสั้น
+      const gr = x.createLinearGradient(0, 0, W, MINI); gr.addColorStop(0, '#0b4470'); gr.addColorStop(1, '#1670ab');
+      x.fillStyle = gr; x.fillRect(0, 0, W, MINI);
+      txt('SMART EXPIRY • สรุปประจำวัน', M, 46, '#a9d6f5', '700 22px');
+      txt(pageTag, W - M, 46, '#a9d6f5', '700 22px', 'right');
+      x.font = `800 34px ${F}`;
+      txt(ellipsize(x, `${title} (ต่อ)`, CW), M, 94, '#ffffff', '800 34px');
+    }
+
+    let y = page.top;
+    for (const b of page.blocks) {
+      if (b.type === 'div') {
+        const g = b.g;
+        rect('#dbe9f6', M, y, CW, DIV_HEAD - 10, 14);
+        x.font = `800 30px ${F}`;
+        txt(ellipsize(x, g.name.toUpperCase() + (b.cont ? ' (ต่อ)' : ''), 460), M + 22, y + 44, '#123f66', '800 30px');
+        const gParts = [g.expired ? `หมดอายุ ${fmtTH(g.expired)}` : '', `เร่งขาย ${fmtTH(g.urgent)}`, `เสี่ยงสูง ${fmtTH(g.high)}`, g.newCount && state.prev ? `ใหม่ ${fmtTH(g.newCount)}` : ''];
+        txt(gParts.filter(Boolean).join(' • '), W - M - 22, y + 43, '#3d5f7e', '700 21px', 'right');
+        y += b.h;
+        continue;
+      }
+      const d = b.d, ch = b.h - GAP, rows = rowsOf(d);
       rect('#ffffff', M, y, CW, ch, 18);
       // ขวาบน: จำนวนรหัสสินค้า + ป้ายหมดอายุ / ใหม่
       let rx = W - M - 24;
@@ -1554,38 +1589,38 @@ function createOverviewCanvas(allGroups, divisionFilter = '', stampDate = new Da
       txt(ellipsize(x, d.name, rx - (M + 24) - 12), M + 24, y + 50, '#13263d', '800 30px');
       if (d.total) {
         const bw = CW - 48, tot = d.urgent + d.high || 1;
-        rect('#edf2f7', M + 24, y + 72, bw, 10, 5);
-        rect('#ea8300', M + 24, y + 72, bw * d.urgent / tot, 10, 5);
-        rect('#d4a400', M + 24 + bw * d.urgent / tot, y + 72, bw * d.high / tot, 10, 0);
+        rect('#edf2f7', M + 24, y + 66, bw, 8, 4);
+        rect('#ea8300', M + 24, y + 66, bw * d.urgent / tot, 8, 4);
+        rect('#d4a400', M + 24 + bw * d.urgent / tot, y + 66, bw * d.high / tot, 8, 0);
       } else {
-        txt('ไม่มีสินค้าเร่งขายหรือเสี่ยงสูง — มีเฉพาะสินค้าหมดอายุที่ต้องคัดออก', M + 24, y + DEPT_HEAD + 6, '#5f7287', '500 20px');
+        txt('ไม่มีสินค้าเร่งขายหรือเสี่ยงสูง — มีเฉพาะสินค้าหมดอายุที่ต้องคัดออก', M + 24, y + DEPT_HEAD + 14, '#5f7287', '500 20px');
       }
       let ry = y + DEPT_HEAD;
-      d.items.forEach((r, i) => {
+      rows.forEach((r, i) => {
         const u = r.status === ST.URG, fg = u ? '#a14a00' : '#7a5c00';
         if (i % 2 === 1) rect('#f7fafc', M + 10, ry, CW - 20, ROW, 10);
-        txt(String(i + 1), M + 44, ry + 50, '#9aa9b8', '800 22px', 'right');
-        rect(u ? '#fff1dd' : '#fff7c9', M + 60, ry + 12, 108, ROW - 24, 12);
+        txt(String(i + 1), M + 42, ry + 42, '#9aa9b8', '800 20px', 'right');
+        rect(u ? '#fff1dd' : '#fff7c9', M + 58, ry + 8, 100, ROW - 16, 10);
         const [big, small] = dayLabel(r.days);
-        txt(big, M + 114, ry + 44, fg, `800 ${big.length > 3 ? 24 : 28}px`, 'center');
-        txt(small, M + 114, ry + 66, fg, '700 17px', 'center');
-        x.font = `700 26px ${F}`;
-        const nm = ellipsize(x, r.name || '-', r.isNew ? 520 : 600);
-        txt(nm, M + 188, ry + 38, '#13263d', '700 26px');
-        if (r.isNew) { x.font = `700 26px ${F}`; pill('ใหม่', M + 198 + x.measureText(nm).width, ry + 29, C.nw[0], C.nw[1], '700 16px'); }
-        txt(`Item ${r.itemno || '-'} • หมด ${r.expiry}`, M + 188, ry + 68, '#64788c', '500 20px');
-        txt(fmtTH(r.stock), W - M - 28, ry + 40, '#13263d', '800 26px', 'right');
-        txt('Stock', W - M - 28, ry + 66, '#8b9bac', '500 18px', 'right');
+        txt(big, M + 108, ry + 34, fg, `800 ${big.length > 3 ? 21 : 25}px`, 'center');
+        txt(small, M + 108, ry + 53, fg, '700 15px', 'center');
+        x.font = `700 24px ${F}`;
+        const nm = ellipsize(x, r.name || '-', r.isNew ? 540 : 620);
+        txt(nm, M + 176, ry + 31, '#13263d', '700 24px');
+        if (r.isNew) { x.font = `700 24px ${F}`; pill('ใหม่', M + 186 + x.measureText(nm).width, ry + 23, C.nw[0], C.nw[1], '700 15px'); }
+        txt(`Item ${r.itemno || '-'} • หมด ${r.expiry}`, M + 176, ry + 56, '#64788c', '500 17px');
+        txt(fmtNum(r.stock), W - M - 26, ry + 33, '#13263d', '800 24px', 'right');
+        txt('Stock', W - M - 26, ry + 55, '#8b9bac', '500 16px', 'right');
         ry += ROW;
       });
-      if (d.total > d.items.length) txt(`+ อีก ${fmtTH(d.total - d.items.length)} รายการ ดูทั้งหมดในเว็บ Smart Expiry`, M + 24, ry + 30, '#0b6fae', '600 20px');
-      y += ch + 18;
+      if (d.total > LINE_TOP) txt(`+ อีก ${fmtTH(d.total - LINE_TOP)} รายการ ดูทั้งหมดในเว็บ Smart Expiry`, M + 24, ry + 30, '#0b6fae', '600 20px');
+      y += b.h;
     }
-  }
-  rect('#e5edf5', 0, c.height - FOOT, W, FOOT);
-  txt(truncated ? 'ภาพยาวเกินกำหนด แสดงไม่ครบ — กรุณาเลือกส่งทีละ Division' : `Smart Expiry • นับทีละรหัสสินค้า • Top ${TOP_N} ต่อ Department • ไม่รวมสินค้าไม่มีวันหมดอายุ`,
-    M, c.height - 38, truncated ? '#b3261e' : '#4f6780', '600 20px');
-  return c;
+    rect('#e5edf5', 0, H - FOOT, W, FOOT);
+    txt(`Smart Expiry • นับทีละรหัสสินค้า • Top ${LINE_TOP} ต่อ Department • ไม่รวมสินค้าไม่มีวันหมดอายุ`, M, H - 29, '#4f6780', '600 19px');
+    if (pageTag) txt(pageTag, W - M, H - 29, '#4f6780', '700 19px', 'right');
+    return c;
+  });
 }
 
 const toBlob = (canvas, type, q) => new Promise((res, rej) => canvas.toBlob(b => b ? res(b) : rej(new Error('สร้างรูปภาพไม่สำเร็จ')), type, q));
@@ -1597,13 +1632,19 @@ async function canvasToLineJpeg(canvas) {
   throw new Error('รูปภาพมีขนาดใหญ่เกินไป กรุณาเลือกส่งทีละ Division');
 }
 
+// คืนรายการภาพ (หน้า) พร้อม PNG สำหรับดาวน์โหลด/แชร์ และ JPEG ขนาดพอดี LINE OA
 async function buildLineImages(groups, division) {
-  const canvas = createOverviewCanvas(groups, division);
-  const png = await toBlob(canvas, 'image/png');
-  let jpg = null, jpgError = '';
-  try { jpg = await canvasToLineJpeg(canvas); } catch (e) { jpgError = e.message; }
-  return { png, jpg, jpgError, url: URL.createObjectURL(png), height: canvas.height };
+  const canvases = createOverviewPages(groups, division);
+  const pages = [];
+  let jpgError = '';
+  for (const c of canvases) {
+    const png = await toBlob(c, 'image/png');
+    let jpg = null; try { jpg = await canvasToLineJpeg(c); } catch (e) { jpgError = e.message; }
+    pages.push({ png, jpg, url: URL.createObjectURL(png), height: c.height });
+  }
+  return { pages, jpgError, ready: !jpgError };
 }
+const revokePages = img => img.pages.forEach(p => URL.revokeObjectURL(p.url));
 
 async function openLineDialog(btn) {
   if (!state.items.length) { toast('กรุณาอัปโหลด Excel ก่อน', 'err'); return; }
@@ -1614,7 +1655,7 @@ async function openLineDialog(btn) {
     const usable = groups.filter(g => g.departments.some(needsAction));
     let scope = location.hash === '#summary' && usable.some(g => g.name === sumDivision) ? sumDivision : '';
     let img = await buildLineImages(groups, scope);
-    const fileName = () => `SmartExpiry-${scope ? scope.replace(/[<>:"/\\|?*\s]+/g, '_') : 'Overview'}-${isoDate(new Date())}.png`;
+    const fileName = i => `SmartExpiry-${scope ? scope.replace(/[<>:"/\\|?*\s]+/g, '_') : 'Overview'}-${isoDate(new Date())}${img.pages.length > 1 ? `-${i + 1}` : ''}.png`;
     let savedKey = ''; try { savedKey = sessionStorage.getItem('sx-send-key') || ''; } catch (_) {}
     const count = g => g.urgent + g.high + g.expired;
     const scopes = [['', 'ทุก Division', usable.reduce((s, g) => s + count(g), 0)], ...usable.map(g => [g.name, g.name, count(g)])];
@@ -1628,7 +1669,7 @@ async function openLineDialog(btn) {
           ${scopes.map(([v, l, n]) => `<button type="button" class="pill" data-scope="${esc(v)}" aria-pressed="${v === scope}">${esc(l)} <em>${fmtTH(n)}</em></button>`).join('')}
         </div>
         <div class="ld-step"><span class="ld-n">2</span><b>ตรวจภาพก่อนส่ง</b><span class="ld-size" data-size></span></div>
-        <div class="ld-frame"><img alt="ภาพสรุปสินค้าที่ต้องรีบจัดการ"></div>
+        <div class="ld-frame" data-frame></div>
       </div>
       <div class="ld-foot">
         <div class="ld-key" data-keybox ${savedKey ? 'hidden' : ''}>
@@ -1638,16 +1679,18 @@ async function openLineDialog(btn) {
         <div class="ld-saved" data-saved ${savedKey ? '' : 'hidden'}>🔒 ใช้รหัสที่จำไว้ • <button type="button" class="ld-link" data-change>เปลี่ยนรหัส</button></div>
         <button type="button" class="btn line ld-send" data-send>ส่งเข้า LINE OA</button>
         <p class="ld-status" data-status role="status"></p>
-        <div class="ld-alt"><button type="button" class="ld-link" data-share title="เปิดเมนูแชร์ของเครื่อง แล้วเลือกห้อง ${esc(LINE_ROOM)}">แชร์ไป LINE เอง</button><span>•</span><a class="ld-link" data-download>ดาวน์โหลดรูป</a></div>
+        <div class="ld-alt"><button type="button" class="ld-link" data-share title="เปิดเมนูแชร์ของเครื่อง แล้วเลือกห้อง ${esc(LINE_ROOM)}">แชร์ไป LINE เอง</button><span>•</span><button type="button" class="ld-link" data-download>ดาวน์โหลดรูป</button></div>
       </div>`;
     document.body.appendChild(d);
     const $d = s => d.querySelector(s);
     const status = (text, kind = '') => { const s = $d('[data-status]'); s.textContent = text; s.className = `ld-status ${kind}`; };
+    // แสดงทุกหน้าเรียงกันในกรอบ พร้อมป้าย "ภาพที่ x/y"
     const paint = () => {
-      $d('.ld-frame img').src = img.url;
-      const a = $d('[data-download]'); a.href = img.url; a.download = fileName();
-      $d('[data-size]').textContent = img.jpg ? `สูง ${fmtTH(img.height)} px` : 'ภาพยาวเกินไปสำหรับ LINE OA';
-      $d('.ld-frame').scrollTop = 0;
+      const n = img.pages.length;
+      $d('[data-frame]').innerHTML = img.pages.map((p, i) => `${n > 1 ? `<div class="ld-page">ภาพที่ ${i + 1}/${n}</div>` : ''}<img src="${p.url}" alt="ภาพสรุป ${i + 1}/${n}">`).join('');
+      $d('[data-size]').textContent = !img.ready ? 'ภาพใหญ่เกินไปสำหรับ LINE OA' : n > 1 ? `${n} ภาพ • ส่งต่อกันอัตโนมัติ` : '1 ภาพ';
+      $d('[data-send]').textContent = n > 1 ? `ส่งเข้า LINE OA (${n} ภาพ)` : 'ส่งเข้า LINE OA';
+      $d('[data-frame]').scrollTop = 0;
     };
     paint();
     // เปลี่ยนขอบเขต → สร้างภาพใหม่
@@ -1658,9 +1701,8 @@ async function openLineDialog(btn) {
       $d('[data-size]').textContent = 'กำลังสร้างภาพ…'; status('');
       try {
         const next = await buildLineImages(groups, b.dataset.scope);
-        URL.revokeObjectURL(img.url); img = next; scope = b.dataset.scope;
+        revokePages(img); img = next; scope = b.dataset.scope;
         pills.forEach(p => p.setAttribute('aria-pressed', String(p.dataset.scope === scope)));
-        $d('[data-send]').textContent = 'ส่งเข้า LINE OA';
         paint();
       } catch (err) { status(`สร้างภาพไม่สำเร็จ: ${err.message}`, 'err'); paint(); }
       finally { pills.forEach(p => { p.disabled = false; }); }
@@ -1668,23 +1710,34 @@ async function openLineDialog(btn) {
     const askKey = () => { savedKey = ''; try { sessionStorage.removeItem('sx-send-key'); } catch (_) {} $d('[data-saved]').hidden = true; $d('[data-keybox]').hidden = false; $d('#sendKey').focus(); };
     $d('[data-change]').onclick = askKey;
     $d('[data-close]').onclick = () => d.close();
-    d.addEventListener('close', () => { URL.revokeObjectURL(img.url); d.remove(); }, { once: true });
-    $d('[data-share]').onclick = e => shareToLine(img.png, fileName(), e.currentTarget);
+    d.addEventListener('close', () => { revokePages(img); d.remove(); }, { once: true });
+    $d('[data-share]').onclick = e => shareToLine(img.pages.map((p, i) => new File([p.png], fileName(i), { type: 'image/png' })), e.currentTarget);
+    $d('[data-download]').onclick = () => img.pages.forEach((p, i) => setTimeout(() => {
+      const a = Object.assign(document.createElement('a'), { href: p.url, download: fileName(i) });
+      document.body.appendChild(a); a.click(); a.remove();
+    }, i * 400));
     const send = async () => {
-      if (!img.jpg) { status(img.jpgError || 'ภาพยาวเกินไปสำหรับ LINE OA — เลือกส่งทีละ Division', 'err'); return; }
+      if (!img.ready) { status(img.jpgError || 'ภาพใหญ่เกินไปสำหรับ LINE OA — เลือกส่งทีละ Division', 'err'); return; }
       const key = savedKey || $d('#sendKey').value.trim();
       if (!key) { status('กรอกรหัสส่ง (SEND_KEY) ก่อนกดส่ง', 'err'); $d('#sendKey').focus(); return; }
-      const btn = $d('[data-send]'); btn.disabled = true; btn.textContent = 'กำลังส่ง…'; status('กำลังส่งภาพเข้า LINE OA…', 'busy');
+      const btn = $d('[data-send]'), n = img.pages.length;
+      btn.disabled = true; btn.textContent = 'กำลังส่ง…';
+      let sent = 0;
       try {
-        await sendToLineOA(img.jpg, key);
+        // ส่งทีละภาพตามลำดับ เพื่อให้ในห้อง LINE เรียงหน้า 1, 2, 3 ถูกต้อง
+        for (const p of img.pages) {
+          status(n > 1 ? `กำลังส่งภาพที่ ${sent + 1}/${n}…` : 'กำลังส่งภาพเข้า LINE OA…', 'busy');
+          await sendToLineOA(p.jpg, key);
+          sent++;
+        }
         if (!savedKey && $d('[data-remember]').checked) {
           try { sessionStorage.setItem('sx-send-key', key); } catch (_) {}
           savedKey = key; $d('[data-keybox]').hidden = true; $d('[data-saved]').hidden = false;
         }
-        status(`✓ ส่งแล้ว ${new Date().toLocaleTimeString('th-TH', { hour: '2-digit', minute: '2-digit' })} น. — ${scope || 'ทุก Division'}`, 'ok');
+        status(`✓ ส่งแล้ว${n > 1 ? ` ${n} ภาพ` : ''} ${new Date().toLocaleTimeString('th-TH', { hour: '2-digit', minute: '2-digit' })} น. — ${scope || 'ทุก Division'}`, 'ok');
         btn.textContent = 'ส่งอีกครั้ง';
       } catch (err) {
-        status(`ส่งไม่สำเร็จ: ${err.message}`, 'err');
+        status(`ส่งไม่สำเร็จ${n > 1 ? ` (ส่งไปแล้ว ${sent}/${n} ภาพ)` : ''}: ${err.message}`, 'err');
         btn.textContent = 'ลองส่งอีกครั้ง';
         if (err.status === 401 || err.status === 403) askKey(); // รหัสผิด → ให้กรอกใหม่
       } finally { btn.disabled = false; }
@@ -1699,17 +1752,18 @@ async function openLineDialog(btn) {
   }
 }
 
-async function shareToLine(blob, filename, btn) {
+async function shareToLine(files, btn) {
   btn.disabled = true;
   try {
-    const file = new File([blob], filename, { type: 'image/png' });
-    if (navigator.share && (!navigator.canShare || navigator.canShare({ files: [file] }))) {
-      await navigator.share({ files: [file], title: 'Smart Expiry Sales Assistant', text: `สรุปสินค้าที่ต้องรีบจัดการ — กรุณาส่งไปห้อง ${LINE_ROOM}` });
+    if (navigator.share && (!navigator.canShare || navigator.canShare({ files }))) {
+      await navigator.share({ files, title: 'Smart Expiry Sales Assistant', text: `สรุปสินค้าที่ต้องรีบจัดการ — กรุณาส่งไปห้อง ${LINE_ROOM}` });
       return;
     }
-    const a = Object.assign(document.createElement('a'), { href: URL.createObjectURL(blob), download: filename });
-    document.body.appendChild(a); a.click();
-    setTimeout(() => { URL.revokeObjectURL(a.href); a.remove(); }, 1000);
+    files.forEach((f, i) => setTimeout(() => {
+      const a = Object.assign(document.createElement('a'), { href: URL.createObjectURL(f), download: f.name });
+      document.body.appendChild(a); a.click();
+      setTimeout(() => { URL.revokeObjectURL(a.href); a.remove(); }, 1000);
+    }, i * 400));
     toast(`เบราว์เซอร์นี้แชร์ไฟล์ตรงไม่ได้ — ดาวน์โหลดภาพให้แล้ว กรุณาแนบในห้อง ${LINE_ROOM}`);
   } catch (err) {
     if (err.name !== 'AbortError') toast(`แชร์ภาพไม่สำเร็จ: ${err.message}`, 'err');
