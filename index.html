@@ -19,6 +19,7 @@
   --high:#866500;--high-bg:#fff7c9;--high-line:#f1df8a;
   --ok:#1d7a3e;--ok-bg:#e6f5eb;--ok-line:#bfe3cb;
   --chk:#5a4fa8;--chk-bg:#efedfb;--chk-line:#d3cdf3;
+  --new:#6a3fc4;--new-bg:#f1ebfd;--new-line:#d9c9f7;
   --sum:#2f5fb3;--sum-bg:#edf3ff;--sum-line:#c3d5f6;
   --shadow:0 1px 2px rgba(20,50,80,.05),0 6px 20px rgba(20,50,80,.06);
   --shadow-lg:0 20px 60px rgba(10,30,50,.22);
@@ -115,10 +116,10 @@ body.dragging .drop-overlay{display:grid}
 .delta.bad{background:var(--exp-bg);color:var(--exp)}
 .delta.good{background:var(--ok-bg);color:var(--ok)}
 .delta.same{background:var(--surface-3);color:var(--muted)}
-.new-tag{display:inline-block;margin-left:6px;padding:0 7px;border-radius:99px;background:var(--exp-bg);color:var(--exp);font-size:11px;font-weight:800;vertical-align:1px;white-space:nowrap}
-.new-only{display:inline-flex;align-items:center;gap:7px;min-height:38px;padding:6px 12px;border:1px solid var(--exp-line);border-radius:10px;background:var(--surface);color:var(--exp);font-size:13.5px;font-weight:700;cursor:pointer;white-space:nowrap}
-.new-only input{width:16px;height:16px;accent-color:var(--exp)}
-.new-only:has(input:checked){background:var(--exp-bg)}
+.new-tag{display:inline-block;margin-left:6px;padding:0 7px;border-radius:99px;background:var(--new-bg);color:var(--new);font-size:11px;font-weight:800;vertical-align:1px;white-space:nowrap}
+.new-only{display:inline-flex;align-items:center;gap:7px;min-height:38px;padding:6px 12px;border:1px solid var(--new-line);border-radius:10px;background:var(--surface);color:var(--new);font-size:13.5px;font-weight:700;cursor:pointer;white-space:nowrap}
+.new-only input{width:16px;height:16px;accent-color:var(--new)}
+.new-only:has(input:checked){background:var(--new-bg)}
 .card{position:relative;display:flex;flex-direction:column;align-items:stretch;text-align:left;min-height:150px;padding:16px 18px;border-radius:16px;border:1px solid var(--border);background:var(--surface);box-shadow:var(--shadow);cursor:pointer;transition:transform .15s,box-shadow .15s,border-color .15s,background .15s}
 .card:hover{transform:translateY(-2px);border-color:var(--cl)}
 .card-top{display:flex;align-items:center;gap:9px}
@@ -240,28 +241,34 @@ td.num,th.num{text-align:right;font-variant-numeric:tabular-nums}
 .s-hero{display:flex;align-items:center;justify-content:space-between;gap:16px;flex-wrap:wrap;margin-top:8px;padding:22px 24px;border-radius:20px;background:var(--surface);border:1px solid var(--border);box-shadow:var(--shadow)}
 .s-hero h2{font-size:26px;font-weight:800;letter-spacing:-.3px;line-height:1.3}
 .s-hero h2:focus{outline:none}
-.meta-chips{display:flex;flex-wrap:wrap;gap:6px;margin-top:8px}
-.meta-chips span{display:inline-flex;align-items:center;gap:5px;padding:3px 10px;border-radius:99px;background:var(--surface-3);color:var(--muted);font-size:12.5px;font-weight:700;white-space:nowrap}
+.meta-chips{display:flex;flex-wrap:wrap;align-items:center;gap:6px 10px;margin-top:6px;font-size:13.5px;color:var(--muted)}
+.s-foot{margin:22px 2px 0;font-size:12.5px;color:var(--faint);line-height:1.6}
+.kpi .todo{margin-top:auto;padding-top:10px;font-size:12.5px;font-weight:600;color:var(--c)}
+.kpi .num-row{display:flex;align-items:baseline;flex-wrap:wrap;gap:4px 10px;margin-top:10px}
+.kpi .num-row b{margin:0}
+.cnt{font-size:13px;color:var(--muted);font-weight:600}
+.cnt b.u{color:var(--urg)}.cnt b.h{color:var(--high)}
+.meta-chips span{display:inline-flex;align-items:center;gap:5px;padding:3px 10px;border-radius:99px;background:var(--surface-3);color:var(--muted);font-size:12.5px;font-weight:700}
 .meta-chips span.warn{background:var(--urg-bg);color:var(--urg)}
-.s-note{margin:10px 2px 0;font-size:12.5px;color:var(--muted)}
-.kpis{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:14px;margin:16px 0 14px}
+.kpis{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:14px;margin:16px 0 6px}
 .kpi{display:flex;flex-direction:column;padding:16px 18px;border-radius:16px;background:var(--surface);border:1px solid var(--border);box-shadow:var(--shadow)}
 .kpi.urg{--c:var(--urg);--cbg:var(--urg-bg)}.kpi.high{--c:var(--high);--cbg:var(--high-bg)}
-.kpi.soon{--c:var(--exp);--cbg:var(--exp-bg)}.kpi.dep{--c:var(--brand);--cbg:var(--brand-soft)}
+.kpi.exp{--c:var(--exp);--cbg:var(--exp-bg)}
+.kpi .delta{align-self:flex-start;margin-top:6px;padding:1px 8px;border-radius:99px;font-size:11.5px;font-weight:700;white-space:nowrap}
+.meta-chips span.new{background:var(--new-bg);color:var(--new)}
+.tag.x{background:var(--exp);color:#fff;border:0;font:inherit;font-size:12.5px;font-weight:800;cursor:pointer}
+.tag.x:hover{background:#a51b18}
+.tag.n{background:var(--new-bg);color:var(--new)}
+.empty-dept{padding:6px 18px 16px;color:var(--muted);font-size:13.5px}
+.dept:not(.expanded) .item.more{display:none}
+.foot-btns{display:flex;gap:6px;flex-wrap:wrap;justify-content:flex-end}
+.info .name .new-tag{vertical-align:2px}
 .kpi .card-top{display:flex;align-items:center;gap:9px}
 .kpi .ic{flex:none;display:grid;place-items:center;width:34px;height:34px;border-radius:10px;background:var(--cbg);color:var(--c)}
 .kpi .ic svg{width:19px;height:19px}
 .kpi .lbl{font-size:14px;font-weight:700}
 .kpi b{display:block;margin-top:10px;font-size:32px;font-weight:800;line-height:1.1;color:var(--c);font-variant-numeric:tabular-nums;letter-spacing:-.5px}
 .kpi small{color:var(--muted);font-size:12.5px;font-weight:600}
-.kpi .meter{display:block;height:6px;margin-top:10px;border-radius:9px;background:var(--surface-3);overflow:hidden}
-.kpi .meter i{display:block;height:100%;border-radius:9px;background:var(--c);transition:width .5s ease}
-.legend{display:flex;flex-wrap:wrap;align-items:center;gap:8px;font-size:13px}
-.legend .k{display:inline-flex;align-items:center;gap:7px;padding:5px 12px;border-radius:99px;font-weight:600}
-.legend .k.urg{background:var(--urg-bg);color:var(--urg)}.legend .k.high{background:var(--high-bg);color:var(--high)}
-.legend .k b{font-weight:800}
-.legend .k.info{padding-left:4px;color:var(--muted);font-weight:500}
-.dot{width:9px;height:9px;border-radius:50%;flex:none;background:currentColor}
 .pills{position:sticky;top:var(--hdr,62px);z-index:5;display:flex;gap:8px;overflow-x:auto;padding:12px 0;margin-top:6px;background:color-mix(in srgb,var(--bg) 92%,transparent);backdrop-filter:blur(8px);scrollbar-width:none}
 .pill{flex:none;display:inline-flex;align-items:center;gap:7px;padding:7px 14px;border-radius:999px;border:1px solid var(--border);background:var(--surface);font-weight:700;font-size:14px;cursor:pointer;white-space:nowrap;box-shadow:0 1px 2px rgba(20,50,80,.05);transition:background .15s,border-color .15s}
 .pill:hover{border-color:var(--brand)}
@@ -271,7 +278,6 @@ td.num,th.num{text-align:right;font-variant-numeric:tabular-nums}
 .division{margin-top:18px}
 .div-head{display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin:6px 2px 12px}
 .div-head h3{font-size:20px;font-weight:800;letter-spacing:-.2px}
-.div-head .sub{color:var(--muted);font-size:13px}
 .tag{display:inline-flex;align-items:center;gap:5px;padding:2px 10px;border-radius:99px;font-size:12.5px;font-weight:800;white-space:nowrap}
 .tag.u{background:var(--urg-bg);color:var(--urg)}.tag.h{background:var(--high-bg);color:var(--high)}
 .dept-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(440px,1fr));gap:14px}
@@ -281,10 +287,7 @@ td.num,th.num{text-align:right;font-variant-numeric:tabular-nums}
 .dept-title{display:flex;align-items:center;justify-content:space-between;gap:10px}
 .dept-title h4{margin:0;font-size:17px;font-weight:800;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 .dept-title .total{flex:none;padding:2px 10px;border-radius:99px;background:var(--surface-3);font-size:12.5px;font-weight:700;color:var(--muted);white-space:nowrap}
-.mixbar{display:flex;gap:2px;height:6px;margin:12px 0 10px;border-radius:9px;overflow:hidden;background:var(--surface-3)}
-.mixbar i{display:block;height:100%;border-radius:9px}
-.mixbar .u{background:var(--urg-bar)}.mixbar .h{background:var(--high-bar)}
-.counts{display:flex;gap:6px;flex-wrap:wrap}
+.counts{display:flex;align-items:center;gap:6px 8px;flex-wrap:wrap;margin-top:8px}
 .items{list-style:none;margin:0;padding:2px 8px 6px}
 .item{display:grid;grid-template-columns:22px 74px minmax(0,1fr) auto;align-items:center;gap:12px;padding:8px 10px;border-radius:12px;transition:background .12s}
 .item:hover{background:var(--surface-2)}
@@ -305,9 +308,8 @@ td.num,th.num{text-align:right;font-variant-numeric:tabular-nums}
 .dept-foot button:hover{background:var(--brand-soft)}
 .ok-depts{display:flex;align-items:flex-start;gap:8px;margin-top:12px;padding:10px 14px;border-radius:12px;background:var(--ok-bg);border:1px solid var(--ok-line);color:var(--ok);font-size:13px}
 .ok-depts b{flex:none;font-weight:800}
-.dlg-scope{display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin-top:10px;font-size:14px;font-weight:700}
-.dlg-scope select{height:38px;border:1px solid var(--border-strong);border-radius:9px;background:var(--surface);padding:4px 10px;min-width:200px}
-@media (max-width:1000px){.kpis{grid-template-columns:repeat(2,minmax(0,1fr))}.dept-grid{grid-template-columns:1fr}}
+
+@media (max-width:1000px){.dept-grid{grid-template-columns:1fr}}
 @media (max-width:720px){
   .s-hero{padding:16px}
   .s-hero h2{font-size:21px}
@@ -318,8 +320,11 @@ td.num,th.num{text-align:right;font-variant-numeric:tabular-nums}
   .kpi .ic{width:28px;height:28px;border-radius:8px}
   .kpi .ic svg{width:16px;height:16px}
   .kpi .lbl{font-size:13px}
-  .kpi b{font-size:25px;margin-top:6px}
-  .legend .k.info{display:none}
+  .kpi b{font-size:25px}
+  .kpi .num-row{margin-top:6px}
+  .kpi .card-top{flex-direction:column;align-items:flex-start;gap:5px}
+  .kpi small,.kpi .todo,.kpi .delta .dl{display:none}
+  .kpi .delta{margin-top:4px}
   .dept-head{padding:14px 14px 10px}
   .items{padding:2px 4px 6px}
   .dept-foot{padding:10px 14px}
@@ -335,12 +340,31 @@ dialog::backdrop{background:rgba(5,20,35,.5);backdrop-filter:blur(2px)}
 .dlg-head{position:sticky;top:0;z-index:1;display:flex;align-items:center;justify-content:space-between;gap:10px;padding:16px 20px;background:var(--surface);border-bottom:1px solid var(--border)}
 .dlg-head b{font-size:17px}
 .dlg-body{padding:18px 20px}
-.dlg-actions{display:flex;flex-wrap:wrap;gap:8px;margin:12px 0 16px}
-.dlg-preview{display:block;width:100%;height:auto;border:1px solid var(--border);border-radius:10px}
-.oa-box{margin:0 0 16px;padding:14px;border-radius:12px;background:var(--surface-2);border:1px solid var(--border)}
-.oa-box .row{display:flex;gap:8px;margin-top:8px}
-.oa-box input[type=password]{flex:1;height:42px;padding:8px 11px;border:1px solid var(--border-strong);border-radius:9px;background:var(--surface);min-width:0}
-.oa-box .remember{display:flex;align-items:center;gap:7px;margin-top:8px;font-size:13px;color:var(--muted)}
+/* หน้าต่างส่ง LINE: 2 ขั้นตอน + ปุ่มหลักปุ่มเดียว */
+.line-dlg{width:min(560px,94vw)}
+.ld-body{padding:16px 20px 6px}
+.ld-step{display:flex;align-items:center;gap:8px;margin:2px 0 10px;font-size:15px}
+.ld-step b{font-weight:800}
+.ld-n{flex:none;display:grid;place-items:center;width:24px;height:24px;border-radius:50%;background:var(--brand);color:#fff;font-size:13px;font-weight:800}
+.ld-size{margin-left:auto;font-size:12.5px;color:var(--muted)}
+.ld-scope{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:18px}
+.ld-scope .pill:disabled{opacity:.6;cursor:wait}
+.ld-frame{max-height:min(42vh,400px);overflow:auto;border:1px solid var(--border);border-radius:12px;background:var(--surface-2)}
+.ld-frame img{display:block;width:100%;height:auto}
+.ld-foot{display:flex;flex-direction:column;gap:10px;padding:14px 20px 18px;margin-top:14px;border-top:1px solid var(--border)}
+.ld-key{display:flex;flex-wrap:wrap;align-items:center;gap:8px 12px}
+.ld-key input[type=password]{flex:1;min-width:180px;height:46px;padding:8px 12px;border:1px solid var(--border-strong);border-radius:10px;background:var(--surface);font-size:15px}
+.ld-key .remember{display:flex;align-items:center;gap:6px;font-size:13px;color:var(--muted);white-space:nowrap}
+.ld-saved{font-size:13px;color:var(--muted);text-align:center}
+.ld-link{border:0;background:none;padding:0;color:var(--brand-strong);font:inherit;font-weight:700;cursor:pointer;text-decoration:none}
+.ld-link:hover{text-decoration:underline}
+.ld-send{width:100%;min-height:52px;font-size:17px;border-radius:12px}
+.ld-alt{display:flex;justify-content:center;align-items:center;gap:10px;font-size:13.5px;color:var(--faint)}
+.ld-status{margin:0;padding:9px 12px;border-radius:10px;text-align:center;font-size:14px;font-weight:700}
+.ld-status:empty{display:none}
+.ld-status.ok{background:var(--ok-bg);color:var(--ok)}
+.ld-status.err{background:var(--exp-bg);color:var(--exp)}
+.ld-status.busy{background:var(--surface-2);color:var(--muted)}
 .confirm-text{font-size:15px;margin-bottom:18px}
 .toasts{position:fixed;left:50%;bottom:24px;transform:translateX(-50%);z-index:6000;display:flex;flex-direction:column;gap:8px;align-items:center;pointer-events:none;width:min(480px,92vw)}
 .toast{padding:11px 16px;border-radius:12px;background:#13263d;color:#fff;font-weight:600;font-size:14px;box-shadow:var(--shadow-lg);animation:tin .2s ease}
@@ -609,13 +633,9 @@ tbody tr{transition:background .12s}
       </div>
     </div>
     <div class="kpis" id="sumKpis"></div>
-    <div class="legend">
-      <span class="k urg"><i class="dot"></i><b>ต้องเร่งขาย</b> ลดราคา • ตรวจสอบคุณภาพ</span>
-      <span class="k high"><i class="dot"></i><b>เสี่ยงสูง</b> ขอโปรโมชัน • จัดชิมผลักดันการขาย</span>
-      <span class="k info">Top 10 ต่อ Department • เรียงจากด่วนที่สุด • สินค้าหลายล็อตแสดงล็อตที่ต้องจัดการก่อน</span>
-    </div>
     <div class="pills" id="sumPills"></div>
     <div id="summaryContent"></div>
+    <p class="s-foot" id="sumFoot"></p>
   </div>
 </main>
 
@@ -1275,23 +1295,53 @@ function buildDivisionSummary(items) {
     if (division === 'ไม่ระบุ' || division === '-' || isBlank(division)) continue;
     if (!divisions.has(division)) divisions.set(division, new Map());
     const deps = divisions.get(division);
-    if (!deps.has(department)) deps.set(department, { products: new Map(), urgentLots: 0, highLots: 0 });
-    if (r.status !== ST.URG && r.status !== ST.HIGH) continue;
+    if (!deps.has(department)) deps.set(department, { products: new Map(), urgentLots: 0, highLots: 0, expired: new Map() });
     const dep = deps.get(department);
+    // หมดอายุ: นับรหัสสินค้าแยก (value = มีล็อตที่เป็นรายการใหม่หรือไม่)
+    if (r.status === ST.EXP) { const k = itemKey(r); dep.expired.set(k, dep.expired.get(k) || !!r.isNew); continue; }
+    if (r.status !== ST.URG && r.status !== ST.HIGH) continue;
     r.status === ST.URG ? dep.urgentLots++ : dep.highLots++;
     const key = itemKey(r);
     const cur = dep.products.get(key);
     if (!cur || cmp(r, cur) < 0) dep.products.set(key, r);
   }
+  const total = (list, k) => list.reduce((s, d) => s + d[k], 0);
   return [...divisions].sort(([a], [b]) => collator.compare(a, b)).map(([name, deps]) => {
-    const departments = [...deps].map(([dname, { products, urgentLots, highLots }]) => {
+    const departments = [...deps].map(([dname, { products, urgentLots, highLots, expired }]) => {
       const ranked = [...products.values()].sort(cmp);
+      const expNew = [...expired.values()].filter(Boolean).length;
       return { name: dname, total: ranked.length, urgent: ranked.filter(r => r.status === ST.URG).length,
-        high: ranked.filter(r => r.status === ST.HIGH).length, urgentLots, highLots, items: ranked.slice(0, TOP_N) };
-    }).sort((a, b) => b.urgent - a.urgent || b.total - a.total || collator.compare(a.name, b.name));
-    return { name, departments, urgent: departments.reduce((s, d) => s + d.urgent, 0), high: departments.reduce((s, d) => s + d.high, 0) };
+        high: ranked.filter(r => r.status === ST.HIGH).length, urgentLots, highLots,
+        expired: expired.size,
+        newCount: ranked.filter(r => r.isNew).length + expNew,
+        all: ranked, items: ranked.slice(0, TOP_N) };
+    }).sort((a, b) => b.urgent - a.urgent || b.total - a.total || b.expired - a.expired || collator.compare(a.name, b.name));
+    return { name, departments, urgent: total(departments, 'urgent'), high: total(departments, 'high'),
+      expired: total(departments, 'expired'), newCount: total(departments, 'newCount') };
   });
 }
+const needsAction = d => d.total > 0 || d.expired > 0;
+
+// นับแบบหน้าสรุปจากแถวใดก็ได้ (ไฟล์ปัจจุบันหรือครั้งก่อน) เพื่อคิด ▲▼:
+// ต่อ Department นับรหัสสินค้าครั้งเดียว เร่งขายมาก่อนเสี่ยงสูง หมดอายุนับแยก และข้ามแถวที่ไม่มี Division
+function summaryCounts(rows, keyOf, division = '') {
+  const urg = new Set(), high = new Set(), exp = new Set();
+  for (const r of rows) {
+    const div = String(r.division ?? '').trim();
+    if (!div || div === '-' || (division && div !== division)) continue;
+    const k = `${div}|${String(r.department ?? '').trim() || 'ไม่ระบุ'}|${keyOf(r)}`;
+    if (r.status === ST.URG) urg.add(k); else if (r.status === ST.HIGH) high.add(k); else if (r.status === ST.EXP) exp.add(k);
+  }
+  return { urg: urg.size, high: [...high].filter(k => !urg.has(k)).length, exp: exp.size };
+}
+function summaryDelta(key, division = '') {
+  if (!state.prev) return null;
+  const cur = summaryCounts(state.items, itemKey, division)[key], prev = summaryCounts(state.prev.rows, r => r.k, division)[key];
+  return cur - prev;
+}
+const deltaText = d => d === 0 ? 'เท่าครั้งก่อน' : `${d > 0 ? '▲' : '▼'} ${fmtTH(Math.abs(d))} จากครั้งก่อน`;
+// บนมือถือซ่อนคำว่า "จากครั้งก่อน" (.dl) ให้เหลือ ▲ 14 พอดีกล่อง
+const deltaHTML = d => d == null ? '' : `<span class="delta ${d === 0 ? 'same' : d > 0 ? 'bad' : 'good'}" title="${deltaText(d)}">${d === 0 ? 'เท่าเดิม' :`${d > 0 ? '▲' : '▼'} ${fmtTH(Math.abs(d))}<span class="dl"> จากครั้งก่อน</span>`}</span>`;
 
 const fmtTH = n => Number(n).toLocaleString('th-TH');
 const dayLabel = d => d === 0 ? ['วันนี้', 'หมดอายุ'] : [String(d), 'วัน'];
@@ -1302,25 +1352,25 @@ function renderSummary() {
   if (sumDivision && !sumGroups.some(g => g.name === sumDivision)) sumDivision = '';
   const deps = sumGroups.flatMap(g => g.departments);
   const sum = k => deps.reduce((s, d) => s + d[k], 0);
-  const urg = sum('urgent'), high = sum('high');
-  const in7 = deps.reduce((s, d) => s + d.items.filter(r => r.days <= 7).length, 0);
+  const urg = sum('urgent'), high = sum('high'), exp = sum('expired'), newCount = sum('newCount');
   // แถวที่ไม่มี Division ไม่อยู่ในหน้าสรุป แจ้งไว้เพื่อให้เทียบกับการ์ดหน้าหลักได้
   const noDiv = state.items.filter(r => (r.status === ST.URG || r.status === ST.HIGH) && (isBlank(r.division) || r.division.trim() === '-')).length;
-  const chips = state.loadedAt ? [
-    `🕒 ข้อมูล ณ ${state.loadedAt.toLocaleString('th-TH', { dateStyle: 'medium', timeStyle: 'short' })}`,
-    `${sumGroups.length} Division`, `${deps.length} Department`,
-    'นับทีละรหัสสินค้า • ข้อมูลทั้งไฟล์ (ไม่ใช้ตัวกรองหน้าหลัก)'
-  ].map(t => `<span>${esc(t)}</span>`).join('') + (noDiv ? `<span class="warn">ไม่รวม ${fmtTH(noDiv)} ล็อตที่ไม่ระบุ Division</span>` : '') : '';
-  $('#sumStamp').innerHTML = chips;
-  const flagged = urg + high, active = deps.filter(d => d.total).length;
-  const share = (n, of) => of ? `${Math.max(n / of * 100, n ? 2 : 0)}%` : '0%';
-  const kpi = (cls, icon, label, value, unit, bar) => `<div class="kpi ${cls}"><div class="card-top"><span class="ic">${icon}</span><span class="lbl">${label}</span></div><b>${value}</b><small>${unit}</small><span class="meter"><i style="width:${bar}"></i></span></div>`;
+  // หัวหน้า: บรรทัดเดียว + ป้ายเฉพาะที่ต้องรู้ (รายการใหม่ / แถวที่ไม่รวม)
+  $('#sumStamp').innerHTML = state.loadedAt
+    ? `<span>ข้อมูล ณ ${esc(state.loadedAt.toLocaleString('th-TH', { dateStyle: 'medium', timeStyle: 'short' }))} • ${sumGroups.length} Division • ${deps.length} Department</span>`
+      + (state.prev ? `<span class="new" title="เทียบกับ ${esc(state.prev.fileName)}">ใหม่ ${fmtTH(newCount)} รายการ จากครั้งก่อน</span>` : '')
+      + (noDiv ? `<span class="warn">ไม่รวม ${fmtTH(noDiv)} ล็อตที่ไม่ระบุ Division</span>` : '')
+    : '';
+  $('#sumFoot').textContent = sumGroups.length
+    ? `วิธีนับ: นับทีละรหัสสินค้า จากข้อมูลทั้งไฟล์ (ไม่ใช้ตัวกรองหน้าหลัก) • Top ${TOP_N} ต่อ Department เรียงจากด่วนที่สุด • สินค้าหลายล็อตแสดงล็อตที่ต้องจัดการก่อน • ไม่รวมสินค้าไม่มีวันหมดอายุ${state.prev ? ` • ▲▼ และ "ใหม่" เทียบกับ ${state.prev.fileName}` : ''}`
+    : '';
+  // 3 ตัวเลขหลัก: จำนวน + ▲▼ + สิ่งที่ต้องทำ
+  const kpi = (cls, icon, label, value, unit, todo, d) => `<div class="kpi ${cls}"><div class="card-top"><span class="ic">${icon}</span><span class="lbl">${label}</span></div><div class="num-row"><b>${value}</b><small>${unit}</small></div>${deltaHTML(d)}<span class="todo">${todo}</span></div>`;
   const svg = p => `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">${p}</svg>`;
   $('#sumKpis').innerHTML = sumGroups.length ? [
-    kpi('urg', svg('<path d="M12 22c4 0 7-2.8 7-7 0-3-1.7-5.5-3.6-7.3-.3 1.9-1.4 3.3-2.9 3.8C12.8 8 11.4 5 9 2.5 9 6.6 5 9.6 5 15c0 4.2 3 7 7 7z"/>'), 'ต้องเร่งขาย', fmtTH(urg), `รหัสสินค้า • ${fmtTH(sum('urgentLots'))} ล็อต`, share(urg, flagged)),
-    kpi('high', svg('<path d="M10.3 3.9 1.8 18a2 2 0 0 0 1.7 3h17a2 2 0 0 0 1.7-3L13.7 3.9a2 2 0 0 0-3.4 0z"/><path d="M12 9v4M12 17h.01"/>'), 'เสี่ยงสูง', fmtTH(high), `รหัสสินค้า • ${fmtTH(sum('highLots'))} ล็อต`, share(high, flagged)),
-    kpi('soon', svg('<circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/>'), 'หมดอายุภายใน 7 วัน', fmtTH(in7), 'รหัสสินค้า จากรายการ Top 10', share(in7, deps.reduce((s, d) => s + d.items.length, 0))),
-    kpi('dep', svg('<rect x="3" y="3" width="7" height="7" rx="1.5"/><rect x="14" y="3" width="7" height="7" rx="1.5"/><rect x="3" y="14" width="7" height="7" rx="1.5"/><rect x="14" y="14" width="7" height="7" rx="1.5"/>'), 'Department ที่ต้องจัดการ', `${active} / ${deps.length}`, 'มีสินค้าเร่งขายหรือเสี่ยงสูง', share(active, deps.length))
+    kpi('exp', svg('<path d="M7.9 2h8.2L22 7.9v8.2L16.1 22H7.9L2 16.1V7.9z"/><path d="m15 9-6 6M9 9l6 6"/>'), 'หมดอายุ', fmtTH(exp), 'รหัสสินค้า', 'ห้ามจำหน่าย • คัดออก', summaryDelta('exp')),
+    kpi('urg', svg('<path d="M12 22c4 0 7-2.8 7-7 0-3-1.7-5.5-3.6-7.3-.3 1.9-1.4 3.3-2.9 3.8C12.8 8 11.4 5 9 2.5 9 6.6 5 9.6 5 15c0 4.2 3 7 7 7z"/>'), 'ต้องเร่งขาย', fmtTH(urg), `รหัสสินค้า • ${fmtTH(sum('urgentLots'))} ล็อต`, 'ลดราคา • ตรวจสอบคุณภาพ', summaryDelta('urg')),
+    kpi('high', svg('<path d="M10.3 3.9 1.8 18a2 2 0 0 0 1.7 3h17a2 2 0 0 0 1.7-3L13.7 3.9a2 2 0 0 0-3.4 0z"/><path d="M12 9v4M12 17h.01"/>'), 'เสี่ยงสูง', fmtTH(high), `รหัสสินค้า • ${fmtTH(sum('highLots'))} ล็อต`, 'ขอโปรโมชัน • จัดชิม', summaryDelta('high'))
   ].join('') : '';
   renderSumPills();
   renderSumDivisions();
@@ -1329,31 +1379,36 @@ function renderSummary() {
 function renderSumPills() {
   const box = $('#sumPills');
   if (!sumGroups.length) { box.innerHTML = ''; return; }
-  const all = sumGroups.reduce((s, g) => s + g.urgent + g.high, 0);
-  box.innerHTML = [['', 'ทุก Division', all], ...sumGroups.map(g => [g.name, g.name, g.urgent + g.high])]
+  const n = g => g.urgent + g.high + g.expired;
+  const all = sumGroups.reduce((s, g) => s + n(g), 0);
+  box.innerHTML = [['', 'ทุก Division', all], ...sumGroups.map(g => [g.name, g.name, n(g)])]
     .map(([v, l, n]) => `<button type="button" class="pill" data-div="${esc(v)}" aria-pressed="${v === sumDivision}">${esc(l)} <em>${fmtTH(n)}</em></button>`).join('');
   box.querySelectorAll('.pill').forEach(b => b.onclick = () => { sumDivision = b.dataset.div; renderSumPills(); renderSumDivisions(); });
 }
 
+// บรรทัดสรุปจำนวนแบบตัวหนังสือ (แทนป้ายหลายอัน) ใช้ทั้งหัว Division และหัวการ์ด Department
+const cntLine = g => (g.urgent || g.high)
+  ? `<span class="cnt">${[g.urgent ? `เร่งขาย <b class="u">${fmtTH(g.urgent)}</b>` : '', g.high ? `เสี่ยงสูง <b class="h">${fmtTH(g.high)}</b>` : ''].filter(Boolean).join(' • ')}</span>` : '';
+const newTag = r => r.isNew ? '<span class="new-tag" title="เพิ่งเข้ากลุ่มเสี่ยงเมื่อเทียบกับไฟล์ครั้งก่อน">ใหม่</span>' : '';
 function deptCardHTML(divName, d) {
-  const tot = d.urgent + d.high || 1;
-  const rows = d.items.map((r, i) => {
+  // แสดง Top 10 ก่อน ที่เหลือซ่อนไว้ กด "แสดงทั้งหมด" เพื่อขยายในการ์ดได้เลย
+  const rows = d.all.map((r, i) => {
     const u = r.status === ST.URG, [big, small] = dayLabel(r.days);
-    return `<li class="item">
+    return `<li class="item${i >= TOP_N ? ' more' : ''}">
       <span class="rank">${i + 1}</span>
       <div class="daybox ${u ? 'urg' : 'high'}" title="${esc(r.status)}"><b>${big}</b><small>${small}</small></div>
-      <div class="info"><div class="name" title="${esc(r.name)}">${esc(r.name || '-')}</div><div class="meta">Item ${esc(r.itemno || '-')} • หมด ${esc(r.expiry)}</div></div>
+      <div class="info"><div class="name" title="${esc(r.name)}">${esc(r.name || '-')}${newTag(r)}</div><div class="meta">Item ${esc(r.itemno || '-')} • หมด ${esc(r.expiry)}</div></div>
       <div class="stk"><b>${fmtTH(r.stock)}</b><small>Stock</small></div>
     </li>`;
   }).join('');
+  const go = `data-go-div="${esc(divName)}" data-go-dep="${esc(d.name)}"`;
   return `<article class="dept">
     <div class="dept-head">
       <div class="dept-title"><h4>${esc(d.name)}</h4><span class="total">${fmtTH(d.total)} รหัสสินค้า</span></div>
-      <div class="mixbar"><i class="u" style="width:${d.urgent / tot * 100}%"></i><i class="h" style="width:${d.high / tot * 100}%"></i></div>
-      <div class="counts">${d.urgent ? `<span class="tag u">ต้องเร่งขาย ${fmtTH(d.urgent)}</span>` : ''}${d.high ? `<span class="tag h">เสี่ยงสูง ${fmtTH(d.high)}</span>` : ''}</div>
+      <div class="counts">${cntLine(d)}${d.expired ? `<button type="button" class="tag x" ${go} data-go-exp title="ดูสินค้าหมดอายุของแผนกนี้">หมดอายุ ${fmtTH(d.expired)} →</button>` : ''}${d.newCount ? `<span class="tag n">ใหม่ ${fmtTH(d.newCount)}</span>` : ''}</div>
     </div>
-    <ol class="items">${rows}</ol>
-    <div class="dept-foot"><span>แสดง ${d.items.length} จาก ${fmtTH(d.total)}</span><button type="button" data-go-div="${esc(divName)}" data-go-dep="${esc(d.name)}">ดูทั้งหมดในตาราง →</button></div>
+    ${d.total ? `<ol class="items">${rows}</ol>` : '<div class="empty-dept">ไม่มีสินค้าเร่งขายหรือเสี่ยงสูง — มีเฉพาะสินค้าหมดอายุที่ต้องคัดออก</div>'}
+    <div class="dept-foot"><span>${d.total ? `แสดง <b data-shown>${Math.min(TOP_N, d.total)}</b> จาก ${fmtTH(d.total)}` : ''}</span><span class="foot-btns">${d.total > TOP_N ? `<button type="button" data-expand data-n="${d.total}">แสดงทั้งหมด (${fmtTH(d.total)})</button>` : ''}<button type="button" ${go}${d.total ? '' : ' data-go-exp'}>ดูในตาราง →</button></span></div>
   </article>`;
 }
 
@@ -1365,24 +1420,31 @@ function renderSumDivisions() {
   }
   // แผนกที่ไม่มีสินค้าต้องจัดการ รวมเป็นบรรทัดเดียวท้าย Division แทนการ์ดเปล่า
   box.innerHTML = sumGroups.filter(g => !sumDivision || g.name === sumDivision).map(g => {
-    const busy = g.departments.filter(d => d.total), clear = g.departments.filter(d => !d.total);
+    const busy = g.departments.filter(needsAction), clear = g.departments.filter(d => !needsAction(d));
     return `<section class="division">
-      <div class="div-head"><h3>${esc(g.name)}</h3>${g.urgent ? `<span class="tag u">ต้องเร่งขาย ${fmtTH(g.urgent)}</span>` : ''}${g.high ? `<span class="tag h">เสี่ยงสูง ${fmtTH(g.high)}</span>` : ''}<span class="sub">${g.departments.length} Department</span></div>
+      <div class="div-head"><h3>${esc(g.name)}</h3>${cntLine(g)}${g.expired ? `<span class="tag x">หมดอายุ ${fmtTH(g.expired)}</span>` : ''}${g.newCount ? `<span class="tag n">ใหม่ ${fmtTH(g.newCount)}</span>` : ''}</div>
       ${busy.length ? `<div class="dept-grid">${busy.map(d => deptCardHTML(g.name, d)).join('')}</div>` : ''}
       ${clear.length ? `<div class="ok-depts"><b>✓ ไม่มีสินค้าต้องจัดการ</b><span>${clear.map(d => esc(d.name)).join(' • ')}</span></div>` : ''}
     </section>`;
   }).join('');
-  box.querySelectorAll('[data-go-div]').forEach(b => b.onclick = () => openInTable(b.dataset.goDiv, b.dataset.goDep));
+  box.querySelectorAll('[data-go-div]').forEach(b => b.onclick = () => openInTable(b.dataset.goDiv, b.dataset.goDep, 'goExp' in b.dataset));
+  box.querySelectorAll('[data-expand]').forEach(b => b.onclick = () => {
+    const card = b.closest('.dept'), open = card.classList.toggle('expanded');
+    b.textContent = open ? 'แสดงแค่ Top 10' : `แสดงทั้งหมด (${fmtTH(b.dataset.n)})`;
+    card.querySelector('[data-shown]').textContent = open ? fmtTH(b.dataset.n) : TOP_N;
+    if (!open) card.scrollIntoView({ block: 'nearest' });
+  });
 }
 
-// "ดูทั้งหมด" → กลับหน้าหลัก แล้วกรองตาม Division + Department
-function openInTable(div, dep) {
+// "ดูในตาราง" → กลับหน้าหลัก แล้วกรองตาม Division + Department (expired = เปิดรายการหมดอายุของแผนกนั้น)
+function openInTable(div, dep, expired = false) {
   location.hash = '';
-  $('#search').value = ''; $('#fClass').value = ''; $('#fStatus').value = ''; $('#fPeriod').value = 'all';
+  $('#search').value = ''; $('#fClass').value = ''; $('#fStatus').value = ''; $('#fPeriod').value = 'all'; $('#newOnly').checked = false;
   $('#fDivision').value = div; buildOptions();
   $('#fDepartment').value = dep === 'ไม่ระบุ' ? '' : dep; buildOptions();
+  state.expOpen = expired;
   applyFilters();
-  setTimeout(() => $('#mainPanel').scrollIntoView({ behavior: 'smooth', block: 'start' }), 80);
+  setTimeout(() => $(expired ? '#expiredPanel' : '#mainPanel').scrollIntoView({ behavior: 'smooth', block: 'start' }), 80);
 }
 
 function syncRoute() {
@@ -1410,11 +1472,11 @@ function ellipsize(ctx, text, max) {
 
 function createOverviewCanvas(allGroups, divisionFilter = '', stampDate = new Date()) {
   const gs = allGroups.filter(g => !divisionFilter || g.name === divisionFilter)
-    .map(g => ({ ...g, departments: g.departments.filter(d => d.total) })).filter(g => g.departments.length);
-  if (!gs.length) throw new Error('ไม่พบสินค้าที่ต้องเร่งขายหรือเสี่ยงสูง');
+    .map(g => ({ ...g, departments: g.departments.filter(needsAction) })).filter(g => g.departments.length);
+  if (!gs.length) throw new Error('ไม่พบสินค้าที่ต้องจัดการ');
   const W = 1080, M = 40, CW = W - M * 2, F = '"Prompt", Tahoma, sans-serif';
-  const ROW = 84, DEPT_HEAD = 92, DIV_HEAD = 74, HEADER = 330, LEGEND = 74, FOOT = 90, MAX_H = 32000;
-  const deptH = d => DEPT_HEAD + d.items.length * ROW + (d.total > d.items.length ? 44 : 14);
+  const ROW = 84, DEPT_HEAD = 104, DIV_HEAD = 74, HEADER = 372, LEGEND = 112, FOOT = 90, MAX_H = 32000;
+  const deptH = d => DEPT_HEAD + (d.items.length ? d.items.length * ROW + (d.total > d.items.length ? 44 : 14) : 52);
   let H = HEADER + LEGEND + 20;
   gs.forEach(g => { H += DIV_HEAD + 12; g.departments.forEach(d => { H += deptH(d) + 18; }); });
   H += FOOT;
@@ -1424,6 +1486,12 @@ function createOverviewCanvas(allGroups, divisionFilter = '', stampDate = new Da
   if (!x) throw new Error('เบราว์เซอร์นี้ไม่รองรับการสร้างภาพ');
   const rect = (col, a, b, w, h, r = 0) => { x.fillStyle = col; x.beginPath(); r && x.roundRect ? x.roundRect(a, b, w, h, r) : x.rect(a, b, w, h); x.fill(); };
   const txt = (v, a, b, col, st, al = 'left') => { x.fillStyle = col; x.font = `${st} ${F}`; x.textAlign = al; x.fillText(String(v), a, b); x.textAlign = 'left'; };
+  // ป้ายมน (pill) กึ่งกลางแนวตั้งที่ cy; คืนค่าความกว้าง
+  const pill = (label, px, cy, bg, fg, st = '700 19px', align = 'left') => {
+    x.font = `${st} ${F}`; const w = x.measureText(label).width + 24, left = align === 'right' ? px - w : px;
+    rect(bg, left, cy - 16, w, 32, 16); txt(label, left + 12, cy + 7, fg, st); return w;
+  };
+  const C = { exp: ['#fdecea', '#b3261e'], urg: ['#fff1dd', '#a14a00'], high: ['#fff7c9', '#7a5c00'], blue: ['#e8f2fc', '#164e7c'], nw: ['#f1ebfd', '#6a3fc4'] };
 
   rect('#f2f6fa', 0, 0, W, c.height);
   const gr = x.createLinearGradient(0, 0, W, HEADER); gr.addColorStop(0, '#0b4470'); gr.addColorStop(1, '#1670ab');
@@ -1432,42 +1500,66 @@ function createOverviewCanvas(allGroups, divisionFilter = '', stampDate = new Da
   x.font = `800 46px ${F}`;
   txt(ellipsize(x, divisionFilter ? `สินค้าที่ต้องรีบจัดการ — ${divisionFilter}` : 'สินค้าที่ต้องรีบจัดการ', CW), M, 122, '#ffffff', '800 46px');
   const stamp = stampDate.toLocaleString('th-TH', { timeZone: 'Asia/Bangkok', day: '2-digit', month: 'short', year: 'numeric', hour: '2-digit', minute: '2-digit' });
-  const deps = gs.flatMap(g => g.departments);
-  txt(`ข้อมูล ณ ${stamp} น. • ${gs.length} Division • ${deps.length} Department • Top ${TOP_N} ต่อ Department`, M, 168, '#d3e8f7', '500 23px');
-  const stats = [['ต้องเร่งขาย', deps.reduce((s, d) => s + d.urgent, 0), '#fff1dd', '#a14a00', 'รหัสสินค้า'],
-                 ['เสี่ยงสูง', deps.reduce((s, d) => s + d.high, 0), '#fff7c9', '#7a5c00', 'รหัสสินค้า'],
-                 ['Department', deps.length, '#e8f2fc', '#164e7c', '']];
-  const sw = (CW - 32) / 3;
-  stats.forEach(([l, v, bg, fg, unit], i) => {
-    const sx = M + i * (sw + 16); rect(bg, sx, 200, sw, 100, 16); txt(l, sx + 22, 236, fg, '700 23px'); txt(fmtTH(v), sx + 22, 284, fg, '800 40px');
-    if (unit) { x.font = `800 40px ${F}`; txt(unit, sx + 32 + x.measureText(fmtTH(v)).width, 282, fg, '600 20px'); }
+  const deps = gs.flatMap(g => g.departments), sum = k => deps.reduce((s, d) => s + d[k], 0);
+  x.font = `500 22px ${F}`;
+  txt(ellipsize(x, `ข้อมูล ณ ${stamp} น. • ${gs.length} Division • ${deps.length} Department${state.prev ? ` • เทียบกับ ${state.prev.fileName}` : ''}`, CW), M, 166, '#d3e8f7', '500 22px');
+  // กล่องตัวเลข 4 ช่อง + ▲▼ เทียบกับไฟล์ครั้งก่อน (ถ้ามี)
+  const stats = [
+    ['หมดอายุ — คัดออก', sum('expired'), C.exp, summaryDelta('exp', divisionFilter)],
+    ['ต้องเร่งขาย', sum('urgent'), C.urg, summaryDelta('urg', divisionFilter)],
+    ['เสี่ยงสูง', sum('high'), C.high, summaryDelta('high', divisionFilter)],
+    state.prev ? ['รายการใหม่', sum('newCount'), C.nw, null] : null
+  ];
+  const shown = stats.filter(Boolean), sw = (CW - 16 * (shown.length - 1)) / shown.length, sy = 196;
+  shown.forEach(([l, v, [bg, fg], dlt], i) => {
+    const sx = M + i * (sw + 16); rect(bg, sx, sy, sw, 140, 16);
+    x.font = `700 21px ${F}`; txt(ellipsize(x, l, sw - 40), sx + 20, sy + 38, fg, '700 21px');
+    txt(fmtTH(v), sx + 20, sy + 90, fg, '800 42px');
+    if (dlt != null) txt(deltaText(dlt), sx + 20, sy + 124, dlt > 0 ? '#b3261e' : dlt < 0 ? '#1d7a3e' : '#5f7287', '700 18px');
+    else txt('เพิ่งเข้ากลุ่มเสี่ยง', sx + 20, sy + 124, fg, '600 18px');
   });
 
   let y = HEADER + 16;
   rect('#ffffff', M, y, CW, LEGEND - 14, 14);
-  rect('#ea8300', M + 22, y + 22, 16, 16, 8); txt('ต้องเร่งขาย = ลดราคา • ตรวจคุณภาพ', M + 48, y + 38, '#38546e', '600 22px');
-  rect('#d4a400', M + 520, y + 22, 16, 16, 8); txt('เสี่ยงสูง = ขอโปรโมชัน • จัดชิม', M + 546, y + 38, '#38546e', '600 22px');
+  const dot = (col, lx, ly) => rect(col, lx, ly - 14, 16, 16, 8);
+  dot('#c5221f', M + 22, y + 40); txt('หมดอายุ = ห้ามจำหน่าย • คัดออก', M + 48, y + 40, '#38546e', '600 20px');
+  dot('#ea8300', M + 500, y + 40); txt('ต้องเร่งขาย = ลดราคา • ตรวจคุณภาพ', M + 526, y + 40, '#38546e', '600 20px');
+  dot('#d4a400', M + 22, y + 78); txt('เสี่ยงสูง = ขอโปรโมชัน • จัดชิม', M + 48, y + 78, '#38546e', '600 20px');
+  if (state.prev) { const pw = pill('ใหม่', M + 500, y + 71, C.nw[0], C.nw[1], '700 17px'); txt('= เพิ่งเข้ากลุ่มเสี่ยงเทียบกับครั้งก่อน', M + 508 + pw, y + 78, '#38546e', '600 20px'); }
+  else txt(`Top ${TOP_N} ต่อ Department • เรียงจากด่วนที่สุด`, M + 500, y + 78, '#38546e', '600 20px');
   y += LEGEND + 4;
 
   let truncated = false;
   outer: for (const g of gs) {
-    if (y + DIV_HEAD + 200 > c.height - FOOT) { truncated = true; break; }
+    // ต้องมีที่พอสำหรับหัว Division + แผนกแรก ไม่อย่างนั้นหยุดและแจ้งว่าภาพไม่ครบ
+    if (y + DIV_HEAD + 12 + deptH(g.departments[0]) > c.height - FOOT) { truncated = true; break; }
     rect('#dbe9f6', M, y, CW, DIV_HEAD - 10, 14);
     x.font = `800 30px ${F}`;
-    txt(ellipsize(x, g.name.toUpperCase(), 560), M + 22, y + 44, '#123f66', '800 30px');
-    txt(`เร่งขาย ${fmtTH(g.urgent)} • เสี่ยงสูง ${fmtTH(g.high)}`, W - M - 22, y + 43, '#3d5f7e', '700 22px', 'right');
+    txt(ellipsize(x, g.name.toUpperCase(), 460), M + 22, y + 44, '#123f66', '800 30px');
+    const gParts = [g.expired ? `หมดอายุ ${fmtTH(g.expired)}` : '', `เร่งขาย ${fmtTH(g.urgent)}`, `เสี่ยงสูง ${fmtTH(g.high)}`, g.newCount && state.prev ? `ใหม่ ${fmtTH(g.newCount)}` : ''];
+    txt(gParts.filter(Boolean).join(' • '), W - M - 22, y + 43, '#3d5f7e', '700 21px', 'right');
     y += DIV_HEAD + 12;
     for (const d of g.departments) {
       const ch = deptH(d);
       if (y + ch > c.height - FOOT) { truncated = true; break outer; }
       rect('#ffffff', M, y, CW, ch, 18);
+      // ขวาบน: จำนวนรหัสสินค้า + ป้ายหมดอายุ / ใหม่
+      let rx = W - M - 24;
+      x.font = `600 20px ${F}`;
+      const totalLabel = `${fmtTH(d.total)} รหัสสินค้า`;
+      txt(totalLabel, rx, y + 47, '#5f7287', '600 20px', 'right'); rx -= x.measureText(totalLabel).width + 12;
+      if (d.newCount && state.prev) rx -= pill(`ใหม่ ${fmtTH(d.newCount)}`, rx, y + 40, C.nw[0], C.nw[1], '700 18px', 'right') + 8;
+      if (d.expired) rx -= pill(`หมดอายุ ${fmtTH(d.expired)}`, rx, y + 40, '#c5221f', '#ffffff', '700 18px', 'right') + 8;
       x.font = `800 30px ${F}`;
-      txt(ellipsize(x, d.name, 680), M + 24, y + 46, '#13263d', '800 30px');
-      txt(`${fmtTH(d.total)} รหัสสินค้า`, W - M - 24, y + 44, '#5f7287', '600 22px', 'right');
-      const bw = CW - 48, tot = d.urgent + d.high || 1;
-      rect('#edf2f7', M + 24, y + 64, bw, 10, 5);
-      rect('#ea8300', M + 24, y + 64, bw * d.urgent / tot, 10, 5);
-      rect('#d4a400', M + 24 + bw * d.urgent / tot, y + 64, bw * d.high / tot, 10, 0);
+      txt(ellipsize(x, d.name, rx - (M + 24) - 12), M + 24, y + 50, '#13263d', '800 30px');
+      if (d.total) {
+        const bw = CW - 48, tot = d.urgent + d.high || 1;
+        rect('#edf2f7', M + 24, y + 72, bw, 10, 5);
+        rect('#ea8300', M + 24, y + 72, bw * d.urgent / tot, 10, 5);
+        rect('#d4a400', M + 24 + bw * d.urgent / tot, y + 72, bw * d.high / tot, 10, 0);
+      } else {
+        txt('ไม่มีสินค้าเร่งขายหรือเสี่ยงสูง — มีเฉพาะสินค้าหมดอายุที่ต้องคัดออก', M + 24, y + DEPT_HEAD + 6, '#5f7287', '500 20px');
+      }
       let ry = y + DEPT_HEAD;
       d.items.forEach((r, i) => {
         const u = r.status === ST.URG, fg = u ? '#a14a00' : '#7a5c00';
@@ -1478,7 +1570,9 @@ function createOverviewCanvas(allGroups, divisionFilter = '', stampDate = new Da
         txt(big, M + 114, ry + 44, fg, `800 ${big.length > 3 ? 24 : 28}px`, 'center');
         txt(small, M + 114, ry + 66, fg, '700 17px', 'center');
         x.font = `700 26px ${F}`;
-        txt(ellipsize(x, r.name || '-', 600), M + 188, ry + 38, '#13263d', '700 26px');
+        const nm = ellipsize(x, r.name || '-', r.isNew ? 520 : 600);
+        txt(nm, M + 188, ry + 38, '#13263d', '700 26px');
+        if (r.isNew) { x.font = `700 26px ${F}`; pill('ใหม่', M + 198 + x.measureText(nm).width, ry + 29, C.nw[0], C.nw[1], '700 16px'); }
         txt(`Item ${r.itemno || '-'} • หมด ${r.expiry}`, M + 188, ry + 68, '#64788c', '500 20px');
         txt(fmtTH(r.stock), W - M - 28, ry + 40, '#13263d', '800 26px', 'right');
         txt('Stock', W - M - 28, ry + 66, '#8b9bac', '500 18px', 'right');
@@ -1489,7 +1583,7 @@ function createOverviewCanvas(allGroups, divisionFilter = '', stampDate = new Da
     }
   }
   rect('#e5edf5', 0, c.height - FOOT, W, FOOT);
-  txt(truncated ? 'ภาพยาวเกินกำหนด แสดงไม่ครบ — กรุณาเลือกส่งทีละ Division' : 'Smart Expiry • นับทีละรหัสสินค้า • ไม่รวมสินค้าหมดอายุและไม่มีวันหมดอายุ (ดูบนเว็บ)',
+  txt(truncated ? 'ภาพยาวเกินกำหนด แสดงไม่ครบ — กรุณาเลือกส่งทีละ Division' : `Smart Expiry • นับทีละรหัสสินค้า • Top ${TOP_N} ต่อ Department • ไม่รวมสินค้าไม่มีวันหมดอายุ`,
     M, c.height - 38, truncated ? '#b3261e' : '#4f6780', '600 20px');
   return c;
 }
@@ -1517,60 +1611,86 @@ async function openLineDialog(btn) {
   try {
     if (document.fonts) await Promise.race([document.fonts.load('800 46px "Prompt"'), new Promise(r => setTimeout(r, 3000))]);
     const groups = buildDivisionSummary(state.items);
-    const usable = groups.filter(g => g.departments.some(d => d.total));
+    const usable = groups.filter(g => g.departments.some(needsAction));
     let scope = location.hash === '#summary' && usable.some(g => g.name === sumDivision) ? sumDivision : '';
     let img = await buildLineImages(groups, scope);
     const fileName = () => `SmartExpiry-${scope ? scope.replace(/[<>:"/\\|?*\s]+/g, '_') : 'Overview'}-${isoDate(new Date())}.png`;
     let savedKey = ''; try { savedKey = sessionStorage.getItem('sx-send-key') || ''; } catch (_) {}
+    const count = g => g.urgent + g.high + g.expired;
+    const scopes = [['', 'ทุก Division', usable.reduce((s, g) => s + count(g), 0)], ...usable.map(g => [g.name, g.name, count(g)])];
     const d = document.createElement('dialog');
+    d.className = 'line-dlg';
     d.innerHTML = `
-      <div class="dlg-head"><b>ภาพสรุปพร้อมส่งใน LINE</b><button type="button" class="btn-ghost" data-close aria-label="ปิด">✕</button></div>
-      <div class="dlg-body">
-        <p class="note">บนมือถือกด “แชร์ไป LINE” แล้วเลือกห้อง “${esc(LINE_ROOM)}”</p>
-        <label class="dlg-scope">ขอบเขตภาพ
-          <select data-scope>
-            <option value="">ทุก Division (ภาพเดียว)</option>
-            ${usable.map(g => `<option ${g.name === scope ? 'selected' : ''}>${esc(g.name)}</option>`).join('')}
-          </select>
-          <span class="note" data-size style="font-weight:500"></span>
-        </label>
-        <div class="dlg-actions">
-          <button type="button" class="btn" data-share>แชร์ไป LINE</button>
-          <a class="btn-outline" data-download>⇩ ดาวน์โหลด PNG</a>
-          <button type="button" class="btn line" data-oa>ส่งเข้า LINE OA</button>
+      <div class="dlg-head"><b>ส่งสรุปเข้า LINE</b><button type="button" class="btn-ghost" data-close aria-label="ปิด">✕</button></div>
+      <div class="ld-body">
+        <div class="ld-step"><span class="ld-n">1</span><b>เลือกสิ่งที่จะส่ง</b></div>
+        <div class="ld-scope" role="group" aria-label="ขอบเขตภาพ">
+          ${scopes.map(([v, l, n]) => `<button type="button" class="pill" data-scope="${esc(v)}" aria-pressed="${v === scope}">${esc(l)} <em>${fmtTH(n)}</em></button>`).join('')}
         </div>
-        <div class="oa-box" data-oabox hidden>
-          <label for="sendKey" style="font-weight:700;font-size:14px">รหัส SEND_KEY</label>
-          <div class="row"><input type="password" id="sendKey" autocomplete="off" value="${esc(savedKey)}" placeholder="กรอกรหัสเพื่อส่งเข้า LINE OA"><button type="button" class="btn line" data-send>ส่ง</button></div>
-          <label class="remember"><input type="checkbox" data-remember ${savedKey ? 'checked' : ''}> จำรหัสไว้จนกว่าจะปิดแท็บนี้</label>
+        <div class="ld-step"><span class="ld-n">2</span><b>ตรวจภาพก่อนส่ง</b><span class="ld-size" data-size></span></div>
+        <div class="ld-frame"><img alt="ภาพสรุปสินค้าที่ต้องรีบจัดการ"></div>
+      </div>
+      <div class="ld-foot">
+        <div class="ld-key" data-keybox ${savedKey ? 'hidden' : ''}>
+          <input type="password" id="sendKey" autocomplete="off" placeholder="รหัสส่ง (SEND_KEY)" aria-label="รหัสส่ง SEND_KEY">
+          <label class="remember"><input type="checkbox" data-remember checked> จำไว้จนปิดแท็บนี้</label>
         </div>
-        <img class="dlg-preview" alt="ภาพสรุปสินค้าที่ต้องรีบจัดการ">
+        <div class="ld-saved" data-saved ${savedKey ? '' : 'hidden'}>🔒 ใช้รหัสที่จำไว้ • <button type="button" class="ld-link" data-change>เปลี่ยนรหัส</button></div>
+        <button type="button" class="btn line ld-send" data-send>ส่งเข้า LINE OA</button>
+        <p class="ld-status" data-status role="status"></p>
+        <div class="ld-alt"><button type="button" class="ld-link" data-share title="เปิดเมนูแชร์ของเครื่อง แล้วเลือกห้อง ${esc(LINE_ROOM)}">แชร์ไป LINE เอง</button><span>•</span><a class="ld-link" data-download>ดาวน์โหลดรูป</a></div>
       </div>`;
     document.body.appendChild(d);
+    const $d = s => d.querySelector(s);
+    const status = (text, kind = '') => { const s = $d('[data-status]'); s.textContent = text; s.className = `ld-status ${kind}`; };
     const paint = () => {
-      d.querySelector('.dlg-preview').src = img.url;
-      const a = d.querySelector('[data-download]'); a.href = img.url; a.download = fileName();
-      d.querySelector('[data-size]').textContent = `ภาพสูง ${fmtTH(img.height)} px`;
+      $d('.ld-frame img').src = img.url;
+      const a = $d('[data-download]'); a.href = img.url; a.download = fileName();
+      $d('[data-size]').textContent = img.jpg ? `สูง ${fmtTH(img.height)} px` : 'ภาพยาวเกินไปสำหรับ LINE OA';
+      $d('.ld-frame').scrollTop = 0;
     };
     paint();
-    d.querySelector('[data-scope]').onchange = async e => {
-      const sel = e.currentTarget; sel.disabled = true;
+    // เปลี่ยนขอบเขต → สร้างภาพใหม่
+    d.querySelectorAll('[data-scope]').forEach(b => b.onclick = async () => {
+      if (b.dataset.scope === scope) return;
+      const pills = d.querySelectorAll('[data-scope]');
+      pills.forEach(p => { p.disabled = true; });
+      $d('[data-size]').textContent = 'กำลังสร้างภาพ…'; status('');
       try {
-        const next = await buildLineImages(groups, sel.value);
-        URL.revokeObjectURL(img.url); img = next; scope = sel.value; paint();
-      } catch (err) { toast(`สร้างภาพไม่สำเร็จ: ${err.message}`, 'err'); sel.value = scope; }
-      finally { sel.disabled = false; }
-    };
-    d.querySelector('[data-close]').onclick = () => d.close();
+        const next = await buildLineImages(groups, b.dataset.scope);
+        URL.revokeObjectURL(img.url); img = next; scope = b.dataset.scope;
+        pills.forEach(p => p.setAttribute('aria-pressed', String(p.dataset.scope === scope)));
+        $d('[data-send]').textContent = 'ส่งเข้า LINE OA';
+        paint();
+      } catch (err) { status(`สร้างภาพไม่สำเร็จ: ${err.message}`, 'err'); paint(); }
+      finally { pills.forEach(p => { p.disabled = false; }); }
+    });
+    const askKey = () => { savedKey = ''; try { sessionStorage.removeItem('sx-send-key'); } catch (_) {} $d('[data-saved]').hidden = true; $d('[data-keybox]').hidden = false; $d('#sendKey').focus(); };
+    $d('[data-change]').onclick = askKey;
+    $d('[data-close]').onclick = () => d.close();
     d.addEventListener('close', () => { URL.revokeObjectURL(img.url); d.remove(); }, { once: true });
-    d.querySelector('[data-share]').onclick = e => shareToLine(img.png, fileName(), e.currentTarget);
-    d.querySelector('[data-oa]').onclick = () => { const b = d.querySelector('[data-oabox]'); b.hidden = !b.hidden; if (!b.hidden) d.querySelector('#sendKey').focus(); };
-    const send = () => {
-      if (!img.jpg) { toast(img.jpgError || 'ภาพใหญ่เกินไปสำหรับ LINE OA', 'err'); return; }
-      sendToLineOA(img.jpg, d.querySelector('#sendKey').value.trim(), d.querySelector('[data-remember]').checked, d.querySelector('[data-send]'));
+    $d('[data-share]').onclick = e => shareToLine(img.png, fileName(), e.currentTarget);
+    const send = async () => {
+      if (!img.jpg) { status(img.jpgError || 'ภาพยาวเกินไปสำหรับ LINE OA — เลือกส่งทีละ Division', 'err'); return; }
+      const key = savedKey || $d('#sendKey').value.trim();
+      if (!key) { status('กรอกรหัสส่ง (SEND_KEY) ก่อนกดส่ง', 'err'); $d('#sendKey').focus(); return; }
+      const btn = $d('[data-send]'); btn.disabled = true; btn.textContent = 'กำลังส่ง…'; status('กำลังส่งภาพเข้า LINE OA…', 'busy');
+      try {
+        await sendToLineOA(img.jpg, key);
+        if (!savedKey && $d('[data-remember]').checked) {
+          try { sessionStorage.setItem('sx-send-key', key); } catch (_) {}
+          savedKey = key; $d('[data-keybox]').hidden = true; $d('[data-saved]').hidden = false;
+        }
+        status(`✓ ส่งแล้ว ${new Date().toLocaleTimeString('th-TH', { hour: '2-digit', minute: '2-digit' })} น. — ${scope || 'ทุก Division'}`, 'ok');
+        btn.textContent = 'ส่งอีกครั้ง';
+      } catch (err) {
+        status(`ส่งไม่สำเร็จ: ${err.message}`, 'err');
+        btn.textContent = 'ลองส่งอีกครั้ง';
+        if (err.status === 401 || err.status === 403) askKey(); // รหัสผิด → ให้กรอกใหม่
+      } finally { btn.disabled = false; }
     };
-    d.querySelector('[data-send]').onclick = send;
-    d.querySelector('#sendKey').onkeydown = e => { if (e.key === 'Enter') send(); };
+    $d('[data-send]').onclick = send;
+    $d('#sendKey').onkeydown = e => { if (e.key === 'Enter') send(); };
     d.showModal();
   } catch (err) {
     toast(`สร้างภาพรวมไม่สำเร็จ: ${err.message}`, 'err');
@@ -1596,18 +1716,16 @@ async function shareToLine(blob, filename, btn) {
   } finally { btn.disabled = false; }
 }
 
-async function sendToLineOA(blob, key, remember, btn) {
-  if (!key) { toast('กรุณากรอกรหัส SEND_KEY', 'err'); return; }
-  try { remember ? sessionStorage.setItem('sx-send-key', key) : sessionStorage.removeItem('sx-send-key'); } catch (_) {}
-  const old = btn.textContent; btn.disabled = true; btn.textContent = 'กำลังส่ง…';
-  try {
-    const res = await fetch(`${LINE_WORKER_URL}/send`, { method: 'POST', headers: { 'Content-Type': 'image/jpeg', 'X-Send-Key': key }, body: blob });
-    let result = {}; try { result = await res.json(); } catch (_) {}
-    if (!res.ok) throw new Error(result.error || `ส่งไม่สำเร็จ (${res.status})`);
-    toast('ส่งภาพสรุปเข้า LINE OA เรียบร้อยแล้ว', 'ok');
-  } catch (err) {
-    toast(`ส่งเข้า LINE OA ไม่สำเร็จ: ${err.message}`, 'err');
-  } finally { btn.disabled = false; btn.textContent = old; }
+// ส่งภาพผ่าน Cloudflare Worker; ผิดพลาดจะ throw Error ที่มี .status (ใช้แยกกรณีรหัสผิด)
+async function sendToLineOA(blob, key) {
+  let res;
+  try { res = await fetch(`${LINE_WORKER_URL}/send`, { method: 'POST', headers: { 'Content-Type': 'image/jpeg', 'X-Send-Key': key }, body: blob }); }
+  catch (_) { throw new Error('เชื่อมต่อไม่ได้ ตรวจสอบอินเทอร์เน็ตแล้วลองใหม่'); }
+  let result = {}; try { result = await res.json(); } catch (_) {}
+  if (!res.ok) {
+    const err = new Error(res.status === 401 || res.status === 403 ? 'รหัสส่งไม่ถูกต้อง' : (result.error || `เซิร์ฟเวอร์ตอบกลับ ${res.status}`));
+    err.status = res.status; throw err;
+  }
 }
 $('#lineBtn').onclick = e => openLineDialog(e.currentTarget);
 
